@@ -140,7 +140,7 @@ services:
       - --serversTransport.insecureSkipVerify=true
     volumes:
       - ./docker/local/certs:/traefik/certs:ro
-      - ./docker/local/traefik/traefik.yml:/traefik/config/my_dynamic_conf/conf.yml:ro
+      - ./docker/local/traefik/$TRAEFIK_CONF.yml:/traefik/config/my_dynamic_conf/conf.yml:ro
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
       - traefik.enable=true
@@ -175,10 +175,10 @@ services:
       - backend
     depends_on:
       - php-backend
+      - traefik
     labels:
       - traefik.enable=true
       - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx.tls=true
-      - traefik.http.routers.holdem-core-nginx.tls.certresolver=cloudflare-acme
       - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx.rule=Host(`$VIRTUAL_HOST`) && PathPrefix(`/tg`)
       - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx.entrypoints=https
       - traefik.http.services.${COMPOSE_PROJECT_NAME:-holdem}-nginx.loadbalancer.server.port=443

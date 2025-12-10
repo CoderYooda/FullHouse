@@ -9,7 +9,7 @@ class CreateTelegramUserDTO
     public readonly ?string $last_name;
     public readonly string $username;
     public readonly ?string $language_code;
-    public readonly bool $allows_write_to_pm;
+    public readonly ?bool $allows_write_to_pm;
     public readonly ?string $photo_url;
 
     public function __construct(
@@ -20,7 +20,7 @@ class CreateTelegramUserDTO
         $this->last_name = $telegramUserData['last_name'];
         $this->username = $telegramUserData['username'];
         $this->language_code = $telegramUserData['language_code'];
-        $this->allows_write_to_pm = $telegramUserData['allows_write_to_pm'];
+        $this->allows_write_to_pm = $telegramUserData['allows_write_to_pm'] ?? false;
         $this->photo_url = $telegramUserData['photo_url'];
     }
 }

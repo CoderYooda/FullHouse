@@ -1,0 +1,10 @@
+/.idea/
+/.code/
+/.vscode/
+/.volumes/
+/.task/
+*.env
+/.editorconfig
+/docker-compose.override.yml
+/taskfile.local.yaml
+/src/.tmp

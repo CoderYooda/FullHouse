@@ -1,0 +1,271 @@
+x-container: &container
+  restart: always
+  networks:
+    - holdem
+    - default
+
+x-php-container: &php-container
+  <<: *container
+  user: 1000:1000
+  image: !reset null
+  build:
+    context: .
+    dockerfile: ./docker/php-swoole/Dockerfile
+#    target: dev
+  volumes: !override
+    - ./src:/application
+  env_file:
+    - .env
+
+services:
+  postgres:
+    <<: *container
+    image: postgres:14-alpine
+    profiles:
+      - backend
+      - backend-admin
+    environment:
+      PGPORT: 5432
+      POSTGRES_DB: holdem
+      POSTGRES_PASSWORD: 123
+      POSTGRES_USER: holdem
+      TZ: $TZ
+    volumes:
+      - ./volumes/postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - ${POSTGRES_HOST_ADDRESS:-0.0.0.0}:${POSTGRES_HOST_PORT:-5432}:${DB_PORT:-5432}
+    networks:
+      - default
+  redis:
+    <<: *container
+    image: redis:7.4-alpine
+    profiles:
+      - backend
+      - backend-admin
+    volumes:
+      - redis_data:/data
+    expose:
+      - 6379
+    ports:
+      - ${REDIS_HOST_ADDRESS:-0.0.0.0}:${REDIS_HOST_PORT:-6379}:6379
+    networks:
+      - default
+    entrypoint: |
+      /bin/sh -c '
+      redis-server --save 60 1 --loglevel debug &
+      while ! redis-cli ping > /dev/null 2>&1; do sleep 0.5; done
+      redis-cli ACL SETUSER "user" on ">user123" "~*" "&*" "+@all"
+      wait '
+  app-init:
+    <<: *php-container
+    restart: "no"
+    entrypoint: sh
+    command:
+      - -xec
+      - |-
+        php artisan -n --ansi db:ready --timeout=5
+        /usr/local/bin/composer install --ansi
+        php artisan -n --ansi migrate --force
+        php artisan -n --ansi cache:clear                      # Reset cache storage/framework/cache
+        php artisan -n --ansi view:clear                       # Reset views cache storage/framework/views
+        php artisan -n --ansi route:clear                      # Reset routes cache bootstrap/cache/routes-v7.php
+        php artisan -n --ansi config:clear                     # Reset configuration cache bootstrap/cache/config.php
+        php artisan -n --ansi clear                            # Reset cache bootstrap/cache/packages.php and bootstrap/cache/services.php
+        php artisan -n --ansi schedule:clear-cache             # Reset mutex cache for schedules
+        php artisan -n --ansi wayfinder:generate --with-form   # Reset mutex cache for schedules
+#        php artisan -n --ansi permission:cache-reset # Reset permission cache
+#        php artisan technical:update_frontend_version
+#        test "$APP_APP_ENV" != "production" || php artisan -n --ansi route:cache   # Build route cache (bootstrap/cache/routes-v7.php)
+#        test "$APP_APP_ENV" != "production" || php artisan -n --ansi config:cache  # Build configuration cache from config/* files to bootstrap/cache/config.php
+#        test "$APP_APP_ENV" = "local" -a ! -f /application/storage/keys/oauth-public.key && php artisan passport:keys  # Create storage/oauth-public.key
+#        test "$APP_APP_ENV" = "local" && php artisan ide-helper:generate           # Ide helper generate
+#        test true
+    #        test "$APP_APP_ENV" != "local" || php artisan db:create_partition:visits --length=12  # Generate 12 partitions for table visits
+    expose: [ ]
+    depends_on:
+      - postgres
+
+  php-backend:
+    <<: *php-container
+    deploy:
+      resources:
+        limits:
+          # noinspection ComposeUnknownValues
+          memory: ${PHP_BACKEND_MEMORY_LIMIT:-4G}
+    healthcheck: !reset [ ]
+
+    command:
+      - /bin/sh
+      - -c
+      - |
+        php artisan octane:start --host=0.0.0.0 --port=8020 --workers=1 --max-requests=500 --task-workers=1 --watch
+    profiles:
+      - backend
+      - backend-admin
+    depends_on:
+      app-init:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+
+
+  traefik:
+    ports:
+      - "80:80"
+      - "443:443"
+    image: traefik:3.4
+    command:
+      # Entrypoints https://doc.traefik.io/traefik/routing/entrypoints/
+      - --entrypoints.http.address=:80
+      - --entrypoints.https.address=:443
+      ## Редирект с `http` на `https`. https://doc.traefik.io/traefik/routing/entrypoints/#redirection
+      - --entrypoints.http.http.redirections.entryPoint.to=https
+      # Docker provider конфигурация https://doc.traefik.io/traefik/routing/providers/docker/
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      # File provider configuration
+      - --providers.file.directory=/traefik/config/my_dynamic_conf
+      # Logging конфигурация https://doc.traefik.io/traefik/observability/logs/
+      - --log.level=error
+      - --log.level=panic
+      - --log.level=fatal
+      - --log.level=warn
+      - --log.format=json
+      # Включение дашборда https://doc.traefik.io/traefik/operations/dashboard/#secure-mode
+      - --api.dashboard=true
+      # Выключение проверки SSL сертификата https://doc.traefik.io/traefik/routing/overview/#insecureskipverify
+      - --serversTransport.insecureSkipVerify=true
+    volumes:
+      - ./docker/local/certs:/traefik/certs:ro
+      - ./docker/local/traefik/traefik.yml:/traefik/config/my_dynamic_conf/conf.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.dashboard.rule=Host(`$TRAEFIK_HOST`) && (PathPrefix(`/`) || PathPrefix(`/dashboard`))
+      - traefik.http.routers.dashboard.tls=true
+      - traefik.http.routers.dashboard.entrypoints=https
+      - traefik.http.routers.dashboard.service=api@internal
+      - traefik.http.services.dashboard.loadbalancer.server.port=80
+    networks:
+      - holdem
+
+  nginx:
+    <<: *container
+    image: nginx:alpine
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+      target: nginx-base
+    environment:
+      NGINX_ENTRYPOINT_WORKER_PROCESSES_AUTOTUNE: 1
+      ADMIN_HOST: php-backend
+      ADMIN_PORT: ${BACKEND_PORT:-8020}
+      VIRTUAL_HOST: $VIRTUAL_HOST
+      NGINX_RESOLVER: "resolver 127.0.0.11 valid=10s;" # Docker local dns
+    volumes:
+      - ./src/public:/application/public
+      - ./docker/log:/var/log/nginx
+      - ./docker/nginx/certs:/etc/nginx/certs
+      - ./docker/nginx:/etc/nginx/conf.d
+      - ./docker/nginx/certs:/usr/share/local/ca-certificates
+    profiles:
+      - backend
+    depends_on:
+      - php-backend
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx.tls=true
+      - traefik.http.routers.holdem-core-nginx.tls.certresolver=cloudflare-acme
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx.rule=Host(`$VIRTUAL_HOST`) && PathPrefix(`/tg`)
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx.entrypoints=https
+      - traefik.http.services.${COMPOSE_PROJECT_NAME:-holdem}-nginx.loadbalancer.server.port=443
+      - traefik.http.services.${COMPOSE_PROJECT_NAME:-holdem}-nginx.loadbalancer.server.scheme=https
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx-http.rule=Host(`$VIRTUAL_HOST`) && PathPrefix(`/tg`)
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx-http.entrypoints=http
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx-http.middlewares=default-https-redirect@file
+    expose:
+      - 80
+      - 443
+
+  front-admin:
+    <<: *container
+#    user: 1000:1000
+    restart: "no"
+    profiles:
+      - backend-admin
+    environment:
+      HOME: /tmp/HOME
+      NPM_COMMAND: dev
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+      target: node-base
+    entrypoint: sh
+    command:
+      - -xec
+      - |-
+        npm install
+        npm run $$NPM_COMMAND
+    volumes:
+      - ./src:/application
+      - ./volumes/front-admin/HOME:/tmp/HOME
+
+
+#  holdem:
+#    build:
+#      dockerfile: docker/go/Dockerfile
+#      context: .
+#      target: dev
+#    profiles:
+#      - backend
+#    volumes:
+#      - ./holdem:/application
+#    ports:
+#      - "3000:3000"
+#    expose:
+#      - 3000
+#    networks:
+#      - holdem
+#    entrypoint: sh
+#    command:
+#      - -xec
+#      - |-
+#        ./HoldemProcessor
+
+#  scheduler:
+#    <<: *php-container
+#    environment:
+#      PHP_MEMORY_LIMIT: 2G
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '1.50'
+#          memory: 2100M
+#    user: www-data:www-data
+#    entrypoint: sh
+#    command:
+#      - -xec
+#      - |-
+#        DELAY=$${DELAY:-60}
+#        exec < /dev/null
+#        on_exit() {
+#            echo Interrupted...
+#            exit 255
+#        }
+#        trap on_exit EXIT
+#        while [ true ]; do
+#            php artisan schedule:run
+#            sleep $$DELAY
+#        done
+#        exit 0
+
+networks:
+  holdem:
+    name: holdem
+    external: true
+volumes:
+  postgres_data:
+  redis_data:

@@ -1,0 +1,32 @@
+tls:
+  options:
+    default:
+      sniStrict: false
+    no-strict-sni:
+      sniStrict: false
+  certificates:
+    - certFile: /traefik/certs/cert.pem
+      keyFile: /traefik/certs/cert-key.pem
+
+http:
+  middlewares:
+    default-https-redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true
+    default-compress:
+      compress: {}
+    default-remove-x-forwarded:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-For: ''
+          X-Forwarded-Host: ''
+          X-Forwarded-Method: ''
+          X-Forwarded-Port: ''
+          X-Forwarded-Prefix: ''
+          X-Forwarded-Proto: ''
+          X-Forwarded-Server: ''
+          X-Forwarded-Tls-Client-Cert-Info: ''
+          X-Forwarded-Tls-Client-Cert: ''
+          X-Forwarded-Uri: ''
+          X-Real-Ip: ''

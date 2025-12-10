@@ -8,8 +8,20 @@ use Illuminate\Contracts\View\View;
 
 class TelegramController extends Controller
 {
-    public function index(): string
+    public function index(): View
     {
-        return 'ok';
+        return view('telegram');
+    }
+
+    public function validate(Request $request): View
+    {
+        dd($request);
+        return view('telegram');
+    }
+
+    public function login(Request $request): View
+    {
+        dd($request);
+        return view('telegram');
     }
 }

@@ -8,16 +8,17 @@ export default ({
         state._authenticated = true
     },
 
-    setUser(state, user) {
-        state._user = user;
-        if (user === null || user === undefined) {
+    setUser(state, userData) {
+
+        state._user = userData.user;
+        if (userData.user === null || userData.user === undefined) {
             localStorage.removeItem('_token');
             localStorage.removeItem('_authenticated');
 
             return
         }
 
-        localStorage.setItem('_token', user.token );
+        localStorage.setItem('_token', userData.token );
 
         axios.interceptors.request.use(
             config => {

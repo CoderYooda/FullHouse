@@ -25,23 +25,21 @@ export default {
             }
         });
 
-        if (this.hasToken()){
-            this.whoAmI()
-            console.log('AUTH LOADED', sessionStorage.getItem('token'))
-            this.$store.state.loaded = true
-
-            return
-        }
+        // if (this.hasToken()){
+        //     this.whoAmI()
+        //
+        //     this.$store.state.loaded = true
+        //
+        //     return
+        // }
 
         if (!this.hasToken()) {
             if(window.Telegram.WebApp.initData){
 
                 this.telegramDataCheck()
                 this.$store.state.loaded = true
-                console.log('Loaded TG')
             } else {
                 this.$store.state.loaded = true
-              console.log('Loaded REdirect')
                 this.$router.push({ path: 'login' })
             }
         }

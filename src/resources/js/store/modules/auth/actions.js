@@ -3,12 +3,13 @@ export default ({
         try {
             const { data } = await axios({
                 method: 'POST',
-                url: '/telegram/user/validate',
+                url: '/api/telegram/user/auth',
                 data:{
                     query: validateData,
                 }
             });
-            commit('setUser', data.user);
+            let userData = data.data;
+            commit('setUser', userData);
             commit('setAuthenticated');
 
             return true;
@@ -26,7 +27,7 @@ export default ({
                 url: '/auth/login',
                 data: loginData
             });
-            commit('setUser', data.user);
+            commit('setUser', data.user, data.token);
             commit('setAuthenticated');
 
             return true;

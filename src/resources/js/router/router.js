@@ -51,7 +51,8 @@ const routes = [
 ];
 
 const router = createRouter({
-    history: createWebHistory('/game'),
+    history: createWebHistory('/telegram' +
+        ''),
     routes,
     linkActiveClass: 'active',
     linkExactActiveClass: 'active'

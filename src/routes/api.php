@@ -2,6 +2,10 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\TelegramController;
+
+Route::post('/telegram/user/auth', [TelegramController::class, 'auth'])
+    ->name('telegram.user.auth');
 
 Route::post('/tokens/create', function (Request $request) {
     $token = $request->user()->createToken($request->token_name);

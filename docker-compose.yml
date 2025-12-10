@@ -181,11 +181,11 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx.tls=true
-      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx.rule=Host(`$VIRTUAL_HOST`) && PathPrefix(`/tg`)
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx.rule=Host(`$VIRTUAL_HOST`) && PathPrefix(`/`)
       - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx.entrypoints=https
       - traefik.http.services.${COMPOSE_PROJECT_NAME:-holdem}-nginx.loadbalancer.server.port=443
       - traefik.http.services.${COMPOSE_PROJECT_NAME:-holdem}-nginx.loadbalancer.server.scheme=https
-      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx-http.rule=Host(`$VIRTUAL_HOST`) && PathPrefix(`/tg`)
+      - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx-http.rule=Host(`$VIRTUAL_HOST`) && PathPrefix(`/`)
       - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx-http.entrypoints=http
       - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx-http.middlewares=default-https-redirect@file
     expose:

@@ -5,6 +5,7 @@ import state from './modules/state/index';
 export default createStore({
     state: {
         _develop_mode:false,
+        _fullscreenLoading:true,
     },
     getters: {
         DEVELOP_MODE(state) {

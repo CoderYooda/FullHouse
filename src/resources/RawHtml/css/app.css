@@ -1,0 +1,33 @@
+body {
+    background: #131217;
+}
+
+.blur-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+
+    animation: overlay-pulse 1s ease-in-out infinite;
+}
+.logo {
+    position: absolute;
+    top: calc(50% - 416px / 2);
+    left: calc(50% - 646px / 2);
+    background: url(./../img/logo.svg);
+    background-size: cover;
+    width: 646px;
+    height: 416px;
+}
+@keyframes overlay-pulse {
+    0% {
+        box-shadow: 0 0 347px 155px #ECB054;
+    }
+    50% {
+        box-shadow: 0 0 347px 180px #ECB054;
+    }
+    100% {
+        box-shadow: 0 0 347px 155px #ECB054;
+    }
+}

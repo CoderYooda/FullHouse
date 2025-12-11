@@ -1,12 +1,5 @@
 <template>
-<input name="login" @input="event => login = event.target.value">
-<input name="password" @input="event => password = event.target.value">
-    <LogoutButton/>
-    <button type="submit" @click="loginAction">Войти</button>
-    <a href="#" @click="registerAction">Регистрация</a>
-    <pre style="overflow: scroll;background: antiquewhite;">
-        {{ TelegramData }}
-    </pre>
+123
 </template>
 
 <script>

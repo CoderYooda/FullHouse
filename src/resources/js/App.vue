@@ -1,6 +1,9 @@
 <template lang="">
-    <div v-if="isLoading">123</div>
     <component :is="layout"></component>
+    <div v-if="isLoading" class="container">
+        <div class="blur-overlay"></div>
+        <div class="logo"></div>
+    </div>
 </template>
 
 <script>
@@ -8,8 +11,6 @@ import Auth from './layouts/Auth.vue';
 import Main from './layouts/Main.vue';
 import DevTools from './layouts/DevTools.vue';
 import {mapActions, mapGetters} from "vuex";
-
-
 
 export default {
     name: 'app',
@@ -19,12 +20,11 @@ export default {
         DevTools,
     },
     mounted() {
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'd') {
-                this.$store.state._develop_mode = !this.$store.state._develop_mode;
-            }
-        });
-
+        // window.addEventListener('keydown', (e) => {
+        //     if (e.key === 'd') {
+        //         this.$store.state._develop_mode = !this.$store.state._develop_mode;
+        //     }
+        // });
         // if (this.hasToken()){
         //     this.whoAmI()
         //
@@ -33,16 +33,16 @@ export default {
         //     return
         // }
 
-        if (!this.hasToken()) {
-            if(window.Telegram.WebApp.initData){
-
-                this.telegramDataCheck()
-                this.$store.state.loaded = true
-            } else {
-                this.$store.state.loaded = true
-                this.$router.push({ path: 'login' })
-            }
-        }
+        // if (!this.hasToken()) {
+        //     if(window.Telegram.WebApp.initData){
+        //
+        //         this.telegramDataCheck()
+        //         this.$store.state.loaded = true
+        //     } else {
+        //         this.$store.state.loaded = true
+        //         this.$router.push({ path: 'login' })
+        //     }
+        // }
     },
     methods: {
         ...mapActions('auth', ['TelegramAuth', 'WhoAmI']),
@@ -82,7 +82,7 @@ export default {
             return this.$store.state.auth._authenticated === true
         },
         isLoading(){
-          // return this.LOADING();
+            return this.$store.state._fullscreenLoading;
         },
 
         layout() {

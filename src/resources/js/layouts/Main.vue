@@ -6,31 +6,31 @@
             </div>
         </div>
         <div class="header">
-            <div class="boxed">
-                <div class="profile">
-                    <div class="user_pic">
-                        <img v-bind:src="user.pic">
-                    </div>
-                    <div class="user_data">
-                        <div class="user_name">
-                            {{ user.name }}
-                        </div>
-                        <div class="level_graph"></div>
-                        <div class="user_lvl">
-                            уровень 151
-                        </div>
-                    </div>
-                </div>
-                <div class="spacer">
-<!--                    <button @click="enterFullscreen()">fullscreen</button>-->
-<!--                    <LogoutButton/>-->
-                </div>
-                <div class="credit_box">
-                    <div class="title">Баланс</div>
-                    <div class="credits">{{ user.credits }}</div>
-                </div>
-            </div>
-            <DevelopPanel/>
+<!--            <div class="boxed">-->
+<!--                <div class="profile">-->
+<!--                    <div class="user_pic">-->
+<!--                        <img v-bind:src="user.pic">-->
+<!--                    </div>-->
+<!--                    <div class="user_data">-->
+<!--                        <div class="user_name">-->
+<!--                            {{ user.name }}-->
+<!--                        </div>-->
+<!--                        <div class="level_graph"></div>-->
+<!--                        <div class="user_lvl">-->
+<!--                            уровень 151-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="spacer">-->
+<!--&lt;!&ndash;                    <button @click="enterFullscreen()">fullscreen</button>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <LogoutButton/>&ndash;&gt;-->
+<!--                </div>-->
+<!--                <div class="credit_box">-->
+<!--                    <div class="title">Баланс</div>-->
+<!--                    <div class="credits">{{ user.credits }}</div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <DevelopPanel/>-->
         </div>
         <div class="content">
             <div class="boxed">
@@ -38,13 +38,8 @@
             </div>
             <SeatModal/>
         </div>
-<!--        <div class="footer">-->
-<!--            <div class="boxed">-->
-<!--                <div class="menu">-->
-<!--                    <button @click="toggleDevelopMode()">dev mode</button>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
+        <div v-if="!isLoading" class="footer">
+        </div>
     </div>
 </template>
 
@@ -114,17 +109,22 @@ export default {
         },
         topPadding(){
             return this.safeTop+'px'
-        }
+        },
+        isLoading(){
+            return this.$store.state._fullscreenLoading;
+        },
     },
     async mounted() {
         this.enterFullscreen()
         setTimeout(() => {
             this.pageLoaded = true;
+
         });
 
         setTimeout(() => {
             // this.$refs['app'].style.opacity = 1;
-        }, 100);
+            this.$store.state._fullscreenLoading = false;
+        }, 2000);
 
 
 

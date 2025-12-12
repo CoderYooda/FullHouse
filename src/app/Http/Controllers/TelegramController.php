@@ -12,16 +12,4 @@ class TelegramController extends Controller
     {
         return view('telegram');
     }
-
-    public function validate(Request $request): View
-    {
-        dd($request);
-        return view('telegram');
-    }
-
-    public function login(Request $request): View
-    {
-        dd($request);
-        return view('telegram');
-    }
 }

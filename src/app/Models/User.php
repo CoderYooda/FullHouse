@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Insurance\ApplicationInsurance;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -14,6 +16,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $email
  * @property int $phone
  * @property string $password
+ *
+ * @property-read TelegramUser|null $telegramUser {@see static::telegramUser()}
  * */
 
 class User extends Authenticatable
@@ -43,11 +47,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -55,5 +54,10 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    public function telegramUser(): HasOne
+    {
+        return $this->hasOne(TelegramUser::class, 'user_id');
     }
 }

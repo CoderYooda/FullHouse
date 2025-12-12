@@ -6,6 +6,7 @@ export default createStore({
     state: {
         _develop_mode:false,
         _fullscreenLoading:true,
+        _isLocalMode:window.mode === 'local',
     },
     getters: {
         DEVELOP_MODE(state) {

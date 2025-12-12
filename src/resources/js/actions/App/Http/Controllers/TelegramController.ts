@@ -1,61 +1,5 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
-* @see \App\Http\Controllers\TelegramController::validate
-* @see app/Http/Controllers/TelegramController.php:16
-* @route '/telegram/user/validate'
-*/
-export const validate = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: validate.url(options),
-    method: 'post',
-})
-
-validate.definition = {
-    methods: ["post"],
-    url: '/telegram/user/validate',
-} satisfies RouteDefinition<["post"]>
-
-/**
-* @see \App\Http\Controllers\TelegramController::validate
-* @see app/Http/Controllers/TelegramController.php:16
-* @route '/telegram/user/validate'
-*/
-validate.url = (options?: RouteQueryOptions) => {
-    return validate.definition.url + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\TelegramController::validate
-* @see app/Http/Controllers/TelegramController.php:16
-* @route '/telegram/user/validate'
-*/
-validate.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: validate.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\TelegramController::validate
-* @see app/Http/Controllers/TelegramController.php:16
-* @route '/telegram/user/validate'
-*/
-const validateForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: validate.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\TelegramController::validate
-* @see app/Http/Controllers/TelegramController.php:16
-* @route '/telegram/user/validate'
-*/
-validateForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: validate.url(options),
-    method: 'post',
-})
-
-validate.form = validateForm
-
-/**
 * @see \App\Http\Controllers\TelegramController::login
 * @see app/Http/Controllers/TelegramController.php:22
 * @route '/auth/login'
@@ -210,6 +154,6 @@ indexForm.head = (args: { any: string | number } | [any: string | number ] | str
 
 index.form = indexForm
 
-const TelegramController = { validate, login, index }
+const TelegramController = { login, index }
 
 export default TelegramController

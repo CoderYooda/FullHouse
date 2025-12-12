@@ -8,13 +8,8 @@ use Illuminate\Contracts\View\View;
 
 class HomeController extends Controller
 {
-    public function index(): View
+    public function index(): string
     {
-        return view('home');
-    }
-
-    public function act(Request $request): void
-    {
-        StateService::add($request->get('var') ?? 'act');
+        return 'ok';
     }
 }

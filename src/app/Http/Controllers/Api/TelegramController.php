@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\Telegram\AuthTelegramResource;
 use App\Models\TelegramUser;
 use App\Modules\Telegram\Domain\Actions\CreateTelegramUserAction;
+use App\Modules\Telegram\Domain\Actions\UpdateTelegramUserAction;
 use App\Modules\Telegram\Domain\DTO\CreateTelegramUserDTO;
+use App\Modules\Telegram\Domain\DTO\UpdateTelegramUserDTO;
 use App\Service\Auth\AuthService;
 use App\Service\Auth\DTO\CreateUserDTO;
 use App\Service\Telegram\ValidateService;
@@ -20,6 +22,7 @@ class TelegramController extends Controller
         ValidateService $validateService,
         AuthService $authService,
         CreateTelegramUserAction $createTelegramUserAction,
+        UpdateTelegramUserAction $updateTelegramUserAction,
     ): AuthTelegramResource {
         $params = $request->get('query');
 
@@ -32,16 +35,23 @@ class TelegramController extends Controller
                 $telegramUser = $createTelegramUserAction->handle(
                     telegramUserDTO: new CreateTelegramUserDTO($telegramUserData)
                 );
+            } else {
+                $telegramUser = $updateTelegramUserAction->handle(
+                    telegramUserDTO: new UpdateTelegramUserDTO($telegramUserData),
+                    telegramUser:$telegramUser,
+                );
             }
 
             $user = $authService->getOrCreateUser(new CreateUserDTO(
                 login: $telegramUser->username,
             ));
+            $user->telegramUser()->save($telegramUser);
+
             $token = $user->createToken('telegram')->plainTextToken;
 
             return new AuthTelegramResource($user, $token);
         }
 
-        throw new Exception();
+        throw new Exception('TelegramUserInvalid');
     }
 }

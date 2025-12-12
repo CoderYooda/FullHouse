@@ -12,6 +12,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js?2"></script>
     <!-- Telegram -->
     <script>
+        window.mode = '{{ env('APP_ENV') }}';
         window.Telegram = Telegram;
         Telegram.WebApp.lockOrientation();
     </script>

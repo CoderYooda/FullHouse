@@ -12,6 +12,15 @@ const routes = [
         }
     },
     {
+        path: '/player',
+        name: 'player',
+        component: () => import('../pages/Player/Player.vue'),
+        meta: {
+            layout: 'Main',
+            auth: true,
+        }
+    },
+    {
         path: '/login',
         name: 'login',
         component: () => import('../pages/Auth/Login.vue'),

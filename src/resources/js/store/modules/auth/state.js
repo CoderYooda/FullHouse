@@ -2,13 +2,8 @@ export default ({
     _authenticated: false,
     _user: {
         login: null,
-        email: null,
-        token: null,
+        first_name: null,
+        last_name: null,
+        pic: null,
     },
-    _player: {
-        name: null,
-        credits: 0,
-    },
-    _app_loading: false,
-    _errors: null,
 });

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Api\TelegramController::auth
-* @see app/Http/Controllers/Api/TelegramController.php:18
+* @see app/Http/Controllers/Api/TelegramController.php:20
 * @route '/api/telegram/user/auth'
 */
 export const auth = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ auth.definition = {
 
 /**
 * @see \App\Http\Controllers\Api\TelegramController::auth
-* @see app/Http/Controllers/Api/TelegramController.php:18
+* @see app/Http/Controllers/Api/TelegramController.php:20
 * @route '/api/telegram/user/auth'
 */
 auth.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ auth.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Api\TelegramController::auth
-* @see app/Http/Controllers/Api/TelegramController.php:18
+* @see app/Http/Controllers/Api/TelegramController.php:20
 * @route '/api/telegram/user/auth'
 */
 auth.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ auth.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\Api\TelegramController::auth
-* @see app/Http/Controllers/Api/TelegramController.php:18
+* @see app/Http/Controllers/Api/TelegramController.php:20
 * @route '/api/telegram/user/auth'
 */
 const authForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ const authForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => (
 
 /**
 * @see \App\Http\Controllers\Api\TelegramController::auth
-* @see app/Http/Controllers/Api/TelegramController.php:18
+* @see app/Http/Controllers/Api/TelegramController.php:20
 * @route '/api/telegram/user/auth'
 */
 authForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -55,65 +55,8 @@ authForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
 
 auth.form = authForm
 
-/**
-* @see \App\Http\Controllers\TelegramController::login
-* @see app/Http/Controllers/TelegramController.php:22
-* @route '/auth/login'
-*/
-export const login = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: login.url(options),
-    method: 'post',
-})
-
-login.definition = {
-    methods: ["post"],
-    url: '/auth/login',
-} satisfies RouteDefinition<["post"]>
-
-/**
-* @see \App\Http\Controllers\TelegramController::login
-* @see app/Http/Controllers/TelegramController.php:22
-* @route '/auth/login'
-*/
-login.url = (options?: RouteQueryOptions) => {
-    return login.definition.url + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\TelegramController::login
-* @see app/Http/Controllers/TelegramController.php:22
-* @route '/auth/login'
-*/
-login.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: login.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\TelegramController::login
-* @see app/Http/Controllers/TelegramController.php:22
-* @route '/auth/login'
-*/
-const loginForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: login.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\TelegramController::login
-* @see app/Http/Controllers/TelegramController.php:22
-* @route '/auth/login'
-*/
-loginForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: login.url(options),
-    method: 'post',
-})
-
-login.form = loginForm
-
 const user = {
     auth: Object.assign(auth, auth),
-    login: Object.assign(login, login),
 }
 
 export default user

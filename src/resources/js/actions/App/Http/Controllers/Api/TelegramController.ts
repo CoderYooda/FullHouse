@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Api\TelegramController::auth
-* @see app/Http/Controllers/Api/TelegramController.php:18
+* @see app/Http/Controllers/Api/TelegramController.php:20
 * @route '/api/telegram/user/auth'
 */
 export const auth = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ auth.definition = {
 
 /**
 * @see \App\Http\Controllers\Api\TelegramController::auth
-* @see app/Http/Controllers/Api/TelegramController.php:18
+* @see app/Http/Controllers/Api/TelegramController.php:20
 * @route '/api/telegram/user/auth'
 */
 auth.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ auth.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Api\TelegramController::auth
-* @see app/Http/Controllers/Api/TelegramController.php:18
+* @see app/Http/Controllers/Api/TelegramController.php:20
 * @route '/api/telegram/user/auth'
 */
 auth.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ auth.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\Api\TelegramController::auth
-* @see app/Http/Controllers/Api/TelegramController.php:18
+* @see app/Http/Controllers/Api/TelegramController.php:20
 * @route '/api/telegram/user/auth'
 */
 const authForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ const authForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => (
 
 /**
 * @see \App\Http\Controllers\Api\TelegramController::auth
-* @see app/Http/Controllers/Api/TelegramController.php:18
+* @see app/Http/Controllers/Api/TelegramController.php:20
 * @route '/api/telegram/user/auth'
 */
 authForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

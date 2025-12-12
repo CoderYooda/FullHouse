@@ -2,8 +2,8 @@ export default ({
     Authenticated(state) {
         return state._authenticated;
     },
-    Token(state) {
-        return state._user.token ?? localStorage.getItem('_token');
+    Token() {
+        return localStorage.getItem('_token');
     },
 
     User(state) {

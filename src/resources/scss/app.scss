@@ -44,6 +44,17 @@ body {
     min-width: 350px;
     overflow: hidden;
 
+    .preloader {
+        position: absolute;
+        background: #131217;
+        z-index: 9999;
+    }
+
+    .boxed {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
     .blur-overlay {
         position: absolute;
         top: 50%;
@@ -67,5 +78,30 @@ body {
         height: 96px;
         background: url(./../img/footer_bg.svg) no-repeat center;
     }
+    .avatar_guard {
+        background: url(./../img/ava_round.svg) no-repeat center;
+        height: 225px;
+        width: 225px;
+        margin: 0 auto;
+        position: relative;
+        .player_avatar {
+            display: block;
+            position: absolute;
+            border-radius: 61%;
+            max-width: 160px;
+            left: 32px;
+            top: 32px;
+        }
+    }
+    .player_name{
+        text-align: center;
+        font-size: 20px;
+    }
+    .player_login{
+        text-align: center;
+        font-size: 20px;
+        color: #EDB258;
+    }
+
 }
 

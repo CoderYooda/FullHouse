@@ -20,41 +20,41 @@ export default ({
             return false;
         }
     },
-    async Login({ getters, commit }, loginData) {
-        try {
-            const { data } = await axios({
-                method: 'POST',
-                url: '/auth/login',
-                data: loginData
-            });
-            commit('setUser', data.user, data.token);
-            commit('setAuthenticated');
-
-            return true;
-        } catch (error) {
-            commit('SET_ERRORS', error.response.data);
-
-            return false;
-        }
-    },
-    async Register({ getters, commit }, registerData) {
-        try {
-            const { data } = await axios({
-                method: 'POST',
-                url: '/auth/register',
-                data: registerData
-            });
-            commit('setUser', data.user);
-            commit('setAuthenticated');
-
-            return data;
-            if (getters.HAS_ERRORS) {
-                commit('SET_ERRORS', null);
-            }
-        } catch (error) {
-            commit('SET_ERRORS', error.response.data);
-        }
-    },
+    // async Login({ getters, commit }, loginData) {
+    //     try {
+    //         const { data } = await axios({
+    //             method: 'POST',
+    //             url: '/auth/login',
+    //             data: loginData
+    //         });
+    //         commit('setUser', data.user, data.token);
+    //         commit('setAuthenticated');
+    //
+    //         return true;
+    //     } catch (error) {
+    //         commit('SET_ERRORS', error.response.data);
+    //
+    //         return false;
+    //     }
+    // },
+    // async Register({ getters, commit }, registerData) {
+    //     try {
+    //         const { data } = await axios({
+    //             method: 'POST',
+    //             url: '/auth/register',
+    //             data: registerData
+    //         });
+    //         commit('setUser', data.user);
+    //         commit('setAuthenticated');
+    //
+    //         return data;
+    //         if (getters.HAS_ERRORS) {
+    //             commit('SET_ERRORS', null);
+    //         }
+    //     } catch (error) {
+    //         commit('SET_ERRORS', error.response.data);
+    //     }
+    // },
     async WhoAmI({ getters, commit }) {
         try {
             const { data } = await axios({

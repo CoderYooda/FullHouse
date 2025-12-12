@@ -11,3 +11,7 @@ Route::get('/', [HomeController::class, 'index'])
 Route::get('/telegram{any}', [TelegramController::class, 'index'])
     ->where('any', '.*')
     ->name('home');
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/test', [TelegramController::class, 'test']);
+});

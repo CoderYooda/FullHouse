@@ -38,7 +38,7 @@
             </div>
             <SeatModal/>
         </div>
-        <div v-if="!isLoading" class="footer">
+        <div v-if="!isLoading" class="footer boxed">
         </div>
     </div>
 </template>

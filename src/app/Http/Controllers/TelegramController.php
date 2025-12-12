@@ -12,4 +12,9 @@ class TelegramController extends Controller
     {
         return view('telegram');
     }
+
+    public function test(): string
+    {
+        return auth()->user()->name;
+    }
 }

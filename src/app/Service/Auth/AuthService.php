@@ -9,17 +9,18 @@ class AuthService
 {
     public function getOrCreateUser(CreateUserDTO $createUserDTO): User
     {
-        $user = User::where('name', $createUserDTO->login)->first();
+        $user = User::where('telegram_user_id', $createUserDTO->telegramUser->id)->first();
 
         if (!$user) {
             $user = new User();
-            $user->name = $createUserDTO->login;
-            $user->email = $createUserDTO->login . '@telegram.com';
+            $user->telegram_user_id = $createUserDTO->telegramUser->id;
+            $user->name = $createUserDTO->telegramUser->username;
+            $user->public_name = $createUserDTO->telegramUser->username;
+            $user->email = $createUserDTO->telegramUser->username . '@telegram.com';
             $user->password = '123456';
 
             $user->save();
         }
-
 
         return $user;
     }

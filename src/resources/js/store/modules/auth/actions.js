@@ -20,6 +20,28 @@ export default ({
             return false;
         }
     },
+    async UpdateName({ getters, commit }, name) {
+        try {
+            const { data } = await axios({
+                method: 'POST',
+                url: '/api/player/update_name',
+                headers:{
+                    Authorization:'Bearer '+localStorage.getItem('_token'),
+                },
+                data:{
+                    name: name,
+                }
+            });
+            commit('setUserName', data.data.name);
+
+            return true;
+        } catch (error) {
+            // alert(error)
+            commit('SET_ERRORS', error.response.data);
+
+            return false;
+        }
+    },
     // async Login({ getters, commit }, loginData) {
     //     try {
     //         const { data } = await axios({

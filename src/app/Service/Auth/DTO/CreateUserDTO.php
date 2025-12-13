@@ -2,10 +2,12 @@
 
 namespace App\Service\Auth\DTO;
 
+use App\Models\TelegramUser;
+
 class CreateUserDTO
 {
     public function __construct(
-        public readonly string $login,
+        public readonly TelegramUser $telegramUser,
     ){
     }
 }

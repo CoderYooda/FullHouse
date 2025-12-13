@@ -19,7 +19,7 @@ class AuthTelegramResource extends JsonResource
     {
         return [
             'user' => [
-                'login' => $this->user->name,
+                'public_name' => $this->user->public_name,
                 'pic' => $this->user->telegramUser?->photo_url,
                 'first_name' => $this->user->telegramUser?->first_name,
                 'last_name' => $this->user->telegramUser?->last_name,

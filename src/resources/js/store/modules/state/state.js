@@ -9,6 +9,9 @@ export default ({
         min_buy: 0,
         max_buy: 0,
     },
+    _change_name_modal: {
+        visible: false,
+    },
     _table_settings:new Table(100, 10000),
 
 });

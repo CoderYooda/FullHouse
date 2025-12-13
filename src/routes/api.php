@@ -12,6 +12,10 @@ Route::post('/tokens/create', function (Request $request) {
     return ['token' => $token->plainTextToken];
 });
 
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/player/update_name', [TelegramController::class, 'updateName']);
+});
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');

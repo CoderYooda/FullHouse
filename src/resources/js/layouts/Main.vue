@@ -1,9 +1,9 @@
 <template>
     <div class="main container">
-        <div class="tg_buttons_header">
-            <div class="tg_center_container" @click="test">
-                <div class="balance">{{ user.credits }}</div>
-            </div>
+        <div class="tg_buttons_header" style="margin-bottom: 30px">
+<!--            <div class="tg_center_container" @click="test">-->
+<!--                <div class="balance">{{ user.credits }}</div>-->
+<!--            </div>-->
         </div>
         <div class="header">
 <!--            <div class="boxed">-->

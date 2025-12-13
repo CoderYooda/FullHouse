@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\Telegram\AuthTelegramResource;
+use App\Http\Resources\Api\Telegram\UpdateNameResource;
 use App\Models\TelegramUser;
 use App\Modules\Telegram\Domain\Actions\CreateTelegramUserAction;
 use App\Modules\Telegram\Domain\Actions\UpdateTelegramUserAction;
@@ -43,9 +44,8 @@ class TelegramController extends Controller
             }
 
             $user = $authService->getOrCreateUser(new CreateUserDTO(
-                login: $telegramUser->username,
+                telegramUser: $telegramUser,
             ));
-            $user->telegramUser()->save($telegramUser);
 
             $token = $user->createToken('telegram')->plainTextToken;
 
@@ -53,5 +53,16 @@ class TelegramController extends Controller
         }
 
         throw new Exception('TelegramUserInvalid');
+    }
+
+    public function updateName(Request $request): UpdateNameResource
+    {
+        $name = $request->get('name');
+
+        $user = $request->user();
+        $user->public_name = $name;
+        $user->save();
+
+        return new UpdateNameResource($user);
     }
 }

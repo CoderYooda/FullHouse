@@ -14,9 +14,6 @@ return new class extends Migration
         Schema::create('telegram_users', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('telegram_id');
-            $table->foreignId('user_id')
-                ->nullable()
-                ->constrained('users');
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
             $table->string('username');

@@ -32,6 +32,10 @@ export default ({
         );
     },
 
+    setUserName(state, name) {
+        state._user.public_name = name;
+    },
+
     setPlayer(state, player) {
         state._user = player;
     }

@@ -93,15 +93,30 @@ body {
             top: 32px;
         }
     }
+    .public_name_title{
+        text-align: center;
+        font-size: 13px;
+        color: #ffffff;
+    }
     .player_name{
         text-align: center;
         font-size: 20px;
+        margin-bottom: 15px;
     }
     .player_login{
         text-align: center;
         font-size: 20px;
         color: #EDB258;
     }
-
+    .change_name_button{
+        button {
+            background: #EDB258;
+            border: 0;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin: 0 auto;
+            display: block;
+        }
+    }
 }
 

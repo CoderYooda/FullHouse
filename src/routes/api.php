@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TelegramController;
+use App\Http\Controllers\TournamentController;
 
 Route::post('/telegram/user/auth', [TelegramController::class, 'auth'])
     ->name('telegram.user.auth');
@@ -14,6 +15,8 @@ Route::post('/tokens/create', function (Request $request) {
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/player/update_name', [TelegramController::class, 'updateName']);
+    Route::post('/tournament/get', [TournamentController::class, 'getActive']);
+    Route::post('/tournament/join', [TournamentController::class, 'join']);
 });
 
 Route::get('/user', function (Request $request) {

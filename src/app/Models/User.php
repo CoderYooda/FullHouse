@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -12,7 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 /**
  * --- Properties from a database ---
  * @property int $id
- * @property string $telegram_user_id
+ * @property string|null $telegram_user_id
  * @property string $name
  * @property string $public_name
  * @property string $te

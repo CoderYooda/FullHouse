@@ -6,6 +6,9 @@ mix.js('./resources/js/app.js', './public/js')
     .sass('./resources/scss/app.scss', './public/css')
     .version()
 
+mix.sass('./resources/admin/scss/azia.scss', './public/admin/css')
+    .version()
+
 // mix.js('./resources/telegram/js/app.js', './public/telegram/js')
 //     .sass('./resources/telegram/scss/app.scss', './public/telegram/css')
 

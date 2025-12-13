@@ -2,7 +2,7 @@
     <div class="seat-window modal" v-if="visible">
         <div class="window">
             <div class="body">
-                <span>Публичное имя для рейтинга</span>
+                <span style="text-align: center;width: 100%; display: block;">Публичное имя для рейтинга</span>
                 <input v-model="user.public_name" name="public_name">
                 <button class="btn primary seat_btn" @click="storePublicName">Сохранить</button>
             </div>

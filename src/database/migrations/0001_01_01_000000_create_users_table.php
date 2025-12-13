@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('is_admin')->default(false);
             $table->string('public_name');
-            $table->foreignId('telegram_user_id');
+            $table->foreignId('telegram_user_id')->nullable();
             $table->string('email')->unique();
             $table->string('password');
             $table->rememberToken();

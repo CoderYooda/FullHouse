@@ -33,13 +33,10 @@
 <!--            <DevelopPanel/>-->
         </div>
         <div class="content">
-            <div class="boxed">
-                <router-view></router-view>
-            </div>
-            <SeatModal/>
+            <router-view></router-view>
         </div>
-        <div v-if="!isLoading" class="footer boxed">
-        </div>
+<!--        <div v-if="!isLoading" class="footer boxed">-->
+<!--        </div>-->
     </div>
 </template>
 

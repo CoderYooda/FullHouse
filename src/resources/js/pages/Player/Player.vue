@@ -30,7 +30,7 @@ export default {
     },
     methods:{
         openChangeNameModal(){
-            this.$store.state.state._change_name_modal.visible = true
+            this.$store.state.ui._modal_change_player_name = true
         }
     },
     computed:{

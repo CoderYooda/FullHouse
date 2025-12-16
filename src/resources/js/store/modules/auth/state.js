@@ -1,4 +1,5 @@
 export default ({
+    _token: null,
     _authenticated: false,
     _change_name_modal: false,
     _user: {

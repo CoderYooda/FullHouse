@@ -12,6 +12,8 @@ _ide_*.php
 /vendor-bin/**/vendor/
 /node_modules/
 /public/fonts/
+/public/admin/css/
+/public/admin/js/
 /public/images/
 /public/vendor/apidoc
 /public/hot

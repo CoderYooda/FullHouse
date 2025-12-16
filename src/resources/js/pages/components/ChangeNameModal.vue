@@ -26,11 +26,11 @@ import { mapActions, mapGetters } from 'vuex';
         methods: {
             ...mapActions('auth', ['UpdateName']),
             seat() {
-                this.$store.state.state._change_name_modal.visible = false
+                this.$store.state.ui._modal_change_player_name = false
             },
             storePublicName(){
                 this.UpdateName(this.user.public_name).then((result) => {
-                    this.$store.state.state._change_name_modal.visible = false
+                    this.$store.state.ui._modal_change_player_name = false
                 })
             }
         },
@@ -40,7 +40,7 @@ import { mapActions, mapGetters } from 'vuex';
                 return this.User;
             },
             visible () {
-                return this.$store.state.state._change_name_modal.visible
+                return this.$store.state.ui._modal_change_player_name
             }
         }
     }

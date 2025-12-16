@@ -73,7 +73,6 @@ services:
         php artisan -n --ansi config:clear                     # Reset configuration cache bootstrap/cache/config.php
         php artisan -n --ansi clear                            # Reset cache bootstrap/cache/packages.php and bootstrap/cache/services.php
         php artisan -n --ansi schedule:clear-cache             # Reset mutex cache for schedules
-        php artisan -n --ansi wayfinder:generate --with-form   # Reset mutex cache for schedules
 #        php artisan -n --ansi permission:cache-reset # Reset permission cache
 #        php artisan technical:update_frontend_version
 #        test "$APP_APP_ENV" != "production" || php artisan -n --ansi route:cache   # Build route cache (bootstrap/cache/routes-v7.php)

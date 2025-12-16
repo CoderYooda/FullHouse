@@ -2,6 +2,7 @@ export default ({
     Authenticated(state) {
         return state._authenticated;
     },
+
     Token() {
         return localStorage.getItem('_token');
     },

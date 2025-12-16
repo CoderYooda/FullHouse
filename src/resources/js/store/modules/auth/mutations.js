@@ -19,21 +19,28 @@ export default ({
         }
 
         localStorage.setItem('_token', userData.token );
-
-        axios.interceptors.request.use(
-            config => {
-                config.headers['Token'] = localStorage.getItem('_token');
-                return config;
-            },
-            error => {
-                console.log("TokenSetERROR", error)
-                return Promise.reject(error);
-            }
-        );
     },
 
     setUserName(state, name) {
         state._user.public_name = name;
+    },
+
+
+    setToken(state, token) {
+        state._token = token;
+
+        axios.interceptors.request.use(
+            config => {
+                config.headers['Authorization'] = 'Bearer '+token;
+
+                return config;
+            },
+            error => {
+                console.log("TokenSetERROR", error)
+
+                return Promise.reject(error);
+            }
+        );
     },
 
     setPlayer(state, player) {

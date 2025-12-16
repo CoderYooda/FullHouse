@@ -15,6 +15,7 @@ use App\Service\Auth\DTO\CreateUserDTO;
 use App\Service\Telegram\ValidateService;
 use Illuminate\Http\Request;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 
 class TelegramController extends Controller
 {
@@ -47,9 +48,12 @@ class TelegramController extends Controller
                 telegramUser: $telegramUser,
             ));
 
+            Auth::login($user);
+            $request->session()->regenerate();
             $token = $user->createToken('telegram')->plainTextToken;
 
             return new AuthTelegramResource($user, $token);
+
         }
 
         throw new Exception('TelegramUserInvalid');

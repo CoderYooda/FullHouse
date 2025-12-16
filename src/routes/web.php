@@ -21,6 +21,16 @@ Route::get('/login', [AuthController::class, 'login'])
 Route::post('/login', [AuthController::class, 'authenticate'])
     ->name('admin.login');
 
+Route::post('/telegram/user/auth', [TelegramController::class, 'auth'])
+    ->name('telegram.user.auth');
+
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/player/update_name', [TelegramController::class, 'updateName']);
+    Route::post('/tournament/get', [TournamentController::class, 'getActive']);
+    Route::post('/tournament/join', [TournamentController::class, 'join']);
+});
+
 Route::middleware(['auth:web'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])
         ->where('any', '.*')
@@ -29,6 +39,8 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('/tournament/create', [TournamentController::class, 'create'])
         ->name('tournament.create');
 });
+
+
 
 
 

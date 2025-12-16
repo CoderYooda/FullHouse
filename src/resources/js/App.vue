@@ -50,6 +50,7 @@ export default {
             })
         },
         telegramDataCheck(data){
+
             this.TelegramAuth(data).then((result) => {
                 if (result) {
                     this.$store.state.loaded = true

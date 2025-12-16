@@ -12,9 +12,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @property int $id
  * @property int $telegram_id
  * @property int $user_id
- * @property string | null $first_name
+ * @property string $first_name
  * @property string | null $last_name
- * @property string $username
+ * @property string | null $username
  * @property string | null $language_code
  * @property bool $allows_write_to_pm
  * @property string | null $photo_url

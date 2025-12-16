@@ -18,7 +18,7 @@ class CreateTelegramUserDTO
         $this->telegram_id = $telegramUserData['id'];
         $this->first_name = $telegramUserData['first_name'];
         $this->last_name = $telegramUserData['last_name'];
-        $this->username = $telegramUserData['username'];
+        $this->username = $telegramUserData['username'] ?? $telegramUserData['first_name'] . '_' . $telegramUserData['id'];
         $this->language_code = $telegramUserData['language_code'];
         $this->allows_write_to_pm = $telegramUserData['allows_write_to_pm'] ?? false;
         $this->photo_url = $telegramUserData['photo_url'];

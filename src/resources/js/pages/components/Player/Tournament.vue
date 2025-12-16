@@ -37,10 +37,10 @@ import { mapActions, mapGetters } from 'vuex';
                 try{
                     const { data } = await axios({
                         method: 'POST',
-                        url: '/api/tournament/get',
-                        headers:{
-                            Authorization:'Bearer '+localStorage.getItem('_token'),
-                        },
+                        url: '/tournament/get',
+                        // headers:{
+                        //     Authorization:'Bearer '+localStorage.getItem('_token'),
+                        // },
                     });
                     this.tournament = data.data
 
@@ -54,10 +54,10 @@ import { mapActions, mapGetters } from 'vuex';
                 try{
                     const { data } = await axios({
                         method: 'POST',
-                        url: '/api/tournament/join',
-                        headers:{
-                            Authorization:'Bearer '+localStorage.getItem('_token'),
-                        },
+                        url: '/tournament/join',
+                        // headers:{
+                        //     Authorization:'Bearer '+localStorage.getItem('_token'),
+                        // },
                     });
                     this.tournament.participant = true
 

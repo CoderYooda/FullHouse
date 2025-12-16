@@ -20,11 +20,6 @@ return new class extends Migration
             $table->string('language_code')->nullable();
             $table->boolean('allows_write_to_pm');
             $table->string('photo_url')->nullable();
-//            $table->string('chat_instance')->nullable();
-//            $table->string('chat_type')->nullable();
-//            $table->integer('auth_date');
-//            $table->string('signature')->nullable();
-//            $table->string('hash')->nullable();
             $table->timestamps();
         });
     }

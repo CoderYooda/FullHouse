@@ -1,9 +1,10 @@
 export default ({
     async TelegramAuth({ getters, commit }, validateData) {
         try {
+            // await axios.get('/sanctum/csrf-cookie')
             const { data } = await axios({
                 method: 'POST',
-                url: '/api/telegram/user/auth',
+                url: '/telegram/user/auth',
                 data:{
                     query: validateData,
                 }
@@ -25,7 +26,7 @@ export default ({
         try {
             const { data } = await axios({
                 method: 'POST',
-                url: '/api/player/update_name',
+                url: '/player/update_name',
                 // headers:{
                 //     Authorization:'Bearer '+localStorage.getItem('_token'),
                 // },

@@ -36,7 +36,7 @@ body {
 }
 
 .tournament{
-    background: url(/images/tournament_bg.svg?ae77888…) no-repeat right, linear-gradient(to top, #18171D, #292931);
+    background: url(/img/tournament_bg.svg) no-repeat right, linear-gradient(to top, #18171D, #292931);
     background-position: right -54px center;
 
     border-radius: 22px;
@@ -103,7 +103,7 @@ body {
         position: absolute;
         top: calc(50% - 416px / 2);
         background-size: cover;
-        background: url(./../img/logo.svg) no-repeat center;
+        background: url(/img/logo.svg) no-repeat center;
         background-size: 300px;
         width: 100%;
         height: 416px;
@@ -111,10 +111,10 @@ body {
     .footer {
         width: 100%;
         height: 96px;
-        background: url(./../img/footer_bg.svg) no-repeat center;
+        background: url(/img/footer_bg.svg) no-repeat center;
     }
     .avatar_guard {
-        background: url(./../img/ava_round.svg) no-repeat center;
+        background: url(/img/ava_round.svg) no-repeat center;
         height: 225px;
         width: 225px;
         margin: 0 auto;

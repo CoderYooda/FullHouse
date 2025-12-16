@@ -6,6 +6,7 @@ use App\Http\Resources\Api\Telegram\ActiveTournamentResource;
 use App\Models\Tournament;
 use App\Service\StateService;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
@@ -41,10 +42,13 @@ class TournamentController extends Controller
     {
         $tournament = Tournament::query()
             ->whereDate('created_at', Carbon::today())->first();
+        if ($tournament) {
+            $participant = $tournament->users->pluck('id')->contains(auth()->user()->id);
 
-        $participant = $tournament->users->pluck('id')->contains(auth()->user()->id);
+            return new ActiveTournamentResource($tournament, $participant);
+        }
 
-        return new ActiveTournamentResource($tournament, $participant);
+        throw new ModelNotFoundException();
     }
 
     public function join(): string

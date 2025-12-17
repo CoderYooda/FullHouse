@@ -28,7 +28,8 @@ export default ({
 
     setToken(state, token) {
         state._token = token;
-        // window.axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken;
+        window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
+
         axios.interceptors.request.use(
             config => {
                 config.headers['X-CSRF-TOKEN'] = token;

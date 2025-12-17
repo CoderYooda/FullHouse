@@ -8,7 +8,8 @@
                 {{ tournament.description }}
             </p>
             <button @click="joinTournament" v-if="!tournament.participant" class="butt">Записаться</button>
-            <div v-if="tournament.participant" class="butt">Вы записаны, ждем вас на игру!</div>
+            <div v-if="tournament.participant" class="butt" style="text-align: center">Вы записаны, ждем вас на игру!</div>
+            <button @click="leaveTournament" v-if="tournament.participant" class="butt">Отменить запись</button>
         </div>
     </div>
 </template>
@@ -60,6 +61,23 @@ import { mapActions, mapGetters } from 'vuex';
                         // },
                     });
                     this.tournament.participant = true
+
+                    return true;
+                } catch (error) {
+                    return false;
+                }
+            },
+
+            async leaveTournament(){
+                try{
+                    const { data } = await axios({
+                        method: 'POST',
+                        url: '/tournament/leave',
+                        // headers:{
+                        //     Authorization:'Bearer '+localStorage.getItem('_token'),
+                        // },
+                    });
+                    this.tournament.participant = false
 
                     return true;
                 } catch (error) {

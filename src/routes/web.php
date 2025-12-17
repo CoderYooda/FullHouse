@@ -29,6 +29,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/player/update_name', [TelegramController::class, 'updateName']);
     Route::post('/tournament/get', [TournamentController::class, 'getActive']);
     Route::post('/tournament/join', [TournamentController::class, 'join']);
+    Route::post('/tournament/leave', [TournamentController::class, 'leave']);
 });
 
 Route::middleware(['auth:web'])->group(function () {

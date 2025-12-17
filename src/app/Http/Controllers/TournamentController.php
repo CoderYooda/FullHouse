@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\Api\Telegram\ActiveTournamentResource;
 use App\Models\Tournament;
+use App\Models\User;
 use App\Service\StateService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -40,10 +41,15 @@ class TournamentController extends Controller
 
     public function getActive(): ActiveTournamentResource
     {
+        /** @var User $user */
+        $user = auth()->user();
         $tournament = Tournament::query()
             ->whereDate('created_at', Carbon::today())->first();
         if ($tournament) {
-            $participant = $tournament->users->pluck('id')->contains(auth()->user()->id);
+            $participant = $tournament->users()
+                ->where('participants.is_actual', true)
+                ->pluck('id')
+                ->contains($user->id);
 
             return new ActiveTournamentResource($tournament, $participant);
         }
@@ -53,10 +59,40 @@ class TournamentController extends Controller
 
     public function join(): string
     {
+        /** @var User $user */
+        $user = auth()->user();
+
         $tournament = Tournament::query()
             ->whereDate('created_at', Carbon::today())->first();
 
-        $tournament->users()->attach(auth()->user()->id);
+        $actualUser = $tournament->users()->where('user_id', $user->id)->first();
+
+        if ($actualUser) {
+            $actualUser->pivot->is_actual = true;
+            $actualUser->pivot->save();
+        } else {
+            $tournament->users()->attach(auth()->user()->id, [
+                'created_at' => Carbon::now(),
+            ]);
+        }
+
+        return 'ok';
+    }
+
+    public function leave(): string
+    {
+        /** @var User $user */
+        $user = auth()->user();
+
+        $tournament = Tournament::query()
+            ->whereDate('created_at', Carbon::today())->first();
+
+        $actualUser = $tournament->users()->where('user_id', $user->id)->first();
+
+        if ($actualUser) {
+            $actualUser->pivot->is_actual = false;
+            $actualUser->pivot->save();
+        }
 
         return 'ok';
     }

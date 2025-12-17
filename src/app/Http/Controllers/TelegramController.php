@@ -11,7 +11,6 @@ use App\Modules\Telegram\Domain\DTO\CreateTelegramUserDTO;
 use App\Modules\Telegram\Domain\DTO\UpdateTelegramUserDTO;
 use App\Service\Auth\AuthService;
 use App\Service\Auth\DTO\CreateUserDTO;
-use App\Service\StateService;
 use App\Service\Telegram\ValidateService;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;

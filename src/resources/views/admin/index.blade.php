@@ -62,20 +62,20 @@
 
                         <button type="submit" class="btn btn-purple mb-2">Создать турнир</button>
                     </form>
-                    @foreach($tournaments as $tournament)
+                    @foreach($tournaments->sortByDesc('pivot.is_actual') as $tournament)
                         <div class="card card-dashboard-one mb-2">
                             <div class="row">
-                                <div class="col-5">
+                                <div class="col-3">
                                     <div class="card-header">
                                         <div>
-                                            Записавшихся участников {{ $tournament->users->count() }}
+                                            Записавшихся участников {{ $tournament->users()->wherePivot('is_actual', true)->count() }}
                                             <h6 class="card-title">{{ $tournament->title }}</h6>
                                             <p class="card-text" style="white-space: pre-line;">
                                                 {{ $tournament->description }}</p>
                                         </div>
                                     </div><!-- card-header -->
                                 </div>
-                                <div class="col-7 p-5">
+                                <div class="col-9 p-5">
                                     <table class="table mg-b-0">
                                         <thead>
                                         <tr>
@@ -83,15 +83,19 @@
                                             <th>Имя</th>
                                             <th>Рейтинговый ник</th>
                                             <th>Личка в ТГ</th>
+                                            <th>Дата записи</th>
+                                            <th>Статус</th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         @foreach($tournament->users as $user)
-                                        <tr>
-                                            <th scope="row">1</th>
+                                        <tr @if(!$user->pivot->is_actual) style="background: #cc2a2a6b;" @endif>
+                                            <th scope="row">{{ $user->id }}</th>
                                             <td>{{ $user->telegramUser?->first_name }} {{ $user->telegramUser?->last_name }}</td>
                                             <td>{{ $user->public_name }}</td>
-                                            <td><a href="https://t.me/{{ $user->telegramUser->username }}">{{ $user->telegramUser->username }}</a></td>
+                                            <td><a href="https://t.me/{{ $user->telegramUser?->username }}">{{ $user->telegramUser?->username ?: 'нет ссылки' }}</a></td>
+                                            <td>{{ $user->pivot->created_at }}</td>
+                                            <td>{{ $user->pivot->is_actual ? 'актуальна' : 'отменена'}}</td>
                                         </tr>
                                         @endforeach
                                         </tbody>

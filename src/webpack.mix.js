@@ -1,9 +1,9 @@
 const mix = require('laravel-mix');
 const webpack = require('webpack')
 
-mix.js('./resources/js/app.js', './public/js')
+mix.js('./resources/js/app_v1.js', './public/js')
     .vue()
-    .sass('./resources/scss/app.scss', './public/css')
+    .sass('./resources/scss/app_v1.scss', './public/css')
     .version()
 
 mix.sass('./resources/admin/scss/azia.scss', './public/admin/css')

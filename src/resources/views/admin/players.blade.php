@@ -13,7 +13,7 @@
                             <div class="d-flex">
                                 <div class="az-img-user mr-2"><img src="{{ $user->telegramUser?->photo_url ?? '/img/coin.svg' }}" alt=""></div>
                                 <div>
-                                    <h6 class="mg-b-0 tx-inverse no-wrap" style="white-space: nowrap; max-width: 144px">{{ $user->name }}</h6>
+                                    <h6 class="mg-b-0 tx-inverse no-wrap" style="white-space: nowrap; max-width: 144px">{{ $user->public_name }}</h6>
                                     <small class="tx-11 tx-gray-500 no-wrap" style="white-space: nowrap;">ID пользователя: {{ $user->id }}</small>
                                 </div>
 

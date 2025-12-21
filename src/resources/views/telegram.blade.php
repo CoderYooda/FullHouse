@@ -21,9 +21,9 @@
     </script>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900,900i" />
-    <link rel="stylesheet" href="{{ mix('css/app.css') }}"/>
+    <link rel="stylesheet" href="{{ mix('css/app_v1.css') }}"/>
     <!-- scss -->
-    <script src="{{ mix('js/app.js') }}"></script>
+    <script src="{{ mix('js/app_v1.js') }}"></script>
 </head>
 
 <body>

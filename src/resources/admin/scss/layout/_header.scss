@@ -136,7 +136,7 @@
   background-color: #fff;
   overflow-y: auto;
   z-index: 1000;
-  //transform: translateX(-$az-width-sidebar);
+  transform: translateX(-$az-width-sidebar);
   @include transition(all 0.35s);
 
   @include media-breakpoint-up(lg) {

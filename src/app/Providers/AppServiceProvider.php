@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use App\Modules\TableManager\Domain\TableManager;
 use App\Service\StateService;
+use Carbon\Carbon;
 use Illuminate\Foundation\Application;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -31,7 +33,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
-
+        Paginator::useBootstrapFour();
+        Carbon::setLocale(config('app.locale'));
 
 //        Octane::tick('simple-ticker', function () {
 //            StateService::add("waw2");

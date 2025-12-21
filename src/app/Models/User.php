@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -19,6 +20,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $password
  *
  * @property-read TelegramUser|null $telegramUser {@see static::telegramUser()}
+ * @property-read Tournament|null $tournaments {@see static::tournaments()}
  * */
 
 class User extends Authenticatable
@@ -60,5 +62,11 @@ class User extends Authenticatable
     public function telegramUser(): BelongsTo
     {
         return $this->belongsTo(TelegramUser::class, 'telegram_user_id');
+    }
+
+    public function tournaments(): BelongsToMany
+    {
+        return $this->belongsToMany(Tournament::class, 'participants', 'user_id', 'tournament_id')
+            ->withPivot('is_actual', 'created_at');
     }
 }

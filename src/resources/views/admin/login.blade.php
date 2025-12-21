@@ -1,4 +1,4 @@
-@extends('admin.layouts.main')
+@extends('admin.layouts.login')
 @section('content')
     <div class="az-signin-wrapper">
         <div class="az-card-signin">

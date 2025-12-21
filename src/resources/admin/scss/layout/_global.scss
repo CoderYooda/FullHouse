@@ -2,6 +2,45 @@
 
 body {
   font-family: $font-family-roboto;
+    min-width: 425px;
+}
+.t-overflow {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.btn-slim {
+    padding: 3px 20px;
+    min-height: 24px;
+}
+.t-card-active{
+    background-color: #79b2232e;
+}
+.t-card-inactive{
+    background-color: #f0010129;
+}
+.tour-timer{
+    font-size: 20px;
+    font-weight: bold;
+    color: #6ba84f;
+    text-align: center;
+    width: 100%;
+    display: block;
+}
+
+@media (min-width: 768px) {
+    .tour-add-box {
+        width: 100%;
+        margin-left: 0;
+        margin-top: -1px;
+        .input-group-text{
+            width: 100%;
+            height: 38px;
+            .ckbox{
+                width: 100%;
+                text-align: left;
+            }
+        }
+    }
 }
 
 .az-body,

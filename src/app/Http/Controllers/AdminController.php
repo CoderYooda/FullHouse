@@ -9,10 +9,6 @@ class AdminController extends Controller
 {
     public function index(): View
     {
-        $tournaments = Tournament::orderBy('created_at', 'DESC')->get();
-
-        return view('admin.index', [
-            'tournaments' => $tournaments,
-        ]);
+        //
     }
 }

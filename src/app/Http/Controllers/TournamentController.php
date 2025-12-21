@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\Api\Telegram\ActiveTournamentResource;
+use App\Http\Resources\Tournament\TournamentCollectionResource;
 use App\Models\Tournament;
 use App\Models\User;
 use App\Service\StateService;
@@ -39,33 +40,37 @@ class TournamentController extends Controller
         return redirect()->route('admin.index');
     }
 
-    public function getActive(): ActiveTournamentResource
+    public function getTodayList(): TournamentCollectionResource
     {
         /** @var User $user */
         $user = auth()->user();
-        $tournament = Tournament::query()
-            ->whereDate('created_at', Carbon::today())->first();
-        if ($tournament) {
-            $participant = $tournament->users()
-                ->where('participants.is_actual', true)
-                ->pluck('id')
-                ->contains($user->id);
+        $tournaments = Tournament::query()
+            ->with('users')
+            ->whereDate('event_date', Carbon::today())->get();
 
-            return new ActiveTournamentResource($tournament, $participant);
+        if ($tournaments) {
+//            $participant = $tournament->users()
+//                ->where('participants.is_actual', true)
+//                ->pluck('id')
+//                ->contains($user->id);
+
+            return new TournamentCollectionResource($tournaments);
         }
 
         throw new ModelNotFoundException();
     }
 
-    public function join(): string
+    public function join(Request $request, int $tournament_id): string
     {
         /** @var User $user */
         $user = auth()->user();
 
+        /** @var Tournament $tournament */
         $tournament = Tournament::query()
-            ->whereDate('created_at', Carbon::today())->first();
+            ->with('users')
+            ->where('id', $tournament_id)->first();
 
-        $actualUser = $tournament->users()->where('user_id', $user->id)->first();
+        $actualUser = $tournament->users->where('id', $user->id)->first();
 
         if ($actualUser) {
             $actualUser->pivot->is_actual = true;
@@ -79,15 +84,16 @@ class TournamentController extends Controller
         return 'ok';
     }
 
-    public function leave(): string
+    public function leave(Request $request, int $tournament_id): string
     {
         /** @var User $user */
         $user = auth()->user();
 
+        /** @var Tournament $tournament */
         $tournament = Tournament::query()
-            ->whereDate('created_at', Carbon::today())->first();
+            ->where('id', $tournament_id)->first();
 
-        $actualUser = $tournament->users()->where('user_id', $user->id)->first();
+        $actualUser = $tournament->users->where('id', $user->id)->first();
 
         if ($actualUser) {
             $actualUser->pivot->is_actual = false;

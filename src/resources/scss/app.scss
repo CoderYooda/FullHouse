@@ -13,25 +13,29 @@ body {
     padding: 0;
     width: 100%;
     height: 100%;
-    overflow:hidden;
+    overflow:scroll;
     background: #131217;
     color: #ffffff;
 }
 #app{
     overflow: hidden;
-    display: contents;
 }
 
+.preloader{
+    position: absolute;
+    z-index: 111;
+    background: #2d1659;
+}
 
 @keyframes overlay-pulse {
     0% {
-        box-shadow: 0 0 207px 90px #ECB054
+        box-shadow: 0 0 207px 90px #cdcde6
     }
     50% {
-        box-shadow: 0 0 207px 100px #ECB054
+        box-shadow: 0 0 207px 100px #cdcde6
     }
     100% {
-        box-shadow: 0 0 207px 90px #ECB054
+        box-shadow: 0 0 207px 90px #cdcde6
     }
 }
 

@@ -175,8 +175,10 @@ services:
     profiles:
       - backend
     depends_on:
-      - php-backend
-      - traefik
+      php-backend:
+        condition: service_completed_successfully
+      traefik:
+        condition: service_completed_successfully
     labels:
       - traefik.enable=true
       - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx.tls=true

@@ -103,8 +103,6 @@ services:
       - backend
       - backend-admin
     depends_on:
-      traefik:
-        condition: service_started
       app-init:
         condition: service_completed_successfully
       postgres:
@@ -176,9 +174,9 @@ services:
       - backend
     depends_on:
       php-backend:
-        condition: service_completed_successfully
+        condition: service_started
       traefik:
-        condition: service_completed_successfully
+        condition: service_started
     labels:
       - traefik.enable=true
       - traefik.http.routers.${COMPOSE_PROJECT_NAME:-holdem}-nginx.tls=true

@@ -21,6 +21,10 @@ export default {
     mounted() {
         if (localStorage.getItem('_token')) {
             this.setToken({token:localStorage.getItem('_token')})
+        } else {
+            this.$router.push({
+                path: 'login'
+            });
         }
     },
     methods: {

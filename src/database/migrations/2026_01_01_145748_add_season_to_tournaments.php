@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tournaments', function (Blueprint $table) {
-            $table->dropColumn('season_id');
+            if (Schema::hasColumn('tournaments', 'season_id')) {
+                $table->dropColumn('season_id');
+            }
             $table->unsignedBigInteger('season_id')->nullable();
         });
     }

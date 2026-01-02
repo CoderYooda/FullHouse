@@ -11,11 +11,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Laravel\Sanctum\HasApiTokens;
-use App\Casts\TimeCast;
 
 /**
  * --- Properties from a database ---
  * @property int $id
+ * @property int $season_id
  * @property string $title
  * @property string $description
  * @property string $is_ended
@@ -39,6 +39,9 @@ use App\Casts\TimeCast;
  * @property bool $is_actual
  *
  * @property-read Collection|null $users {@see static::users()}
+ * @property-read Season|null $season {@see static::season()}
+ * @property-read Collection|null $types {@see static::types()}
+ * @property-read Collection|null $players {@see static::players()}
  *
  * */
 
@@ -53,7 +56,6 @@ class Tournament extends Model
         ];
     }
 
-    // Accessor (for retrieving the value)
     public function getStartAtAttribute($value)
     {
         return Carbon::parse($value)->format('H:i');
@@ -62,10 +64,21 @@ class Tournament extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'participants', 'tournament_id', 'user_id')
-            ->withPivot('is_actual', 'created_at');
+            ->withPivot('is_actual', 'is_arrived', 'created_at');
     }
-//    public function telegramUser(): BelongsTo
-//    {
-//        return $this->belongsTo(TelegramUser::class, 'telegram_user_id');
-//    }
+
+    public function players(): Collection
+    {
+        return $this->users->where('pivot.is_arrived', true);
+    }
+
+    public function types(): BelongsToMany
+    {
+        return $this->belongsToMany(TournamentType::class, 'tournament_type_to_tournaments', 'tournament_id', 'tournament_type_id');
+    }
+
+    public function season(): BelongsTo
+    {
+        return $this->belongsTo(Season::class, 'season_id');
+    }
 }

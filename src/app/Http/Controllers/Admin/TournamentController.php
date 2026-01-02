@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Tournament\UpdateTournamentRequest;
+use App\Models\Season;
 use App\Models\Tournament;
+use App\Models\TournamentType;
 use App\Modules\Tournament\Actions\UpdateTournamentAction;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -38,8 +41,13 @@ class TournamentController extends Controller
 
     public function new(Request $request): View
     {
+        $tournamentTypes = TournamentType::query()->get();
+        $seasons = Season::query()->get();
+
         return view('admin.tournaments.edit', [
             'tournament' => null,
+            'tournamentTypes' => $tournamentTypes,
+            'seasons' => $seasons,
         ]);
     }
 
@@ -49,8 +57,13 @@ class TournamentController extends Controller
             ->where('id', $tournament_id)
             ->firstOrFail();
 
+        $tournamentTypes = TournamentType::query()->get();
+        $seasons = Season::query()->get();
+
         return view('admin.tournaments.edit', [
             'tournament' => $tournament,
+            'tournamentTypes' => $tournamentTypes,
+            'seasons' => $seasons,
         ]);
     }
 
@@ -75,5 +88,22 @@ class TournamentController extends Controller
         $tournament->save();
 
         return redirect(route('admin.tournament.view', $tournament->id));
+    }
+
+    public function players($tournament_id): JsonResponse
+    {
+        $tournament = Tournament::query()
+            ->where('id', $tournament_id)
+            ->firstOrFail();
+
+        return new JsonResponse([
+            'players' => $tournament->users()->with('telegramUser')->get(),
+        ]);
+    }
+
+    public function test(
+        Request $request,
+    ): RedirectResponse {
+        dd(auth()->user());
     }
 }

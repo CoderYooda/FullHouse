@@ -1,24 +1,31 @@
 <template>
+    <div class="module">
+        <h3>Предстоящие турниры
+            <router-link :to="{ path: '/tournaments'}" class="right_button">все</router-link>
+        </h3>
+    </div>
     <div v-if="tournaments">
         <div v-for="tournament in tournaments" class="tournament">
-            <div class="background">
-                <div class="title">
-                    {{ tournament.title }}
+            <router-link :to="{ path: '/tournaments/' + tournament.id}"  class="my-link-wrapper">
+
+                <div class="background">
+                    <div class="title">
+                        {{ tournament.title }} <br>{{ tournament.date }} в {{ tournament.at }}
+                    </div>
+                    <p class="descr">
+                        Стек: {{ tournament.stack }} ({{ tournament.small_blind }}/{{ tournament.big_blind }}/{{ tournament.ante }})<br>
+                        Buy-in: {{ tournament.buy_in }}₽<br>
+                        Re-Entry: {{ tournament.re_entry }}₽<br>
+                        Add-on: {{ tournament.add_on }}₽<br>
+                    </p>
+                    <div class="i_am_player">Я участник</div>
                 </div>
-                <p class="descr">
-                    Стек: {{ tournament.stack }} ({{ tournament.small_blind }}/{{ tournament.big_blind }}/{{ tournament.ante }})<br>
-                    Buy-in: {{ tournament.buy_in }}₽<br>
-                    Re-Entry: {{ tournament.re_entry }}₽<br>
-                    Add-on: {{ tournament.add_on }}₽<br>
-                    <br>
-                    Структура турнира:<br>
-                    ➡️Уровни: {{ tournament.levels_start }} - {{ tournament.levels_end }} мин<br>
-                    ➡️Поздняя регистрация: до {{ tournament.late_registration }} <br>
-                </p>
-                <button @click="joinTournament(tournament.id)" v-if="!tournament.participant" class="butt">Записаться</button>
-                <div v-if="tournament.participant" class="butt" style="text-align: center">Вы записаны, ждем вас на игру!</div>
-                <button @click="leaveTournament(tournament.id)" v-if="tournament.participant" class="butt">Отменить запись</button>
-            </div>
+            </router-link>
+        </div>
+    </div>
+    <div  class="module" v-if="!tournaments.length">
+        <div class="user-card" style="text-align: center">
+            В данный момент активных записей нет
         </div>
     </div>
 
@@ -43,15 +50,11 @@ import { mapActions, mapGetters } from 'vuex';
             })
         },
         methods: {
-
             async getTournament (){
                 try{
                     const { data } = await axios({
                         method: 'POST',
-                        url: '/tournament/get',
-                        // headers:{
-                        //     Authorization:'Bearer '+localStorage.getItem('_token'),
-                        // },
+                        url: '/api/tournament/get',
                     });
                     this.tournaments = data.data
 
@@ -65,7 +68,7 @@ import { mapActions, mapGetters } from 'vuex';
                 try{
                     const { data } = await axios({
                         method: 'POST',
-                        url: '/tournament/'+id+'/join',
+                        url: '/api/tournament/'+id+'/join',
                         // headers:{
                         //     Authorization:'Bearer '+localStorage.getItem('_token'),
                         // },
@@ -82,7 +85,7 @@ import { mapActions, mapGetters } from 'vuex';
                 try{
                     const { data } = await axios({
                         method: 'POST',
-                        url: '/tournament/'+id+'/leave',
+                        url: '/api/tournament/'+id+'/leave',
                         // headers:{
                         //     Authorization:'Bearer '+localStorage.getItem('_token'),
                         // },
@@ -97,9 +100,9 @@ import { mapActions, mapGetters } from 'vuex';
 
         },
         computed: {
-            ...mapGetters('auth', ['User']),
-            user() {
-                return this.User;
+            ...mapGetters('auth', ['Player']),
+            player() {
+                return this.Player;
             },
             visible () {
                 return this.$store.state.state._change_name_modal.visible

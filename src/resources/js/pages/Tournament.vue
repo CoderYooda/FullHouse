@@ -1,0 +1,158 @@
+<template>
+    <div class="content">
+        <div class="boxed">
+            <h2 class="page_h2">{{ tournament.title }} #{{ tournament.id }}</h2>
+            <div class="module">
+                <div class="tour-timer">Начало {{ tournament.date }} в {{ tournament.at }}</div>
+            </div>
+            <div>
+                <div class="tournament clear clock">
+                    <div class="time-fragment">
+                        <div class="head">11</div>
+                        <div class="descr">дней</div>
+                    </div>
+                    <div class="dots">:</div>
+                    <div class="time-fragment">
+                        <div class="head">11</div>
+                        <div class="descr">часов</div>
+                    </div>
+                    <div class="dots">:</div>
+                    <div class="time-fragment">
+                        <div class="head">11</div>
+                        <div class="descr">минут</div>
+                    </div>
+                    <div class="dots">:</div>
+                    <div class="time-fragment">
+                        <div class="head">11</div>
+                        <div class="descr">секунд</div>
+                    </div>
+                </div>
+                <div class="tournament clear fond">
+                    <h2 class="fond-h2">Призовой фонд</h2>
+                    <span class="fond_title">Фонд турнира может меняться по мере активности игроков</span>
+                    <div class="fond-value">{{ tournament.participant_count > 0 ? tournament.participant_count * 100 : 200 }} points</div>
+                </div>
+                <div class="module">
+                    <p class="descr">
+                        Формируется фонд турнира, который состоит из Buy-in (100 очков), Re-entry (100 очков) и Add-on (200 очков).
+                    </p>
+                    <p class="descr">
+                        🔥По окончании турнира суммируются все очки и распределяются по процентам, согласно призовым местам: 1 - 25%, 2 - 15%, 3 - 10%, 4 - 8%, 5 - 7%, 6 - 6%, 7 - 5%, 8 - 4%, 9 - 3%, с 10 до 13 - 2,5%, с 14 до 17 - 1,5%, 18 - 1%                   
+                    </p>
+                    <p class="descr">
+                        🔥Если количество игроков,  участвующих в турнире, не превышает 18 человек, рейтинг рассчитывается по системе выше, и оставшиеся очки делятся на всех поровну и округляются в большую сторону до ровной единицы.
+                    </p>
+                </div>
+                <div class="module">
+                    <h3>Описание турнира</h3>
+
+                    <div v-for="type in tournament.types">
+                        <p class="descr">
+                            <span style="font-weight: bold;color: white;">{{ type.title }}</span> - {{ type.description }}
+                        </p>
+                    </div>
+                </div>
+                <div class="tournament clear stat">
+                    <div class="stat-elem">
+                        <div class="left">Стек</div>
+                        <div class="right">{{ tournament.stack }} ({{ tournament.small_blind }}/{{ tournament.big_blind }}/{{ tournament.ante }})</div>
+                    </div>
+                    <div class="stat-elem">
+                        <div class="left">Buy-in</div>
+                        <div class="right">{{ !tournament.free_entry ? tournament.buy_in + '₽' : 'Бесплатно' }}</div>
+                    </div>
+                    <div class="stat-elem">
+                        <div class="left">Re-Entry</div>
+                        <div class="right">{{ !tournament.without_re_entry ? tournament.re_entry + '₽' : 'Без re-enty' }}</div>
+                    </div>
+                    <div class="stat-elem">
+                        <div class="left">Add-on</div>
+                        <div class="right">{{ !tournament.without_add_on ? tournament.add_on + '₽' : 'Без add-on' }}</div>
+                    </div>
+                </div>
+                <div v-if="tournament.is_private" class="module">
+                    <div  class="butt private_tournament" >
+                        Участие по приглашению администрации
+                    </div>
+                </div>
+                <div v-if="!tournament.is_private" class="module">
+                    <button @click="joinTournament(tournament.id)" v-if="!tournament.participant" class="join-button" style="width: 100%">Принять участие</button>
+                    <div v-if="tournament.participant" class="butt" style="text-align: center; margin-bottom: 15px">Вы записаны, ждем вас на игру!</div>
+                    <button @click="leaveTournament(tournament.id)" v-if="tournament.participant" class="join-button cancel" style="width: 100%">Отменить запись</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+
+export default {
+    data: function () {
+        return {
+            tournament:{
+                title:null,
+                id:null,
+            }
+        }
+    },
+    methods:{
+        async getTournament(){
+            try{
+                const { data } = await axios({
+                    method: 'POST',
+                    url: '/api/tournament/'+ this.$route.params.id +'/get',
+                });
+                this.tournament = data.data
+
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async joinTournament(id){
+            try{
+                const { data } = await axios({
+                    method: 'POST',
+                    url: '/api/tournament/'+id+'/join',
+                    // headers:{
+                    //     Authorization:'Bearer '+localStorage.getItem('_token'),
+                    // },
+                });
+                this.tournament.participant = true
+
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async leaveTournament(id){
+            try{
+                const { data } = await axios({
+                    method: 'POST',
+                    url: '/api/tournament/'+id+'/leave',
+                    // headers:{
+                    //     Authorization:'Bearer '+localStorage.getItem('_token'),
+                    // },
+                });
+                this.tournament.participant = false
+
+                return true;
+            } catch (error) {
+                return false;
+            }
+        }
+    },
+    computed:{
+
+    },
+    mounted() {
+        this.getTournament()
+    },
+}
+</script>
+
+<style>
+
+</style>

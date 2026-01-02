@@ -14,7 +14,10 @@ _ide_*.php
 /public/fonts/
 /public/admin/css/
 /public/admin/js/
-/public/images/
+/public/css/
+/public/js/
+/public/img/
+/public/sounds/
 /public/vendor/apidoc
 /public/hot
 /public/sitemap.xml

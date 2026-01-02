@@ -36,7 +36,10 @@ class UpdateTournamentAction
         $tournament->is_private = $updateTournamentDTO->is_private;
         $tournament->is_actual = $updateTournamentDTO->is_actual;
         $tournament->description = 'deprecated';
+        $tournament->season_id = $updateTournamentDTO->season;
         $tournament->save();
+
+        $tournament->types()->sync($updateTournamentDTO->types);
 
         return $tournament;
     }

@@ -1,4 +1,13 @@
 'use strict'
+import 'select2';
+import axios from "axios";
+import { createApp } from 'vue';
+window.$ = window.jQuery = require("jquery");
+import Tournament from './Tournament.vue';
+window.axios = axios;
+axios.defaults.withCredentials = true;
+axios.defaults.withXSRFToken = true;
+
 document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('azMenuShow').addEventListener('click', function(e) {
         e.preventDefault();
@@ -24,3 +33,13 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 });
+
+
+$(document).ready(()=>{
+    $('.select2').select2()
+
+    if (document.getElementById('tournament')){
+        const tournament = createApp(Tournament)
+        tournament.mount('#tournament')
+    }
+})

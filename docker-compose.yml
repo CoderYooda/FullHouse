@@ -199,7 +199,7 @@ services:
       - backend-admin
     environment:
       HOME: /tmp/HOME
-      NPM_COMMAND: dev
+      NPM_COMMAND: ${NPM_COMMAND:-prod}
     build:
       context: .
       dockerfile: docker/nginx/Dockerfile

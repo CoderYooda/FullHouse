@@ -1,11 +1,12 @@
 <template>
     <div class="main container">
-        <div class="tg_buttons_header" style="margin-bottom: 30px">
+        <div class="blur-overlay static"></div>
+<!--        <div class="tg_buttons_header" style="margin-bottom: 30px">-->
 <!--            <div class="tg_center_container" @click="test">-->
 <!--                <div class="balance">{{ user.credits }}</div>-->
 <!--            </div>-->
-        </div>
-        <div class="header">
+<!--        </div>-->
+<!--        <div class="header">-->
 <!--            <div class="boxed">-->
 <!--                <div class="profile">-->
 <!--                    <div class="user_pic">-->
@@ -31,27 +32,43 @@
 <!--                </div>-->
 <!--            </div>-->
 <!--            <DevelopPanel/>-->
-        </div>
-        <div class="content">
-            <router-view></router-view>
-        </div>
-<!--        <div v-if="!isLoading" class="footer boxed">-->
 <!--        </div>-->
+
+            <router-view @scroll.passive="onScroll" id="scroller" class="view"/>
+<!--        <router-view v-slot="{ Component }">-->
+<!--            <transition name="fade">-->
+<!--                <div class="content">-->
+<!--                    <component :is="Component" />-->
+<!--                </div>-->
+<!--            </transition>-->
+<!--        </router-view>-->
+
+        <div class="footer boxed">
+            <div class="buttons">
+                <router-link activeClass="active" :to="{ name: 'report' }" class="footer_button report_button"><div class="active-arrow"></div></router-link>
+                <router-link activeClass="active" :to="{ name: 'player' }" class="footer_button profile_button"><div class="active-arrow"></div></router-link>
+                <router-link activeClass="active" :to="{ name: 'tournaments' }" class="footer_button main_button" />
+                <router-link activeClass="active" :to="{ name: 'rating' }" class="footer_button rating_button"><div class="active-arrow"></div></router-link>
+                <router-link activeClass="active" :to="{ name: 'game' }" class="footer_button cards_button"><div class="active-arrow"></div></router-link>
+            </div>
+
+        </div>
     </div>
+    <div class="body-backdrop" :style="{ 'background-position-y': -background / 3 + 'px' }"></div>
 </template>
 
 <script>
 import {mapActions, mapGetters, mapMutations} from 'vuex';
-import DevelopPanel from "../pages/components/DevelopPanel.vue";
-import LogoutButton from "../pages/components/LogoutButton.vue";
-import {SocketConsumerHandler} from "../pages/Service/Socket/SocketConsumerHandler";
-import SeatModal from "../pages/components/Game/SeatModal.vue";
+// import DevelopPanel from "../pages/components/DevelopPanel.vue";
+// import LogoutButton from "../pages/components/LogoutButton.vue";
+// import {SocketConsumerHandler} from "../pages/Service/Socket/SocketConsumerHandler";
+// import SeatModal from "../pages/components/Game/SeatModal.vue";
 // import MainNav from '../components/layout/MainNav/MainNav.vue';
 // import HeadUser from "../pages/Auth/modules/HeadUser.vue";
 
 export default {
     name: 'Main',
-    components: {SeatModal, LogoutButton, DevelopPanel},
+    // components: {SeatModal, LogoutButton, DevelopPanel},
 
     data: function () {
         return {
@@ -59,6 +76,7 @@ export default {
             pageLoaded: false,
             searchActive: false,
             categories: 'categories',
+            background:0,
         }
     },
 
@@ -98,6 +116,9 @@ export default {
         test(){
           alert(1)
         },
+        onScroll(event){
+            this.background = event.target.scrollTop;
+        }
     },
     computed:{
         ...mapGetters('auth', ['User']),
@@ -113,17 +134,12 @@ export default {
     },
     async mounted() {
         this.enterFullscreen()
-        setTimeout(() => {
-            this.pageLoaded = true;
-
-        });
 
         setTimeout(() => {
             // this.$refs['app'].style.opacity = 1;
+            this.pageLoaded = true;
             this.$store.state._fullscreenLoading = false;
         }, 2000);
-
-
 
         document.addEventListener('keyup', (event) => this.appKeyUp(event));
     },
@@ -154,11 +170,7 @@ export default {
         color: #fff;
     }
 }
-.content {
-    flex: auto;
-    overflow:hidden;
-    position: relative;
-}
+
 .header{
 
 }

@@ -11,7 +11,6 @@ class TournamentResource extends JsonResource
 {
     public function __construct(
         private readonly Tournament $tournament,
-        private readonly bool $participant,
     ){
         parent::__construct(null);
     }
@@ -21,9 +20,9 @@ class TournamentResource extends JsonResource
         $lateRegistration = explode(':', $this->tournament->late_registration);
         return [
             'id' => $this->tournament->id,
-            'title' => $this->tournament->title
-                . ', ' . $this->tournament->event_date->translatedFormat('d F, l')
-                . ' в ' . $this->tournament->start_at,
+            'title' => $this->tournament->title,
+            'date' => $this->tournament->event_date->translatedFormat('j F, l'),
+            'at' => $this->tournament->start_at,
             'stack' => $this->tournament->stack,
             'small_blind' => $this->tournament->small_blind,
             'big_blind' => $this->tournament->big_blind,
@@ -35,7 +34,13 @@ class TournamentResource extends JsonResource
             'levels_end' => $this->tournament->levels_end,
             'late_registration' => $lateRegistration[0] .':' . $lateRegistration[1],
             'is_private' => $this->tournament->is_private,
+            'start_at' => $this->tournament->start_at,
+            'types' => $this->tournament->types,
+            'free_entry' => $this->tournament->free_entry,
+            'without_re_entry' => $this->tournament->without_re_entry,
+            'without_add_on' => $this->tournament->without_add_on,
             'description' => $this->tournament->description,
+            'participant_count' => $this->tournament->users()->where('participants.is_actual', true)->count(),
             'participant' => $this->tournament->users()
                 ->where('participants.is_actual', true)
                 ->pluck('id')

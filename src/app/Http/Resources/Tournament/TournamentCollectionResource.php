@@ -20,7 +20,7 @@ class TournamentCollectionResource extends JsonResource
     {
         $tournaments = [];
         foreach ($this->tournaments as $tournament) {
-            $tournaments[] = (new TournamentResource($tournament, true))->toArray($request);
+            $tournaments[] = (new TournamentResource($tournament))->toArray($request);
         }
 
         return $tournaments;

@@ -24,6 +24,49 @@
                         >
                     </div>
                 </div>
+            </div>
+            <div class="row row-xs">
+                <div class="col-md-6 mb-3" data-select2-id="32">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text" style="min-width: 142px">
+                                Тип турнира
+                            </div>
+                        </div>
+                        @if (count($errors) > 0)
+                            @if($errors->has('types')) Выберите минимум один из типов турнира @endif
+                        @endif
+                        <select class="form-control js-example-basic-multiple select2 w-100" name="types[]" multiple="multiple">
+                            @foreach($tournamentTypes as $type)
+                                <option value="{{$type->id}}"
+                                        @if($tournament && $tournament->types->contains($type)) selected @endif
+                                >{{ $type->tournament_title }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text" style="min-width: 142px">
+                                Сезон
+                            </div>
+                        </div>
+                        <select  class="form-control
+                        @if (count($errors) > 0)
+                            @if($errors->has('season')) is-invalid @else is-valid @endif
+                        @endif
+                        " name="season">
+                            @foreach($seasons as $season)
+                                <option value="{{$season->id}}"
+                                        @if($tournament && $tournament->season?->id === $season->id) selected @endif
+                                >{{ $season->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row row-xs">
                 <div class="col-md-6 mb-3">
                     <div class="input-group has-danger">
                         <div class="input-group-prepend">
@@ -31,7 +74,7 @@
                                 Стек:
                             </div>
                         </div><!-- input-group-prepend -->
-                        <input type="number" step="100" class="form-control
+                        <input type="number" step="10" class="form-control
                         @if (count($errors) > 0)
                             @if($errors->has('stack')) is-invalid @else is-valid @endif
                         @endif
@@ -79,7 +122,7 @@
                                 Малый блайнд:
                             </div>
                         </div><!-- input-group-prepend -->
-                        <input type="number" step="100" class="form-control
+                        <input type="number" step="5" class="form-control
                         @if (count($errors) > 0)
                             @if($errors->has('small_blind')) is-invalid @else is-valid @endif
                         @endif
@@ -93,7 +136,7 @@
                                 Большой блайнд:
                             </div>
                         </div><!-- input-group-prepend -->
-                        <input type="number" step="100" class="form-control
+                        <input type="number" step="5" class="form-control
                         @if (count($errors) > 0)
                             @if($errors->has('big_blind')) is-invalid @else is-valid @endif
                         @endif
@@ -107,7 +150,7 @@
                                 Анте:
                             </div>
                         </div><!-- input-group-prepend -->
-                        <input type="number" step="100" class="form-control
+                        <input type="number" step="5" class="form-control
                         @if (count($errors) > 0)
                             @if($errors->has('ante')) is-invalid @else is-valid @endif
                         @endif

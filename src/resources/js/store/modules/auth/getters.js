@@ -7,12 +7,8 @@ export default ({
         return localStorage.getItem('_token');
     },
 
-    User(state) {
-        return state._user;
-    },
-
-    GetUser(state) {
-        return state._user;
+    Player(state) {
+        return state._player;
     },
 
     ERRORS(state) {

@@ -18,6 +18,8 @@ class UpdateTournamentRequest extends FormRequest
             'small_blind' => ['required','integer','min:0'],
             'big_blind' => ['required','integer','min:0'],
             'ante' => ['required','integer','min:0'],
+            'types' => ['required','array','min:1'],
+            'season' => ['required','integer'],
             'buy_in' => [
                 Rule::requiredIf(function (){
                     return !request()->input('free_entry');
@@ -75,6 +77,8 @@ class UpdateTournamentRequest extends FormRequest
             without_add_on: $this->validated('without_add_on') ?? false,
             is_private: $this->validated('is_private') ?? false,
             is_actual: $this->validated('is_actual') ?? false,
+            types: $this->validated('types') ?? [],
+            season: $this->validated('season'),
         );
     }
 }

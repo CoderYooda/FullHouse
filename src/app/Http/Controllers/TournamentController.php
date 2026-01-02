@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\Api\Telegram\ActiveTournamentResource;
 use App\Http\Resources\Tournament\TournamentCollectionResource;
+use App\Http\Resources\Tournament\TournamentResource;
 use App\Models\Tournament;
 use App\Models\User;
 use App\Service\StateService;
@@ -44,9 +45,37 @@ class TournamentController extends Controller
     {
         /** @var User $user */
         $user = auth()->user();
+
         $tournaments = Tournament::query()
             ->with('users')
-            ->whereDate('event_date', Carbon::today())->get();
+            ->whereDate('event_date', '>=', Carbon::today()->startOfDay())
+            ->where('is_actual', true)
+            ->whereHas('users', function ($query) use ($user) {
+                $query->where('participants.user_id', $user->id)
+                ->where('participants.is_actual', true);
+            })
+            ->orderBy('event_date')
+            ->get();
+
+        if ($tournaments) {
+//            $participant = $tournament->users()
+//                ->where('participants.is_actual', true)
+//                ->pluck('id')
+//                ->contains($user->id);
+
+            return new TournamentCollectionResource($tournaments);
+        }
+
+        throw new ModelNotFoundException();
+    }
+
+    public function list(): TournamentCollectionResource
+    {
+        $tournaments = Tournament::query()
+            ->whereDate('event_date', '>=', Carbon::today())
+            ->where('is_actual', true)
+            ->orderBy('event_date')
+            ->get();
 
         if ($tournaments) {
 //            $participant = $tournament->users()
@@ -82,6 +111,19 @@ class TournamentController extends Controller
         }
 
         return 'ok';
+    }
+
+    public function get(Request $request, int $tournament_id): TournamentResource
+    {
+        /** @var Tournament $tournament */
+        $tournament = Tournament::query()
+            ->where('id', $tournament_id)->first();
+
+        if ($tournament) {
+            return new TournamentResource($tournament);
+        }
+
+        throw new ModelNotFoundException();
     }
 
     public function leave(Request $request, int $tournament_id): string

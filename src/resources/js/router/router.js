@@ -5,16 +5,61 @@ const routes = [
     {
         path: '/',
         name: 'main',
-        component: () => import('../pages/Lobby/Lobby.vue'),
+        component: () => import('../pages/Loading.vue'),
+        redirect: to => {
+            return { name: 'player' }
+        },
+    },
+    {
+        path: '/player',
+        name: 'player',
+        component: () => import('../pages/Player.vue'),
         meta: {
             layout: 'Main',
             auth: true,
         }
     },
     {
-        path: '/player',
-        name: 'player',
-        component: () => import('../pages/Player/Player.vue'),
+        path: '/tournaments',
+        name: 'tournaments',
+        component: () => import('../pages/Tournaments.vue'),
+        meta: {
+            layout: 'Main',
+            auth: true,
+        },
+
+    },
+    {
+        path: '/tournaments/:id',
+        name: 'tournament',
+        component: () => import('../pages/Tournament.vue'),
+        meta: {
+            layout: 'Main',
+            auth: true,
+        }
+    },
+    {
+        path: '/report',
+        name: 'report',
+        component: () => import('../pages/Report.vue'),
+        meta: {
+            layout: 'Main',
+            auth: true,
+        }
+    },
+    {
+        path: '/rating',
+        name: 'rating',
+        component: () => import('../pages/Rating.vue'),
+        meta: {
+            layout: 'Main',
+            auth: true,
+        }
+    },
+    {
+        path: '/game',
+        name: 'game',
+        component: () => import('../pages/Game.vue'),
         meta: {
             layout: 'Main',
             auth: true,
@@ -23,45 +68,16 @@ const routes = [
     {
         path: '/login',
         name: 'login',
-        component: () => import('../pages/Auth/Login.vue'),
+        component: () => import('../pages/Login.vue'),
         meta: {
             layout: 'Auth',
             auth: false,
         }
     },
-    {
-        path: '/register',
-        name: 'register',
-        component: () => import('../pages/Auth/Register.vue'),
-        meta: {
-            layout: 'Auth',
-            auth: false,
-        }
-    },
-    {
-        path: '/play/:uuid',
-        name: 'play',
-        component: () => import('../pages/components/Game.vue'),
-        props: true,
-        meta: {
-            layout: 'Main',
-            auth: true,
-        }
-    },
-    {
-        path: '/devtools',
-        name: 'devtools',
-        component: () => import('../pages/DevTools.vue'),
-        meta: {
-            layout: 'DevTools',
-            auth: true,
-        }
-    }
 ];
 
 const router = createRouter({
-    history: createWebHistory('/telegram' +
-        ''),
+    history: createWebHistory('/telegram'),
     routes,
     linkActiveClass: 'active',
     linkExactActiveClass: 'active'

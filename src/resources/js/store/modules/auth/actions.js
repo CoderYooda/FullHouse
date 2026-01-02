@@ -1,22 +1,30 @@
 export default ({
     async TelegramAuth({ getters, commit }, validateData) {
         try {
-            // await axios.get('/sanctum/csrf-cookie')
             const { data } = await axios({
                 method: 'POST',
-                url: '/telegram/user/auth',
+                url: '/api/telegram/user/auth',
                 data:{
                     query: validateData,
                 }
             });
-            let userData = data.data;
-            commit('setUser', userData);
-            commit('setAuthenticated');
-            commit('setToken', data.data.token);
 
-            return true;
+            return data.token;
         } catch (error) {
-            // alert(error)
+            commit('SET_ERRORS', error.response.data);
+
+            return false;
+        }
+    },
+    async GetPlayer({ getters, commit }) {
+        try {
+            const { data } = await axios({
+                method: 'GET',
+                url: '/api/player/getPlayer',
+            });
+
+            return data.data.user;
+        } catch (error) {
             commit('SET_ERRORS', error.response.data);
 
             return false;
@@ -26,7 +34,7 @@ export default ({
         try {
             const { data } = await axios({
                 method: 'POST',
-                url: '/player/update_name',
+                url: '/api/player/update_name',
                 // headers:{
                 //     Authorization:'Bearer '+localStorage.getItem('_token'),
                 // },
@@ -34,11 +42,11 @@ export default ({
                     name: name,
                 }
             });
-            commit('setUserName', data.data.name);
+            commit('setPlayerName', data.data.name);
 
             return true;
         } catch (error) {
-            // alert(error)
+            alert(error)
             commit('SET_ERRORS', error.response.data);
 
             return false;

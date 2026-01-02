@@ -2,8 +2,6 @@
 
 namespace App\Modules\Tournament\DTO;
 
-use App\Models\Tournament;
-
 class UpdateTournamentDTO
 {
     public function __construct(
@@ -26,6 +24,8 @@ class UpdateTournamentDTO
         public readonly bool $without_add_on,
         public readonly bool $is_private,
         public readonly bool $is_actual,
+        public readonly array $types,
+        public readonly int $season,
     ){
     }
 }

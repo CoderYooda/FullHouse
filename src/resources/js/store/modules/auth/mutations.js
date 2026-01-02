@@ -4,36 +4,19 @@ export default ({
         state._errors = errors;
     },
 
-    setAuthenticated(state){
+    setPlayerName(state, name) {
+        state._player.public_name = name;
+    },
+
+    setToken(state, data) {
         state._authenticated = true
-    },
-
-    setUser(state, userData) {
-
-        state._user = userData.user;
-        if (userData.user === null || userData.user === undefined) {
-            localStorage.removeItem('_token');
-            localStorage.removeItem('_authenticated');
-
-            return
-        }
-
-        localStorage.setItem('_token', userData.token );
-    },
-
-    setUserName(state, name) {
-        state._user.public_name = name;
-    },
-
-
-    setToken(state, token) {
-        state._token = token;
-        window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
-
+        state._token = data.token;
+        // window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
+        localStorage.setItem('_token', data.token );
         axios.interceptors.request.use(
             config => {
-                config.headers['X-CSRF-TOKEN'] = token;
-
+                // config.headers['X-CSRF-TOKEN'] = token;
+                config.headers['Authorization'] = 'Bearer '+ data.token;
                 return config;
             },
             error => {
@@ -44,7 +27,7 @@ export default ({
         );
     },
 
-    setPlayer(state, player) {
-        state._user = player;
+    setPlayer(state, data) {
+        state._player = data.player;
     }
 });

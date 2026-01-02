@@ -9,6 +9,8 @@
 
         <link rel="stylesheet" href="{{ mix('admin/css/azia.css') }}"/>
         <script type="text/javascript" defer src="{{ mix('admin/js/azia.js') }}"></script>
+        <link href="" rel="stylesheet" />
+{{--        <script src="vendor/select2/dist/js/select2.min.js"></script>--}}
 
     </head>
     <body class="az-body">
@@ -29,6 +31,15 @@
                         </li>
                         <li class="nav-item {{ request()->is('*/tournaments') ? 'active' : '' }}">
                             <a href="{{ route('admin.tournaments.index') }}" class="nav-link">Турниры</a>
+                        </li>
+                        <li class="nav-item {{ request()->is('*/seasons') ? 'active' : '' }}">
+                            <a href="{{ route('admin.seasons.index') }}" class="nav-link">Сезоны</a>
+                        </li>
+                        <li class="nav-item {{ request()->is('*/feedback') ? 'active' : '' }}">
+                            <a href="{{ route('admin.feedback.index') }}" class="nav-link">Обратная связь</a>
+                        </li>
+                        <li class="nav-item {{ request()->is('*/settings') ? 'active' : '' }}">
+                            <a href="{{ route('admin.settings.index') }}" class="nav-link">Настройки</a>
                         </li>
                     </ul>
                 </div>

@@ -1,5 +1,23 @@
 /* ###### 6.1 Content  ###### */
 
+.select2-container--default .select2-selection--multiple {
+    border-radius: 0;
+    border-color: #cdd4e0;
+}
+.select2-selection--multiple {
+    height: 38px;
+    padding-top: 1px;
+}
+.input-group .select2-container{
+    flex: 1 1 auto;
+    width: 1% !important;
+}
+
+.input-group .select2-selection{
+    height: auto;
+    min-height: 38px;
+}
+
 .az-content-left-show {
   @media (max-width: 575px) { overflow: hidden; }
 

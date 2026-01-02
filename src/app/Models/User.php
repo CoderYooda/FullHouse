@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -18,6 +19,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $te
  * @property string $email
  * @property string $password
+ * @property Carbon|null $created_at
  *
  * @property-read TelegramUser|null $telegramUser {@see static::telegramUser()}
  * @property-read Tournament|null $tournaments {@see static::tournaments()}

@@ -60,6 +60,7 @@ import { mapActions, mapGetters } from 'vuex';
 
                     return true;
                 } catch (error) {
+                    this.$router.push({ name: 'login' })
                     return false;
                 }
             },

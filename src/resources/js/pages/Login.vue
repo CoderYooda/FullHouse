@@ -16,21 +16,35 @@ export default {
         ...mapGetters('auth', ['Authenticated', 'Token', 'Register']),
 
         telegramDataCheck(data){
-            if (this.isAuthenticated){
-                this.$router.push({ name: 'player' })
-            } else {
+            // if (this.isAuthenticated){
+            //     this.$router.push({ name: 'player' })
+            // } else {
+
                 this.TelegramAuth(data).then((token) => {
                     if (token) {
                         this.setToken({token:token})
                         this.$store.state.loaded = true
                         this.$router.push({ name: 'player' })
 
+                        axios.interceptors.request.use(
+                            config => {
+                                // config.headers['X-CSRF-TOKEN'] = token;
+                                config.headers['Authorization'] = 'Bearer '+ token;
+                                return config;
+                            },
+                            error => {
+                                console.log("TokenSetERROR", error)
+
+                                return Promise.reject(error);
+                            }
+                        );
+
                         return
                     }
                     alert('Авторизация Telegram невалидна')
                     this.$router.push({ path: 'login' })
                 })
-            }
+            // }
         }
     },
     computed:{

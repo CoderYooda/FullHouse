@@ -11,7 +11,12 @@ class PlayersController extends Controller
 {
     public function index(): View
     {
-        $users = User::query()->paginate(15);
+        /** @var User $user */
+        $user = auth()->user();
+
+        $users = User::query()
+            ->owned()
+            ->paginate(15);
 
         return view('admin.players', [
             'users' => $users,

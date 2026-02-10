@@ -69,6 +69,7 @@ export default {
                         message: this.message,
                         date: this.date,
                         is_anon: this.anon,
+                        company: window.Slug,
                     }
                 });
 

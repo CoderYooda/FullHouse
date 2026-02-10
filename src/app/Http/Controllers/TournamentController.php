@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\Api\Telegram\ActiveTournamentResource;
 use App\Http\Resources\Tournament\TournamentCollectionResource;
 use App\Http\Resources\Tournament\TournamentResource;
+use App\Models\Company;
 use App\Models\Tournament;
 use App\Models\User;
 use App\Service\StateService;
@@ -69,11 +70,16 @@ class TournamentController extends Controller
         throw new ModelNotFoundException();
     }
 
-    public function list(): TournamentCollectionResource
+    public function list(Request $request): TournamentCollectionResource
     {
+        $company = Company::query()
+            ->where('slug', $request->get('company'))
+            ->first();
+
         $tournaments = Tournament::query()
             ->whereDate('event_date', '>=', Carbon::today())
             ->where('is_actual', true)
+            ->where('company_id', $company->id)
             ->orderBy('event_date')
             ->get();
 

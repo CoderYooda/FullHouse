@@ -79,6 +79,7 @@ class UpdateTournamentRequest extends FormRequest
             is_actual: $this->validated('is_actual') ?? false,
             types: $this->validated('types') ?? [],
             season: $this->validated('season'),
+            company_id: $this->user()->company_id,
         );
     }
 }

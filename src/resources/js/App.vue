@@ -23,6 +23,7 @@ export default {
             this.setToken({token:localStorage.getItem('_token')})
         } else {
             this.$router.push({
+                slug: window.company_id,
                 path: 'login'
             });
         }

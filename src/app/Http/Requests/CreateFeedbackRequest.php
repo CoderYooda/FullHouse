@@ -21,6 +21,7 @@ class CreateFeedbackRequest extends FormRequest
             ],
             'message' => ['required','string','max:1000'],
             'is_anon' => ['required','bool'],
+            'company' => ['required','string'],
         ];
     }
 }

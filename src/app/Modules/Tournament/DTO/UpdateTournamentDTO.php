@@ -26,6 +26,7 @@ class UpdateTournamentDTO
         public readonly bool $is_actual,
         public readonly array $types,
         public readonly int $season,
+        public readonly int $company_id,
     ){
     }
 }

@@ -1,3 +1,7 @@
+@php
+    $name = \App\Models\Company::query()->where('id', auth()->user()->company_id)->first()->name;
+@endphp
+
 <!DOCTYPE html>
 <html lang="ru">
     <head>
@@ -17,12 +21,12 @@
         <div class="az-header">
             <div class="container">
                 <div class="az-header-left">
-                    <a href="{{ route('admin.index') }}" class="az-logo"><span></span> FullHouse Admin</a>
+                    <a href="{{ route('admin.index') }}" class="az-logo"><span></span> {{ $name }}</a>
                     <a id="azMenuShow" class="az-header-menu-icon d-lg-none"><span></span></a>
                 </div><!-- az-header-left -->
                 <div class="az-header-menu">
                     <div class="az-header-menu-header">
-                        <a href="{{ route('admin.index') }}" class="az-logo"><span></span> FullHouse</a>
+                        <a href="{{ route('admin.index') }}" class="az-logo"><span></span> {{ $name }}</a>
                         <a href="" class="close">×</a>
                     </div>
                     <ul class="nav">

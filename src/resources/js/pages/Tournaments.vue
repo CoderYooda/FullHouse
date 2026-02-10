@@ -8,7 +8,7 @@
                         Заполнение турниров в процессе, вернитесь позже
                     </div>
                 </div>
-                <router-link :to="{ path: '/tournaments/'+ tournament.id}" v-for="tournament in tournaments"  class="my-link-wrapper">
+                <router-link :to="{ path: '/' + slug + '/tournaments/'+ tournament.id}" v-for="tournament in tournaments"  class="my-link-wrapper">
                     <div class="card">
                         <div class="aside-container">
                             <div class="left-side">
@@ -63,7 +63,7 @@ export default {
             try{
                 const { data } = await axios({
                     method: 'POST',
-                    url: '/api/tournament/list',
+                    url: '/api/tournament/list?company=' + window.Slug,
                 });
                 this.tournaments = data.data
 
@@ -83,7 +83,9 @@ export default {
         }
     },
     computed:{
-
+        slug() {
+            return window.Slug;
+        },
     },
     mounted() {
         this.getTournaments()

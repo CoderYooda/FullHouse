@@ -16,7 +16,7 @@ use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 Route::get('/', [HomeController::class, 'index'])
     ->name('home');
 
-Route::get('/telegram{any}', [TelegramController::class, 'index'])
+Route::get('/telegram/{company_slug}/{any}', [TelegramController::class, 'index'])
     ->where('any', '.*')
     ->name('home');
 

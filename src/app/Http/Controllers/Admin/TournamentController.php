@@ -18,7 +18,9 @@ class TournamentController extends Controller
 {
     public function index(): View
     {
-        $tournaments = Tournament::orderBy('created_at', 'DESC')->paginate(10);
+        $tournaments = Tournament::query()
+            ->owned()
+            ->orderBy('created_at', 'DESC')->paginate(10);
 
         return view('admin.tournaments.index', [
             'tournaments' => $tournaments,
@@ -28,6 +30,7 @@ class TournamentController extends Controller
     public function view(Request $request, int $tournament_id): View
     {
         $tournament = Tournament::query()
+            ->owned()
             ->with('users', function (BelongsToMany $q) {
                 $q->orderBy('pivot_is_actual', 'DESC');
             })
@@ -41,8 +44,12 @@ class TournamentController extends Controller
 
     public function new(Request $request): View
     {
-        $tournamentTypes = TournamentType::query()->get();
-        $seasons = Season::query()->get();
+        $tournamentTypes = TournamentType::query()
+            ->owned()
+            ->get();
+        $seasons = Season::query()
+            ->owned()
+            ->get();
 
         return view('admin.tournaments.edit', [
             'tournament' => null,
@@ -54,11 +61,14 @@ class TournamentController extends Controller
     public function edit(Request $request, int $tournament_id): View
     {
         $tournament = Tournament::query()
+            ->owned()
             ->where('id', $tournament_id)
             ->firstOrFail();
 
-        $tournamentTypes = TournamentType::query()->get();
-        $seasons = Season::query()->get();
+        $tournamentTypes = TournamentType::query()
+            ->owned()
+            ->get();
+        $seasons = Season::query()->owned()->get();
 
         return view('admin.tournaments.edit', [
             'tournament' => $tournament,
@@ -81,6 +91,7 @@ class TournamentController extends Controller
         int $tournament_id,
     ): RedirectResponse {
         $tournament = Tournament::query()
+            ->owned()
             ->where('id', $tournament_id)
             ->firstOrFail();
         $tournament->is_actual = !$tournament->is_actual;
@@ -93,6 +104,7 @@ class TournamentController extends Controller
     public function players($tournament_id): JsonResponse
     {
         $tournament = Tournament::query()
+            ->owned()
             ->where('id', $tournament_id)
             ->firstOrFail();
 

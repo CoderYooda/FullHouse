@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -37,6 +38,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property bool $without_add_on
  * @property bool $is_private
  * @property bool $is_actual
+ * @property int $company_id
  *
  * @property-read Collection|null $users {@see static::users()}
  * @property-read Season|null $season {@see static::season()}
@@ -54,6 +56,11 @@ class Tournament extends Model
         return [
             'event_date' => 'date',
         ];
+    }
+
+    public function scopeOwned(Builder $query): void
+    {
+        $query->where('company_id', auth()->user()->company_id);
     }
 
     public function getStartAtAttribute($value)

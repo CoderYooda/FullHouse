@@ -19,12 +19,14 @@ export default {
             // if (this.isAuthenticated){
             //     this.$router.push({ name: 'player' })
             // } else {
-
                 this.TelegramAuth(data).then((token) => {
                     if (token) {
                         this.setToken({token:token})
                         this.$store.state.loaded = true
-                        this.$router.push({ name: 'player' })
+                        this.$router.push({
+                            name: 'player',
+                            params: { slug: window.Slug },
+                        })
 
                         axios.interceptors.request.use(
                             config => {

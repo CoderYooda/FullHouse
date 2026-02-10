@@ -1,12 +1,12 @@
 <template>
     <div class="module">
         <h3>Предстоящие турниры
-            <router-link :to="{ path: '/tournaments'}" class="right_button">все</router-link>
+            <router-link :to="{ path: '/' + slug + '/tournaments'}" class="right_button">все</router-link>
         </h3>
     </div>
     <div v-if="tournaments">
         <div v-for="tournament in tournaments" class="tournament">
-            <router-link :to="{ path: '/tournaments/' + tournament.id}"  class="my-link-wrapper">
+            <router-link :to="{ path: '/' + slug + '/tournaments/' + tournament.id}"  class="my-link-wrapper">
 
                 <div class="background">
                     <div class="title">
@@ -104,6 +104,9 @@ import { mapActions, mapGetters } from 'vuex';
             ...mapGetters('auth', ['Player']),
             player() {
                 return this.Player;
+            },
+            slug() {
+                return window.Slug;
             },
             visible () {
                 return this.$store.state.state._change_name_modal.visible

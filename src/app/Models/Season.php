@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * --- Properties from a database ---
@@ -27,5 +28,10 @@ class Season extends Model
             'end_date' => 'datetime',
             'start_date' => 'datetime',
         ];
+    }
+
+    public function scopeOwned(Builder $query): void
+    {
+        $query->where('company_id', auth()->user()->company_id);
     }
 }

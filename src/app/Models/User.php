@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -16,6 +17,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $telegram_user_id
  * @property string $name
  * @property string $public_name
+ * @property int $company_id
  * @property string $te
  * @property string $email
  * @property string $password
@@ -59,6 +61,11 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    public function scopeOwned(Builder $query): void
+    {
+        $query->where('company_id', auth()->user()->company_id);
     }
 
     public function telegramUser(): BelongsTo

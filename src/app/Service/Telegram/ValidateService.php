@@ -4,7 +4,7 @@ namespace App\Service\Telegram;
 
 class ValidateService
 {
-    public function validate(string $query): bool
+    public function validate(string $query, string $token): bool
     {
         parse_str(urldecode($query), $params);
 
@@ -21,7 +21,7 @@ class ValidateService
         }
         $dataString = rtrim($dataString, "\n"); // Remove trailing newline
 
-        $secret_key = hash_hmac('sha256', config('telegram.token'), 'WebAppData', true);
+        $secret_key = hash_hmac('sha256', $token, 'WebAppData', true);
 
         $calculatedHash = hash_hmac('sha256', $dataString, $secret_key);
 

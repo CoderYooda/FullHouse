@@ -3,7 +3,7 @@ import store from '../store/store';
 
 const routes = [
     {
-        path: '/',
+        path: '/:slug',
         name: 'main',
         component: () => import('../pages/Loading.vue'),
         redirect: to => {
@@ -11,7 +11,7 @@ const routes = [
         },
     },
     {
-        path: '/player',
+        path: '/:slug/player',
         name: 'player',
         component: () => import('../pages/Player.vue'),
         meta: {
@@ -20,7 +20,7 @@ const routes = [
         }
     },
     {
-        path: '/tournaments',
+        path: '/:slug/tournaments',
         name: 'tournaments',
         component: () => import('../pages/Tournaments.vue'),
         meta: {
@@ -30,7 +30,7 @@ const routes = [
 
     },
     {
-        path: '/tournaments/:id',
+        path: '/:slug/tournaments/:id',
         name: 'tournament',
         component: () => import('../pages/Tournament.vue'),
         meta: {
@@ -39,7 +39,7 @@ const routes = [
         }
     },
     {
-        path: '/report',
+        path: '/:slug/report',
         name: 'report',
         component: () => import('../pages/Report.vue'),
         meta: {
@@ -48,7 +48,7 @@ const routes = [
         }
     },
     {
-        path: '/rating',
+        path: '/:slug/rating',
         name: 'rating',
         component: () => import('../pages/Rating.vue'),
         meta: {
@@ -57,7 +57,7 @@ const routes = [
         }
     },
     {
-        path: '/game',
+        path: '/:slug/game',
         name: 'game',
         component: () => import('../pages/Game.vue'),
         meta: {

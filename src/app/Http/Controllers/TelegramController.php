@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\Api\Telegram\AuthTelegramResource;
 use App\Http\Resources\Api\Telegram\UpdateNameResource;
 use App\Http\Resources\Tournament\TournamentCollectionResource;
+use App\Models\Company;
 use App\Models\TelegramUser;
 use App\Models\Tournament;
 use App\Modules\Telegram\Domain\Actions\CreateTelegramUserAction;
@@ -20,12 +21,21 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Exception;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TelegramController extends Controller
 {
-    public function index(): View
+    public function index($company_slug): View
     {
-        return view('telegram');
+        $company = Company::query()
+            ->where('slug', $company_slug)
+            ->first();
+
+        if (!$company) {
+            throw new NotFoundHttpException('Company not found');
+        }
+
+        return view('telegram', compact('company'));
     }
 
     public function test(): string
@@ -41,11 +51,16 @@ class TelegramController extends Controller
         UpdateTelegramUserAction $updateTelegramUserAction,
     ): JsonResponse {
         $params = $request->get('query');
+        $companySlug = $request->get('company');
+
+        $company = Company::query()
+            ->where('slug', $companySlug)
+            ->first();
 
         parse_str(urldecode($params), $tgData);
         $telegramUserData = json_decode($tgData['user'], true);
 
-        if ($validateService->validate($params)) {
+        if ($validateService->validate($params, $company->tg_bot_token)) {
             $telegramUser = TelegramUser::where('telegram_id', $telegramUserData['id'])->first();
 
             if (!$telegramUser) {
@@ -66,12 +81,6 @@ class TelegramController extends Controller
             $user->tokens()->delete();
 
             $token = $user->createToken('telegram', ['read', 'write']);
-//            if (!Auth::check()) {
-//                Auth::login($user);
-//                $request->session()->regenerate();
-//            }
-//            dd($user);
-            //$token = $user->createToken('telegram')->plainTextToken;
 
             return new JsonResponse([
                 'token' => $token->plainTextToken,

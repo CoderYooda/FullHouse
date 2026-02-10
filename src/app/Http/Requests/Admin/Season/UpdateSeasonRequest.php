@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests\Admin\Season;
 
-use App\Modules\Tournament\DTO\UpdateTournamentDTO;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class UpdateSeasonRequest extends FormRequest
 {

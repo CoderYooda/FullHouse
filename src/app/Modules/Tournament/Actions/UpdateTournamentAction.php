@@ -4,7 +4,6 @@ namespace App\Modules\Tournament\Actions;
 
 use App\Models\Tournament;
 use App\Modules\Tournament\DTO\UpdateTournamentDTO;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UpdateTournamentAction
 {
@@ -37,6 +36,7 @@ class UpdateTournamentAction
         $tournament->is_actual = $updateTournamentDTO->is_actual;
         $tournament->description = 'deprecated';
         $tournament->season_id = $updateTournamentDTO->season;
+        $tournament->company_id = $updateTournamentDTO->company_id;
         $tournament->save();
 
         $tournament->types()->sync($updateTournamentDTO->types);

@@ -14,6 +14,7 @@
     <script>
         window.mode = '{{ env('APP_ENV') }}';
         window.Telegram = Telegram;
+        window.Slug = '{{ $company->slug }}';
         Telegram.WebApp.lockOrientation();
     </script>
     <script>

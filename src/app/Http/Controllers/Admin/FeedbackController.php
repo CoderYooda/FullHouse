@@ -13,6 +13,7 @@ class FeedbackController extends Controller
     public function index(): View
     {
         $feedbacks = Feedback::query()
+            ->owned()
             ->orderBy('created_at', 'DESC')
             ->paginate(10);
 

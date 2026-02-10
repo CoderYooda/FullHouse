@@ -6,6 +6,7 @@ export default ({
                 url: '/api/telegram/user/auth',
                 data:{
                     query: validateData,
+                    company: window.Slug,
                 }
             });
 

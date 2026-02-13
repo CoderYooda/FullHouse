@@ -53,5 +53,21 @@ export default ({
             return false;
         }
     },
+    async AcceptAgreement({ getters, commit }) {
+        try {
+            const { data } = await axios({
+                method: 'POST',
+                url: '/api/player/accept_agreement',
+            });
+            commit('setPlayerAgreement', true);
+
+            return true;
+        } catch (error) {
+            alert(error)
+            commit('SET_ERRORS', error.response.data);
+
+            return false;
+        }
+    },
 
 });

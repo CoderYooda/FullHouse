@@ -32,6 +32,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/player/getPlayer', [PlayerController::class, 'getPlayer']);
     Route::post('/player/tournaments', [PlayerController::class, 'getTournaments']);
     Route::post('/player/update_name', [TelegramController::class, 'updateName']);
+    Route::post('/player/accept_agreement', [PlayerController::class, 'acceptAgreement']);
 
     Route::post('/tournament/list', [TournamentController::class, 'list']);
     Route::post('/tournament/get', [TournamentController::class, 'getTodayList']);

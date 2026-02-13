@@ -20,6 +20,15 @@ const routes = [
         }
     },
     {
+        path: '/:slug/agreement',
+        name: 'agreement',
+        component: () => import('../pages/Agreement.vue'),
+        meta: {
+            layout: 'Clear',
+            auth: true,
+        }
+    },
+    {
         path: '/:slug/tournaments',
         name: 'tournaments',
         component: () => import('../pages/Tournaments.vue'),
@@ -89,7 +98,7 @@ router.beforeEach((
     next
 ) => {
     if (localStorage.getItem('_token') === null && to.meta.auth === true) {
-        next({ name: 'login' });
+        next({ name: 'login', params: { slug: window.Slug } });
     }
     next();
 });

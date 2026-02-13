@@ -7,5 +7,6 @@ export default ({
         first_name: null,
         last_name: null,
         pic: null,
+        agreement: null,
     },
 });

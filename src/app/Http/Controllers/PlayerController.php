@@ -7,6 +7,7 @@ use App\Http\Resources\Tournament\TournamentCollectionResource;
 use App\Models\Tournament;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PlayerController extends Controller
@@ -17,6 +18,18 @@ class PlayerController extends Controller
         $player = auth()->user();
 
         return new PlayerResource($player);
+    }
+
+    public function acceptAgreement(): JsonResponse
+    {
+        /** @var User $player */
+        $player = auth()->user();
+        $player->agreement = true;
+        $player->save();
+
+        return new JsonResponse([
+            'success' => true,
+        ]);
     }
 
     public function getTournaments(Request $request): TournamentCollectionResource

@@ -24,6 +24,7 @@ class PlayerResource extends JsonResource
                 'last_name' => $this->user->telegramUser?->last_name,
                 'registration_date' => $this->user->created_at->translatedFormat('d F Y'),
                 'profile_id' => '#0_'. 382 * $this->user->id,
+                'agreement' => $this->user->agreement,
             ],
         ];
     }

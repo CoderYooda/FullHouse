@@ -10,6 +10,7 @@
 <script>
 import Auth from './layouts/Auth.vue';
 import Main from './layouts/Main.vue';
+import Clear from './layouts/Clear.vue';
 import { mapActions, mapGetters, mapMutations } from 'vuex';
 
 export default {
@@ -17,6 +18,7 @@ export default {
     components: {
         Auth,
         Main,
+        Clear,
     },
     mounted() {
         if (localStorage.getItem('_token')) {

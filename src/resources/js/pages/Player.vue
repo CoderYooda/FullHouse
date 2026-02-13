@@ -71,6 +71,14 @@ export default {
         ...mapMutations('auth', ['setPlayer']),
         loadPlayerData(){
             this.GetPlayer().then((player) => {
+
+                if (player.agreement === false) {
+                    this.$router.push({
+                        slug: window.company_id,
+                        path: 'agreement'
+                    });
+                }
+
                 this.setPlayer({player:player})
             })
         },

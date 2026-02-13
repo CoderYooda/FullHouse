@@ -4,8 +4,8 @@ export default ({
         state._errors = errors;
     },
 
-    setPlayerName(state, name) {
-        state._player.public_name = name;
+    setPlayerAgreement(state, value) {
+        state._player.agreement = value;
     },
 
     setToken(state, data) {

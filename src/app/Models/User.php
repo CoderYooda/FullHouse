@@ -21,6 +21,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $te
  * @property string $email
  * @property string $password
+ * @property bool $agreement
  * @property Carbon|null $created_at
  *
  * @property-read TelegramUser|null $telegramUser {@see static::telegramUser()}

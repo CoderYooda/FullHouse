@@ -92,7 +92,7 @@ export default {
 
 <style scoped>
 .content {
-    padding: 0 15px;
+    padding: 60px 15px 0;
 }
 .agreement-page {
     max-width: 800px;

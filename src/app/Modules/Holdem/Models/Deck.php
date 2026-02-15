@@ -4,7 +4,7 @@ namespace App\Modules\Holdem\Models;
 
 use App\Modules\Holdem\Enums\CardSuit;
 use App\Modules\Holdem\Enums\CardValue;
-use App\Modules\Holdem\Exceptions\NotEnoughtCardsException;
+use App\Modules\Holdem\Exceptions\NotEnoughCardsException;
 
 class Deck
 {
@@ -25,11 +25,11 @@ class Deck
         shuffle($this->cards);
     }
 
-    /** @throws NotEnoughtCardsException */
+    /** @throws NotEnoughCardsException */
     public function deal(?int $count = 2): array
     {
         if (count($this->cards) < $count) {
-            throw new NotEnoughtCardsException();
+            throw new NotEnoughCardsException();
         }
 
         $dealt = array_slice($this->cards, 0, $count);

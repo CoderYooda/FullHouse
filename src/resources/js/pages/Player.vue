@@ -45,8 +45,13 @@
                         </div>
                         <span class="text-gray">{{ user.registration_date }}</span>
                     </div>
-                </div>
 
+                </div>
+                <div class="view-agreement-row">
+                    <router-link :to="{ name: 'agreement', params: { slug: $route.params.slug } }" class="view-agreement-button">
+                        Просмотреть соглашение
+                    </router-link>
+                </div>
             </div>
             <Tournament/>
         </div>
@@ -113,5 +118,25 @@ export default {
 </script>
 
 <style>
+.view-agreement-row {
+    margin-bottom: 1rem;
+}
+.view-agreement-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+    color: #68627d;
+    text-decoration: none;
+    border-radius: 15px;
+    transition: background-color 0.2s, color 0.2s;
+    border: 1px solid rgba(59, 58, 65, 0.6588235294);
+    background: rgba(24, 23, 28, 0.431372549);
 
+    text-align: center;
+    display: block;
+    margin: 20px auto 0;
+}
+.view-agreement-button:hover {
+    background-color: #0066cc;
+    color: white;
+}
 </style>

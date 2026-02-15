@@ -4,7 +4,7 @@ namespace App\Modules\Holdem\Exceptions;
 
 use Exception;
 
-class NotEnoughtCardsException extends Exception
+class NotEnoughCardsException extends Exception
 {
 
 }

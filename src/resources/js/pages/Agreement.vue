@@ -8,7 +8,8 @@
                         {{ point }}
                     </li>
                 </ul>
-                <button @click="acceptAgreement">Согласиться</button>
+                <button v-if="!hasAgreed" @click="acceptAgreement">Согласиться</button>
+                <button v-else class="button-back" @click="goBack">Вернуться</button>
             </div>
         </div>
     </div>
@@ -64,8 +65,16 @@ export default {
             currentIndex: null,
         };
     },
+    computed: {
+        hasAgreed() {
+            return this.$store.state.auth?._player?.agreement === true;
+        },
+    },
     methods: {
         ...mapActions('auth', ['AcceptAgreement']),
+        goBack() {
+            this.$router.push({ name: 'player', params: { slug: this.$route.params.slug } });
+        },
         selectPoint(index) {
             this.currentIndex = index;
             // Прокручиваем список до нужного пункта
@@ -75,17 +84,18 @@ export default {
             }
         },
         acceptAgreement() {
-            this.AcceptAgreement(true).then((result) => {
-                this.$router.push({
-                    slug: window.company_id,
-                    path: 'player'
-                });
-            })
+            this.AcceptAgreement(true).then(() => {
+                this.$router.push({ name: 'player', params: { slug: this.$route.params.slug } });
+            });
         },
     },
-    mounted() {
-        console.log(123);
+    async mounted() {
         this.$store.state._fullscreenLoading = false;
+        if (this.$store.state.auth?._player?.agreement == null) {
+            await this.$store.dispatch('auth/GetPlayer').then((player) => {
+                if (player) this.$store.commit('auth/setPlayer', { player });
+            });
+        }
     },
 }
 </script>
@@ -133,5 +143,12 @@ button {
 
 button:hover {
     background-color: darkgreen;
+}
+
+.button-back {
+    background-color: #555;
+}
+.button-back:hover {
+    background-color: #333;
 }
 </style>

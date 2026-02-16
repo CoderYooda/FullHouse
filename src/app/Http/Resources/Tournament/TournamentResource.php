@@ -18,11 +18,17 @@ class TournamentResource extends JsonResource
     public function toArray(Request $request): array
     {
         $lateRegistration = explode(':', $this->tournament->late_registration);
+        $registration = explode(':', $this->tournament->start_at);
+
+        $atDate = $this->tournament->event_date->addHours((int)$registration[0]);
+        $atDate = $atDate->addMinutes((int)$registration[1]);
+
         return [
             'id' => $this->tournament->id,
             'title' => $this->tournament->title,
             'date' => $this->tournament->event_date->translatedFormat('j F, l'),
             'at' => $this->tournament->start_at,
+            'at_date' => $atDate,
             'stack' => $this->tournament->stack,
             'small_blind' => $this->tournament->small_blind,
             'big_blind' => $this->tournament->big_blind,

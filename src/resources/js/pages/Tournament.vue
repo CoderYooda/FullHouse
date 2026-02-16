@@ -8,22 +8,22 @@
             <div>
                 <div class="tournament clear clock">
                     <div class="time-fragment">
-                        <div class="head">11</div>
+                        <div class="head">{{ countdown.days }}</div>
                         <div class="descr">дней</div>
                     </div>
                     <div class="dots">:</div>
                     <div class="time-fragment">
-                        <div class="head">11</div>
+                        <div class="head">{{ countdown.hours }}</div>
                         <div class="descr">часов</div>
                     </div>
                     <div class="dots">:</div>
                     <div class="time-fragment">
-                        <div class="head">11</div>
+                        <div class="head">{{ countdown.minutes }}</div>
                         <div class="descr">минут</div>
                     </div>
                     <div class="dots">:</div>
                     <div class="time-fragment">
-                        <div class="head">11</div>
+                        <div class="head">{{ countdown.seconds }}</div>
                         <div class="descr">секунд</div>
                     </div>
                 </div>
@@ -93,7 +93,14 @@ export default {
             tournament:{
                 title:null,
                 id:null,
-            }
+            },
+            countdown: {
+                days: '00',
+                hours: '00',
+                minutes: '00',
+                seconds: '00',
+            },
+            countdownTimerId: null,
         }
     },
     methods:{
@@ -105,21 +112,7 @@ export default {
                 });
                 this.tournament = data.data
 
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async joinTournament(id){
-            try{
-                const { data } = await axios({
-                    method: 'POST',
-                    url: '/api/tournament/'+id+'/join',
-                    // headers:{
-                    //     Authorization:'Bearer '+localStorage.getItem('_token'),
-                    // },
-                });
-                this.tournament.participant = true
+                this.startCountdown();   // start timer after data is loaded
 
                 return true;
             } catch (error) {
@@ -142,6 +135,49 @@ export default {
             } catch (error) {
                 return false;
             }
+        },
+
+        startCountdown() {
+            if (this.countdownTimerId) {
+                clearInterval(this.countdownTimerId);
+            }
+
+            this.updateCountdown(); // initial calculation
+
+            this.countdownTimerId = setInterval(() => {
+                this.updateCountdown();
+            }, 1000);
+        },
+
+        updateCountdown() {
+            if (!this.tournament || !this.tournament.at) {
+                return;
+            }
+
+            // If instead date and time are separate, use this form:
+            let target = new Date(this.tournament.at_date);
+            console.log(target);
+            const now = new Date();
+            let diffMs = target.getTime() - now.getTime();
+
+            if (diffMs <= 0) {
+                diffMs = 0;
+                if (this.countdownTimerId) {
+                    clearInterval(this.countdownTimerId);
+                    this.countdownTimerId = null;
+                }
+            }
+
+            const totalSeconds = Math.floor(diffMs / 1000);
+            const days = Math.floor(totalSeconds / (24 * 60 * 60));
+            const hours = Math.floor((totalSeconds % (24 * 60 * 60)) / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            this.countdown.days = String(days).padStart(2, '0');
+            this.countdown.hours = String(hours).padStart(2, '0');
+            this.countdown.minutes = String(minutes).padStart(2, '0');
+            this.countdown.seconds = String(seconds).padStart(2, '0');
         }
     },
     computed:{
@@ -150,6 +186,11 @@ export default {
     mounted() {
         this.getTournament()
     },
+    beforeDestroy() {
+        if (this.countdownTimerId) {
+            clearInterval(this.countdownTimerId);
+        }
+    }
 }
 </script>
 

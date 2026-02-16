@@ -18,6 +18,7 @@ class AuthService
             $user->public_name = $createUserDTO->telegramUser->username;
             $user->email = $createUserDTO->telegramUser->username . '@telegram.com';
             $user->password = '123456';
+            $user->company_id = $createUserDTO->companyId;
 
             $user->save();
         }

@@ -76,6 +76,7 @@ class TelegramController extends Controller
 
             $user = $authService->getOrCreateUser(new CreateUserDTO(
                 telegramUser: $telegramUser,
+                companyId: $company->id,
             ));
 
             $user->tokens()->delete();

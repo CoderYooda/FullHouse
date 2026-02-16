@@ -120,6 +120,23 @@ export default {
             }
         },
 
+        async joinTournament(id){
+            try{
+                const { data } = await axios({
+                    method: 'POST',
+                    url: '/api/tournament/'+id+'/join',
+                    // headers:{
+                    //     Authorization:'Bearer '+localStorage.getItem('_token'),
+                    // },
+                });
+                this.tournament.participant = true
+
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
         async leaveTournament(id){
             try{
                 const { data } = await axios({

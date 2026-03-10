@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Tournament;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -21,7 +22,25 @@ class UserSeeder extends Seeder
             'password' => Hash::make('FHPC313131'),
         ]);
 
-        User::create([
+        $user1 = User::create([
+            'name' => 'Mihail',
+            'is_admin' => 0,
+            'public_name' => 'Mihail',
+            'telegram_user_id' => 2,
+            'email' => 'Mihail@telegram.com',
+            'password' => Hash::make('123123'),
+            'agreement' => true,
+        ]);
+        $user2 = User::create([
+            'name' => 'Vlad',
+            'is_admin' => 0,
+            'public_name' => 'Vlad',
+            'telegram_user_id' => 3,
+            'email' => 'Vlad@telegram.com',
+            'password' => Hash::make('123123'),
+            'agreement' => true,
+        ]);
+        $user3 = User::create([
             'name' => 'CoderYooda',
             'is_admin' => 0,
             'public_name' => 'CoderYooda',
@@ -30,33 +49,19 @@ class UserSeeder extends Seeder
             'password' => Hash::make('FHPC323232'),
             'agreement' => true,
         ]);
-//        User::create([
-//            'name' => 'Mihail',
-//            'is_admin' => 0,
-//            'public_name' => 'Mihail',
-//            'telegram_user_id' => 2,
-//            'email' => 'Mihail@telegram.com',
-//            'password' => Hash::make('123123'),
-//            'agreement' => true,
-//        ]);
-//        User::create([
-//            'name' => 'Vlad',
-//            'is_admin' => 0,
-//            'public_name' => 'Vlad',
-//            'telegram_user_id' => 2,
-//            'email' => 'Vlad@telegram.com',
-//            'password' => Hash::make('123123'),
-//            'agreement' => true,
-//        ]);
-//        User::create([
-//            'name' => 'Dmitri',
-//            'is_admin' => 0,
-//            'public_name' => 'Dmitri',
-//            'telegram_user_id' => 2,
-//            'email' => 'Dmitri@telegram.com',
-//            'password' => Hash::make('123123'),
-//            'agreement' => true,
-//        ]);
+        $user4 = User::create([
+            'name' => 'Dmitri',
+            'is_admin' => 0,
+            'public_name' => 'Dmitri',
+            'telegram_user_id' => 4,
+            'email' => 'Dmitri@telegram.com',
+            'password' => Hash::make('123123'),
+            'agreement' => true,
+        ]);
 
+
+        $tournament = Tournament::first();
+
+        $tournament->users()->attach([$user1, $user2, $user3, $user4]);
     }
 }

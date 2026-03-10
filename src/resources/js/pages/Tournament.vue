@@ -32,6 +32,21 @@
                     <span class="fond_title">Фонд турнира может меняться по мере активности игроков</span>
                     <div class="fond-value">{{ tournament.participant_count > 0 ? tournament.participant_count * 100 : 200 }} points</div>
                 </div>
+
+                <div class="module">
+                  <div class="players_list__title">Учасники турнира</div>
+
+                  <div class=" players_list row">
+                    <div v-for="player in players"  class="player_item row">
+                      <div class="player_item__info row">
+                        <img v-bind:src="player.telegram_user.photo_url" class="player_item__img">
+                        <div class="player_item__name">{{ player.public_name }}</div>
+                      </div>
+                      <div class="player_item__ordinal">{{ player.id }}</div>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="module">
                     <p class="descr">
                         Формируется фонд турнира, который состоит из Buy-in (100 очков), Re-entry (100 очков) и Add-on (200 очков).
@@ -85,6 +100,56 @@
     </div>
 </template>
 
+<style>
+
+  .row {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+  .players_list__title {
+    font-size: 1.17em;
+    font-weight: 700;
+    margin-block-end: 1em;
+  }
+  .players_list {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .player_item {
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px;
+    border: 1px solid #3E3B48;
+    padding: 10px;
+  }
+  .player_item__info {
+    align-items: center;
+  }
+  .player_item__img {
+    width: 40px;
+    margin-right: 10px;
+    border-radius: 8px;
+  }
+  .player_item__name {
+    font-size: 18px;
+    line-height: 24px;
+  }
+  .player_item__ordinal {
+    font-size: 20px;
+    line-height: 20px;
+    font-weight: 500;
+    color: #EDB258;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: #6B6581;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+</style>
+
 <script>
 
 export default {
@@ -101,6 +166,7 @@ export default {
                 seconds: '00',
             },
             countdownTimerId: null,
+            players: [],
         }
     },
     methods:{
@@ -115,6 +181,23 @@ export default {
                 this.startCountdown();   // start timer after data is loaded
 
                 return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async getTournamentPlayers(){
+            try{
+                const { data } = await axios({
+                    method: 'POST',
+                    url: '/api/tournament/'+ this.$route.params.id +'/players',
+                });
+
+                // this.players = data.players;
+
+              // console.log(data.players[0].telegram_user)
+
+                return data;
             } catch (error) {
                 return false;
             }
@@ -173,7 +256,7 @@ export default {
 
             // If instead date and time are separate, use this form:
             let target = new Date(this.tournament.at_date);
-            console.log(target);
+            // console.log(target);
             const now = new Date();
             let diffMs = target.getTime() - now.getTime();
 
@@ -201,7 +284,11 @@ export default {
 
     },
     mounted() {
-        this.getTournament()
+        this.getTournament();
+
+        this.getTournamentPlayers().then((data) => {
+          this.players = data.players
+        })
     },
     beforeDestroy() {
         if (this.countdownTimerId) {
@@ -211,6 +298,4 @@ export default {
 }
 </script>
 
-<style>
 
-</style>

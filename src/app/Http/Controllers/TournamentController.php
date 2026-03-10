@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Service\StateService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
@@ -149,5 +150,17 @@ class TournamentController extends Controller
         }
 
         return 'ok';
+    }
+
+    public function getTournamentPlayers($tournament_id): JsonResponse
+    {
+        $tournament = Tournament::query()
+            ->owned()
+            ->where('id', $tournament_id)
+            ->firstOrFail();
+
+        return new JsonResponse([
+            'players' => $tournament->users()->where('is_actual', true)->with('telegramUser')->get(),
+        ]);
     }
 }

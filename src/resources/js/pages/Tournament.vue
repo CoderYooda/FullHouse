@@ -27,11 +27,11 @@
                         <div class="descr">секунд</div>
                     </div>
                 </div>
-                <div class="tournament clear fond">
-                    <h2 class="fond-h2">Призовой фонд</h2>
-                    <span class="fond_title">Фонд турнира может меняться по мере активности игроков</span>
-                    <div class="fond-value">{{ tournament.participant_count > 0 ? tournament.participant_count * 100 : 200 }} points</div>
-                </div>
+<!--                <div class="tournament clear fond">-->
+<!--                    <h2 class="fond-h2">Призовой фонд</h2>-->
+<!--                    <span class="fond_title">Фонд турнира может меняться по мере активности игроков</span>-->
+<!--                    <div class="fond-value">{{ tournament.participant_count > 0 ? tournament.participant_count * 100 : 200 }} points</div>-->
+<!--                </div>-->
 
                 <div class="module">
                   <div class="players_list__title">Учасники турнира</div>
@@ -42,22 +42,22 @@
                         <img v-bind:src="player.telegram_user.photo_url" class="player_item__img">
                         <div class="player_item__name">{{ player.public_name }}</div>
                       </div>
-                      <div class="player_item__ordinal">{{ player.id }}</div>
+                      <div class="player_item__ordinal">{{ player.pivot.serial_number }}</div>
                     </div>
                   </div>
                 </div>
 
-                <div class="module">
-                    <p class="descr">
-                        Формируется фонд турнира, который состоит из Buy-in (100 очков), Re-entry (100 очков) и Add-on (200 очков).
-                    </p>
-                    <p class="descr">
-                        🔥По окончании турнира суммируются все очки и распределяются по процентам, согласно призовым местам: 1 - 25%, 2 - 15%, 3 - 10%, 4 - 8%, 5 - 7%, 6 - 6%, 7 - 5%, 8 - 4%, 9 - 3%, с 10 до 13 - 2,5%, с 14 до 17 - 1,5%, 18 - 1%                   
-                    </p>
-                    <p class="descr">
-                        🔥Если количество игроков,  участвующих в турнире, не превышает 18 человек, рейтинг рассчитывается по системе выше, и оставшиеся очки делятся на всех поровну и округляются в большую сторону до ровной единицы.
-                    </p>
-                </div>
+<!--                <div class="module">-->
+<!--                    <p class="descr">-->
+<!--                        Формируется фонд турнира, который состоит из Buy-in (100 очков), Re-entry (100 очков) и Add-on (200 очков).-->
+<!--                    </p>-->
+<!--                    <p class="descr">-->
+<!--                        🔥По окончании турнира суммируются все очки и распределяются по процентам, согласно призовым местам: 1 - 25%, 2 - 15%, 3 - 10%, 4 - 8%, 5 - 7%, 6 - 6%, 7 - 5%, 8 - 4%, 9 - 3%, с 10 до 13 - 2,5%, с 14 до 17 - 1,5%, 18 - 1%-->
+<!--                    </p>-->
+<!--                    <p class="descr">-->
+<!--                        🔥Если количество игроков,  участвующих в турнире, не превышает 18 человек, рейтинг рассчитывается по системе выше, и оставшиеся очки делятся на всех поровну и округляются в большую сторону до ровной единицы.-->
+<!--                    </p>-->
+<!--                </div>-->
                 <div class="module">
                     <h3>Описание турнира</h3>
 
@@ -100,55 +100,6 @@
     </div>
 </template>
 
-<style>
-
-  .row {
-    display: flex;
-    flex-wrap: nowrap;
-  }
-  .players_list__title {
-    font-size: 1.17em;
-    font-weight: 700;
-    margin-block-end: 1em;
-  }
-  .players_list {
-    flex-direction: column;
-    gap: 10px;
-  }
-  .player_item {
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 8px;
-    border: 1px solid #3E3B48;
-    padding: 10px;
-  }
-  .player_item__info {
-    align-items: center;
-  }
-  .player_item__img {
-    width: 40px;
-    margin-right: 10px;
-    border-radius: 8px;
-  }
-  .player_item__name {
-    font-size: 18px;
-    line-height: 24px;
-  }
-  .player_item__ordinal {
-    font-size: 20px;
-    line-height: 20px;
-    font-weight: 500;
-    color: #EDB258;
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-    background: #6B6581;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-</style>
 
 <script>
 
@@ -214,6 +165,8 @@ export default {
                 });
                 this.tournament.participant = true
 
+                this.players = data.players;
+
                 return true;
             } catch (error) {
                 return false;
@@ -229,7 +182,9 @@ export default {
                     //     Authorization:'Bearer '+localStorage.getItem('_token'),
                     // },
                 });
-                this.tournament.participant = false
+                this.tournament.participant = false;
+
+                this.players = data.players
 
                 return true;
             } catch (error) {
@@ -299,3 +254,52 @@ export default {
 </script>
 
 
+<style>
+
+.row {
+  display: flex;
+  flex-wrap: nowrap;
+}
+.players_list__title {
+  font-size: 1.17em;
+  font-weight: 700;
+  margin-block-end: 1em;
+}
+.players_list {
+  flex-direction: column;
+  gap: 10px;
+}
+.player_item {
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 8px;
+  border: 1px solid #3E3B48;
+  padding: 10px;
+}
+.player_item__info {
+  align-items: center;
+}
+.player_item__img {
+  width: 40px;
+  margin-right: 10px;
+  border-radius: 8px;
+}
+.player_item__name {
+  font-size: 18px;
+  line-height: 24px;
+}
+.player_item__ordinal {
+  font-size: 20px;
+  line-height: 20px;
+  font-weight: 500;
+  color: #EDB258;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #6B6581;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+</style>

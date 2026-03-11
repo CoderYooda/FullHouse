@@ -59,9 +59,23 @@ class UserSeeder extends Seeder
             'agreement' => true,
         ]);
 
-
         $tournament = Tournament::first();
 
-        $tournament->users()->attach([$user1, $user2, $user3, $user4]);
+        $users = [$user1, $user2, $user3, $user4];
+
+        $tournament->users()->attach($users);
+
+        $counter = 1;
+        foreach ($users as $user) {
+            $actualUser = $tournament->users->where('id', $user->id)->first();
+
+            if ($actualUser) {
+                $actualUser->pivot->serial_number = $counter;
+                $actualUser->pivot->save();
+
+                $counter++;
+            }
+        }
+
     }
 }

@@ -15,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
+use function Symfony\Component\String\u;
 
 class TournamentController extends Controller
 {
@@ -96,7 +97,7 @@ class TournamentController extends Controller
         throw new ModelNotFoundException();
     }
 
-    public function join(Request $request, int $tournament_id): string
+    public function join(Request $request, int $tournament_id): JsonResponse
     {
         /** @var User $user */
         $user = auth()->user();
@@ -117,7 +118,9 @@ class TournamentController extends Controller
             ]);
         }
 
-        return 'ok';
+        $this->recalculationOrderPlayers($this->getSortedActualPlayers($tournament_id));
+
+        return $this->getTournamentPlayers($tournament_id);
     }
 
     public function get(Request $request, int $tournament_id): TournamentResource
@@ -133,7 +136,7 @@ class TournamentController extends Controller
         throw new ModelNotFoundException();
     }
 
-    public function leave(Request $request, int $tournament_id): string
+    public function leave(Request $request, int $tournament_id): JsonResponse
     {
         /** @var User $user */
         $user = auth()->user();
@@ -146,21 +149,52 @@ class TournamentController extends Controller
 
         if ($actualUser) {
             $actualUser->pivot->is_actual = false;
+            $actualUser->pivot->serial_number = null;
             $actualUser->pivot->save();
         }
 
-        return 'ok';
+        $this->recalculationOrderPlayers($this->getSortedActualPlayers($tournament_id));
+
+        return $this->getTournamentPlayers($tournament_id);
     }
 
     public function getTournamentPlayers($tournament_id): JsonResponse
+    {
+        return new JsonResponse([
+            'players' => $this->getSortedActualPlayers($tournament_id),
+        ]);
+    }
+
+    public function recalculationOrderPlayers($users): JsonResponse
+    {
+        $counter = 1;
+
+        foreach ($users as $user) {
+            $user->pivot->serial_number = $counter;
+            $user->pivot->save();
+
+            $counter++;
+        }
+
+        return new JsonResponse([
+            'status' => 'ok'
+        ]);
+    }
+
+    public function getSortedActualPlayers($tournament_id)
     {
         $tournament = Tournament::query()
             ->owned()
             ->where('id', $tournament_id)
             ->firstOrFail();
 
-        return new JsonResponse([
-            'players' => $tournament->users()->where('is_actual', true)->with('telegramUser')->get(),
-        ]);
+        $users = $tournament->users()
+            ->orderBy('serial_number')
+            ->where('is_actual', true)
+            ->with('telegramUser')
+            ->get();
+
+        return $users;
     }
+
 }

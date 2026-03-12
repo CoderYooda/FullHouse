@@ -16,9 +16,19 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
 use function Symfony\Component\String\u;
+use App\Repositories\TournamentRepository;
+use App\Service\TournamentService;
 
 class TournamentController extends Controller
 {
+    public function __construct(
+        protected TournamentRepository $tournamentRepository,
+        protected TournamentService $tournamentService,
+    )
+    {
+
+    }
+
     public function create(Request $request): RedirectResponse
     {
         $actualTournament = Tournament::query()
@@ -61,11 +71,6 @@ class TournamentController extends Controller
             ->get();
 
         if ($tournaments) {
-//            $participant = $tournament->users()
-//                ->where('participants.is_actual', true)
-//                ->pluck('id')
-//                ->contains($user->id);
-
             return new TournamentCollectionResource($tournaments);
         }
 
@@ -86,11 +91,6 @@ class TournamentController extends Controller
             ->get();
 
         if ($tournaments) {
-//            $participant = $tournament->users()
-//                ->where('participants.is_actual', true)
-//                ->pluck('id')
-//                ->contains($user->id);
-
             return new TournamentCollectionResource($tournaments);
         }
 
@@ -118,7 +118,7 @@ class TournamentController extends Controller
             ]);
         }
 
-        $this->recalculationOrderPlayers($this->getSortedActualPlayers($tournament_id));
+        $this->tournamentService->recalculationOrderPlayers($this->tournamentRepository->getSortedActualPlayers($tournament_id));
 
         return $this->getTournamentPlayers($tournament_id);
     }
@@ -153,7 +153,7 @@ class TournamentController extends Controller
             $actualUser->pivot->save();
         }
 
-        $this->recalculationOrderPlayers($this->getSortedActualPlayers($tournament_id));
+        $this->tournamentService->recalculationOrderPlayers($this->tournamentRepository->getSortedActualPlayers($tournament_id));
 
         return $this->getTournamentPlayers($tournament_id);
     }
@@ -161,40 +161,9 @@ class TournamentController extends Controller
     public function getTournamentPlayers($tournament_id): JsonResponse
     {
         return new JsonResponse([
-            'players' => $this->getSortedActualPlayers($tournament_id),
+            'players' => $this->tournamentRepository->getSortedActualPlayers($tournament_id),
         ]);
     }
 
-    public function recalculationOrderPlayers($users): JsonResponse
-    {
-        $counter = 1;
-
-        foreach ($users as $user) {
-            $user->pivot->serial_number = $counter;
-            $user->pivot->save();
-
-            $counter++;
-        }
-
-        return new JsonResponse([
-            'status' => 'ok'
-        ]);
-    }
-
-    public function getSortedActualPlayers($tournament_id)
-    {
-        $tournament = Tournament::query()
-            ->owned()
-            ->where('id', $tournament_id)
-            ->firstOrFail();
-
-        $users = $tournament->users()
-            ->orderBy('serial_number')
-            ->where('is_actual', true)
-            ->with('telegramUser')
-            ->get();
-
-        return $users;
-    }
 
 }

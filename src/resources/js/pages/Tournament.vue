@@ -27,12 +27,6 @@
                         <div class="descr">секунд</div>
                     </div>
                 </div>
-<!--                <div class="tournament clear fond">-->
-<!--                    <h2 class="fond-h2">Призовой фонд</h2>-->
-<!--                    <span class="fond_title">Фонд турнира может меняться по мере активности игроков</span>-->
-<!--                    <div class="fond-value">{{ tournament.participant_count > 0 ? tournament.participant_count * 100 : 200 }} points</div>-->
-<!--                </div>-->
-
                 <div class="module">
                   <div class="players_list__title">Учасники турнира</div>
 
@@ -46,18 +40,6 @@
                     </div>
                   </div>
                 </div>
-
-<!--                <div class="module">-->
-<!--                    <p class="descr">-->
-<!--                        Формируется фонд турнира, который состоит из Buy-in (100 очков), Re-entry (100 очков) и Add-on (200 очков).-->
-<!--                    </p>-->
-<!--                    <p class="descr">-->
-<!--                        🔥По окончании турнира суммируются все очки и распределяются по процентам, согласно призовым местам: 1 - 25%, 2 - 15%, 3 - 10%, 4 - 8%, 5 - 7%, 6 - 6%, 7 - 5%, 8 - 4%, 9 - 3%, с 10 до 13 - 2,5%, с 14 до 17 - 1,5%, 18 - 1%-->
-<!--                    </p>-->
-<!--                    <p class="descr">-->
-<!--                        🔥Если количество игроков,  участвующих в турнире, не превышает 18 человек, рейтинг рассчитывается по системе выше, и оставшиеся очки делятся на всех поровну и округляются в большую сторону до ровной единицы.-->
-<!--                    </p>-->
-<!--                </div>-->
                 <div class="module">
                     <h3>Описание турнира</h3>
 
@@ -143,10 +125,6 @@ export default {
                     method: 'POST',
                     url: '/api/tournament/'+ this.$route.params.id +'/players',
                 });
-
-                // this.players = data.players;
-
-              // console.log(data.players[0].telegram_user)
 
                 return data;
             } catch (error) {

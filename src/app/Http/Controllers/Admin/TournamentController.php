@@ -109,7 +109,7 @@ class TournamentController extends Controller
             ->firstOrFail();
 
         return new JsonResponse([
-            'players' => $tournament->users()->with('telegramUser')->get(),
+            'players' => $tournament->users()->orderBy('pivot_serial_number')->with('telegramUser')->get(),
         ]);
     }
 

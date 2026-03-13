@@ -11,12 +11,24 @@ use App\Models\User;
 use App\Service\StateService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
+use function Symfony\Component\String\u;
+use App\Repositories\TournamentRepository;
+use App\Service\TournamentService;
 
 class TournamentController extends Controller
 {
+    public function __construct(
+        protected TournamentRepository $tournamentRepository,
+        protected TournamentService $tournamentService,
+    )
+    {
+
+    }
+
     public function create(Request $request): RedirectResponse
     {
         $actualTournament = Tournament::query()
@@ -59,11 +71,6 @@ class TournamentController extends Controller
             ->get();
 
         if ($tournaments) {
-//            $participant = $tournament->users()
-//                ->where('participants.is_actual', true)
-//                ->pluck('id')
-//                ->contains($user->id);
-
             return new TournamentCollectionResource($tournaments);
         }
 
@@ -84,18 +91,13 @@ class TournamentController extends Controller
             ->get();
 
         if ($tournaments) {
-//            $participant = $tournament->users()
-//                ->where('participants.is_actual', true)
-//                ->pluck('id')
-//                ->contains($user->id);
-
             return new TournamentCollectionResource($tournaments);
         }
 
         throw new ModelNotFoundException();
     }
 
-    public function join(Request $request, int $tournament_id): string
+    public function join(Request $request, int $tournament_id): JsonResponse
     {
         /** @var User $user */
         $user = auth()->user();
@@ -116,7 +118,9 @@ class TournamentController extends Controller
             ]);
         }
 
-        return 'ok';
+        $this->tournamentService->recalculationOrderPlayers($this->tournamentRepository->getSortedActualPlayers($tournament_id));
+
+        return $this->getTournamentPlayers($tournament_id);
     }
 
     public function get(Request $request, int $tournament_id): TournamentResource
@@ -132,7 +136,7 @@ class TournamentController extends Controller
         throw new ModelNotFoundException();
     }
 
-    public function leave(Request $request, int $tournament_id): string
+    public function leave(Request $request, int $tournament_id): JsonResponse
     {
         /** @var User $user */
         $user = auth()->user();
@@ -145,9 +149,21 @@ class TournamentController extends Controller
 
         if ($actualUser) {
             $actualUser->pivot->is_actual = false;
+            $actualUser->pivot->serial_number = null;
             $actualUser->pivot->save();
         }
 
-        return 'ok';
+        $this->tournamentService->recalculationOrderPlayers($this->tournamentRepository->getSortedActualPlayers($tournament_id));
+
+        return $this->getTournamentPlayers($tournament_id);
     }
+
+    public function getTournamentPlayers($tournament_id): JsonResponse
+    {
+        return new JsonResponse([
+            'players' => $this->tournamentRepository->getSortedActualPlayers($tournament_id),
+        ]);
+    }
+
+
 }

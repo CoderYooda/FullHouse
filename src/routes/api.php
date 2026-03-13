@@ -39,6 +39,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/tournament/{tournament_id}/get', [TournamentController::class, 'get']);
     Route::post('/tournament/{tournament_id}/join', [TournamentController::class, 'join']);
     Route::post('/tournament/{tournament_id}/leave', [TournamentController::class, 'leave']);
+    Route::post('/tournament/{tournament_id}/players', [TournamentController::class, 'getTournamentPlayers']);
+
     Route::post('/feedback/create', [FeedbackController::class, 'receiveFeedback']);
 });
 //

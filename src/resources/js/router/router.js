@@ -48,6 +48,15 @@ const routes = [
         }
     },
     {
+        path: '/:slug/tournaments/:id/players',
+        name: 'tournamentPlayers',
+        component: () => import('../pages/Tournament.vue'),
+        meta: {
+            layout: 'Main',
+            auth: true,
+        }
+    },
+    {
         path: '/:slug/report',
         name: 'report',
         component: () => import('../pages/Report.vue'),

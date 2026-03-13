@@ -26,7 +26,11 @@
 <!--    </div>-->
     <div class="row row-sm">
         <div class="col-lg-12 ht-lg-100p">
-            <div class="az-content-label mg-b-5">записи на игру</div>
+            <div class="az-content-label mg-b-5 title-flex">
+              записи на игру
+              
+              <div class="actual_players_count">Актуальных записей - {{actualPlayers}}</div>
+            </div>
             <div v-for="player in players" class="card card-dashboard-pageviews mb-2 p-2">
                 <div class="az-list-item">
                     <div class="d-flex">
@@ -36,6 +40,7 @@
                             <small class="tx-11 tx-gray-500 no-wrap" style="white-space: nowrap;">ID пользователя: {{ player.id }}</small>
                         </div>
                     </div>
+                    <div v-if="player.pivot.is_actual" class="player_item__ordinal">{{ player.pivot.serial_number }}</div>
                     <div class="d-flex flex-column">
                         <div v-if="player.pivot.is_actual" class="badge badge-success">Актуальна</div>
                         <div v-if="!player.pivot.is_actual" class="badge badge-danger">Отменена</div>
@@ -55,11 +60,13 @@ export default {
     data: function () {
         return {
             players:[],
+            actualPlayers: 0
         }
     },
     mounted() {
         this.test().then((data) => {
             this.players = data.players
+            this.actualPlayers = this.countActualPlayers(data.players);
             console.log(this.players);
         })
     },
@@ -80,6 +87,17 @@ export default {
                 return false;
             }
         },
+
+        countActualPlayers(players) {
+          let counter = 0;
+
+          for (let player of players) {
+            if (player.pivot.is_actual) {
+              counter++;
+            }
+          }
+          return counter;
+        }
     },
     computed: {
         activePlayers(){
@@ -92,5 +110,20 @@ export default {
 </script>
 
 <style scoped>
-
+.player_item__ordinal {
+  font-weight: 600;
+  border: 1px solid #cdd4e0;
+  border-radius: 4px;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: 15px;
+}
+.title-flex {
+  display: flex;
+  justify-content: space-between;
+}
 </style>

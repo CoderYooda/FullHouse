@@ -61,7 +61,7 @@ class UserSeeder extends Seeder
 
         $tournament = Tournament::first();
 
-        $users = [$user1, $user2, $user3, $user4];
+        $users = [$user1, $user2, $user4];
 
         $tournament->users()->attach($users);
 

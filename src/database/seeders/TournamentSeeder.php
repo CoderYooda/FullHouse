@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Tournament;
@@ -31,7 +32,7 @@ class TournamentSeeder extends Seeder
             'levels_end' => 20,
             'late_registration' => '21:00:00',
             'is_private' => false,
-            'event_date' => '2026-03-18',
+            'event_date' => Carbon::now()->addMonth(),
             'is_actual' => true,
             'start_at' => '19:00:00',
             'free_entry' => false,

@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Faker\Factory as Faker;
 
 class UserSeeder extends Seeder
 {
@@ -15,6 +16,8 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        $faker = Faker::create();
+
         User::factory()->create([
             'name' => 'Administrator',
             'public_name' => 'Admin',
@@ -58,10 +61,73 @@ class UserSeeder extends Seeder
             'password' => Hash::make('123123'),
             'agreement' => true,
         ]);
+        $user5 = User::create([
+            'name' => 'Dmitri',
+            'is_admin' => 0,
+            'public_name' => 'Dmitri',
+            'telegram_user_id' => 4,
+            'email' => $faker->safeEmail,
+            'password' => Hash::make('123123'),
+            'agreement' => true,
+        ]);
+        $user6 = User::create([
+            'name' => 'Dmitri',
+            'is_admin' => 0,
+            'public_name' => 'Dmitri',
+            'telegram_user_id' => 4,
+            'email' => $faker->safeEmail,
+            'password' => Hash::make('123123'),
+            'agreement' => true,
+        ]);
+        $user7 = User::create([
+            'name' => 'Dmitri',
+            'is_admin' => 0,
+            'public_name' => 'Dmitri',
+            'telegram_user_id' => 4,
+            'email' => $faker->safeEmail,
+            'password' => Hash::make('123123'),
+            'agreement' => true,
+        ]);
+        $user8 = User::create([
+            'name' => 'Dmitri',
+            'is_admin' => 0,
+            'public_name' => 'Dmitri',
+            'telegram_user_id' => 4,
+            'email' => $faker->safeEmail,
+            'password' => Hash::make('123123'),
+            'agreement' => true,
+        ]);
+        $user9 = User::create([
+            'name' => 'Dmitri',
+            'is_admin' => 0,
+            'public_name' => 'Dmitri',
+            'telegram_user_id' => 4,
+            'email' => $faker->safeEmail,
+            'password' => Hash::make('123123'),
+            'agreement' => true,
+        ]);
+        $user10 = User::create([
+            'name' => 'Dmitri',
+            'is_admin' => 0,
+            'public_name' => 'Dmitri',
+            'telegram_user_id' => 4,
+            'email' => $faker->safeEmail,
+            'password' => Hash::make('123123'),
+            'agreement' => true,
+        ]);
+        $user11 = User::create([
+            'name' => 'Dmitri',
+            'is_admin' => 0,
+            'public_name' => 'Dmitri',
+            'telegram_user_id' => 4,
+            'email' => $faker->safeEmail,
+            'password' => Hash::make('123123'),
+            'agreement' => true,
+        ]);
 
         $tournament = Tournament::first();
 
-        $users = [$user1, $user2, $user4];
+        $users = [$user1, $user2, $user4, $user5, $user6, $user7, $user8, $user9, $user10, $user11];
 
         $tournament->users()->attach($users);
 

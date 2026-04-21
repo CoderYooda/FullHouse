@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\City;
+use App\Models\UserCredential;
+use App\Models\MergeHistory;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -78,5 +81,30 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Tournament::class, 'participants', 'user_id', 'tournament_id')
             ->withPivot('is_actual', 'created_at');
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    public function mergedInto()
+    {
+        return $this->belongsTo(User::class, 'merged_into_user_id');
+    }
+
+    public function credentials()
+    {
+        return $this->hasMany(UserCredential::class);
+    }
+
+    public function participants()
+    {
+        return $this->hasMany(Participant::class, 'user_id');
+    }
+
+    public function isPrimary()
+    {
+        return is_null($this->merged_into_user_id) && $this->is_active;
     }
 }

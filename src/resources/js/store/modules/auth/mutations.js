@@ -18,5 +18,9 @@ export default ({
 
     setPlayer(state, data) {
         state._player = data.player;
+    },
+
+    SET_USER(state, user) {
+        state.user = user;
     }
 });

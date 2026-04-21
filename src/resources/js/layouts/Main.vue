@@ -1,47 +1,7 @@
 <template>
     <div class="main container">
         <div class="blur-overlay static"></div>
-<!--        <div class="tg_buttons_header" style="margin-bottom: 30px">-->
-<!--            <div class="tg_center_container" @click="test">-->
-<!--                <div class="balance">{{ user.credits }}</div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--        <div class="header">-->
-<!--            <div class="boxed">-->
-<!--                <div class="profile">-->
-<!--                    <div class="user_pic">-->
-<!--                        <img v-bind:src="user.pic">-->
-<!--                    </div>-->
-<!--                    <div class="user_data">-->
-<!--                        <div class="user_name">-->
-<!--                            {{ user.name }}-->
-<!--                        </div>-->
-<!--                        <div class="level_graph"></div>-->
-<!--                        <div class="user_lvl">-->
-<!--                            уровень 151-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <div class="spacer">-->
-<!--&lt;!&ndash;                    <button @click="enterFullscreen()">fullscreen</button>&ndash;&gt;-->
-<!--&lt;!&ndash;                    <LogoutButton/>&ndash;&gt;-->
-<!--                </div>-->
-<!--                <div class="credit_box">-->
-<!--                    <div class="title">Баланс</div>-->
-<!--                    <div class="credits">{{ user.credits }}</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <DevelopPanel/>-->
-<!--        </div>-->
-
             <router-view @scroll.passive="onScroll" id="scroller" class="view"/>
-<!--        <router-view v-slot="{ Component }">-->
-<!--            <transition name="fade">-->
-<!--                <div class="content">-->
-<!--                    <component :is="Component" />-->
-<!--                </div>-->
-<!--            </transition>-->
-<!--        </router-view>-->
 
         <div class="footer boxed">
             <div class="buttons">
@@ -55,19 +15,17 @@
         </div>
     </div>
     <div class="body-backdrop" :style="{ 'background-position-y': -background / 3 + 'px' }"></div>
+
+    <CitySelector :visible="showCitySelector" @city-selected="onCitySelected" />
 </template>
 
 <script>
 import {mapActions, mapGetters, mapMutations} from 'vuex';
-// import DevelopPanel from "../pages/components/DevelopPanel.vue";
-// import LogoutButton from "../pages/components/LogoutButton.vue";
-// import {SocketConsumerHandler} from "../pages/Service/Socket/SocketConsumerHandler";
-// import SeatModal from "../pages/components/Game/SeatModal.vue";
-// import MainNav from '../components/layout/MainNav/MainNav.vue';
-// import HeadUser from "../pages/Auth/modules/HeadUser.vue";
+import CitySelector from '../components/CitySelector.vue';
 
 export default {
     name: 'Main',
+    components: { CitySelector },
     // components: {SeatModal, LogoutButton, DevelopPanel},
 
     data: function () {
@@ -77,7 +35,21 @@ export default {
             searchActive: false,
             categories: 'categories',
             background:0,
+            showCitySelector: false,
         }
+    },
+
+    watch: {
+      user: {
+        immediate: true,
+        handler(newUser) {
+          if (newUser && (newUser.city_id === undefined || newUser.city_id === null)) {
+            this.showCitySelector = true;
+          } else {
+            this.showCitySelector = false;
+          }
+        }
+      }
     },
 
     // components: { HeadUser },
@@ -118,6 +90,12 @@ export default {
         },
         onScroll(event){
             this.background = event.target.scrollTop;
+        },
+
+        onCitySelected() {
+          this.showCitySelector = false;
+
+          this.$store.dispatch('auth/GetPlayer');
         }
     },
     computed:{

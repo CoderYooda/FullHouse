@@ -22,4 +22,8 @@ export default ({
     HAS_ERROR: state => slug => {
         return Boolean(state._errors && state._errors.errors[slug]);
     },
+
+    User(state) {
+        return state.user;
+    },
 });

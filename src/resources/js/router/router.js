@@ -84,7 +84,7 @@ const routes = [
         }
     },
     {
-        path: '/login',
+        path: '/:slug/login',   // <- добавляем с параметром
         name: 'login',
         component: () => import('../pages/Login.vue'),
         meta: {
@@ -107,9 +107,11 @@ router.beforeEach((
     next
 ) => {
     if (localStorage.getItem('_token') === null && to.meta.auth === true) {
-        next({ name: 'login', params: { slug: window.Slug } });
+        const slug = to.params.slug || window.Slug;
+        next({ name: 'login', params: { slug } });
+    } else {
+        next();
     }
-    next();
 });
 
 export default router;

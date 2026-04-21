@@ -1,19 +1,22 @@
 export default ({
-    async TelegramAuth({ getters, commit }, validateData) {
+    async TelegramAuth({ getters, commit, dispatch }, validateData) {
         try {
             const { data } = await axios({
                 method: 'POST',
                 url: '/api/telegram/user/auth',
-                data:{
+                data: {
                     query: validateData,
                     company: window.Slug,
                 }
             });
 
+            localStorage.setItem('_token', data.token);
+            commit('setToken', data.token);
+            await dispatch('GetPlayer'); // получаем и сохраняем пользователя
+
             return data.token;
         } catch (error) {
             commit('SET_ERRORS', error.response.data);
-
             return false;
         }
     },
@@ -24,10 +27,11 @@ export default ({
                 url: '/api/player/getPlayer',
             });
 
+            // Сохраняем пользователя в store
+            commit('SET_USER', data.data.user);
             return data.data.user;
         } catch (error) {
             commit('SET_ERRORS', error.response.data);
-
             return false;
         }
     },

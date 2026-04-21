@@ -9,4 +9,5 @@ export default ({
         pic: null,
         agreement: null,
     },
+    user: null,
 });

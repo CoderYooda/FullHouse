@@ -6,27 +6,17 @@ use App\Http\Controllers\TournamentController;
 use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\UserController;
 
-
-//Route::post('/tokens/telegram/create', function (Request $request) {
-//    $token = $request->user()->createToken('telegram', ['read', 'write']);
-//
-//    return ['token' => $token->plainTextToken];
-//});
 
 Route::post('/telegram/user/auth', [TelegramController::class, 'auth'])
     ->name('telegram.user.auth');
 
-//Route::post('/tokens/create', function (Request $request) {
-//    $token = $request->user()->createToken($request->token_name);
-//    return ['token' => $token->plainTextToken];
-//});
-//
-//Route::middleware(['auth:sanctum'])->group(function () {
-//    Route::post('/player/update_name', [TelegramController::class, 'updateName']);
-//    Route::post('/tournament/get', [TournamentController::class, 'getTodayList']);
-//    Route::post('/tournament/join', [TournamentController::class, 'join']);
-//});
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/verify-email', [AuthController::class, 'verifyEmail']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/telegram-login', [AuthController::class, 'telegramLogin']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/player/getPlayer', [PlayerController::class, 'getPlayer']);
@@ -42,8 +32,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/tournament/{tournament_id}/players', [TournamentController::class, 'getTournamentPlayers']);
 
     Route::post('/feedback/create', [FeedbackController::class, 'receiveFeedback']);
+
+    Route::get('/me', [AuthController::class, 'me']);
+    Route::post('/link-telegram', [AuthController::class, 'linkTelegram']);
+    Route::post('/unlink-telegram', [AuthController::class, 'unlinkTelegram']);
+    Route::post('/set-city', [UserController::class, 'setCity']);
 });
-//
-//Route::get('/user', function (Request $request) {
-//    return $request->user();
-//})->middleware('auth:sanctum');
+

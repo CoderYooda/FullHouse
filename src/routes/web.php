@@ -20,11 +20,9 @@ Route::get('/telegram/{company_slug}/{any}', [TelegramController::class, 'index'
     ->where('any', '.*')
     ->name('home');
 
-Route::get('/login', [AuthController::class, 'login'])
-    ->name('login');
+Route::get('/login', [AuthController::class, 'login'])->name('login');
 
-Route::post('/login', [AuthController::class, 'authenticate'])
-    ->name('admin.login');
+Route::post('/login', [AuthController::class, 'authenticate'])->name('admin.login');
 
 
 Route::middleware(['auth:web'])->group(function () {

@@ -25,17 +25,30 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TelegramController extends Controller
 {
+//    public function index($company_slug): View
+//    {
+//        $company = Company::query()
+//            ->where('slug', $company_slug)
+//            ->first();
+//
+//        if (!$company) {
+//            throw new NotFoundHttpException('Company not found');
+//        }
+//
+//        return view('telegram', compact('company'));
+//    }
     public function index($company_slug): View
     {
-        $company = Company::query()
-            ->where('slug', $company_slug)
-            ->first();
-
+        // Находим компанию по slug (или заглушку)
+        $company = Company::where('slug', $company_slug)->first();
         if (!$company) {
-            throw new NotFoundHttpException('Company not found');
+            $company = (object)['slug' => $company_slug];
         }
 
-        return view('telegram', compact('company'));
+        return view('app', [
+            'company' => $company,
+            'isWeb' => false,
+        ]);
     }
 
     public function test(): string

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\WebController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TelegramController;
@@ -13,16 +14,26 @@ use App\Http\Controllers\Admin\SeasonsController as AdminSeasonsController;
 use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 
 
-Route::get('/', [HomeController::class, 'index'])
-    ->name('home');
+//Route::get('/', [HomeController::class, 'index'])
+//    ->name('home');
+//
+//Route::get('/telegram/{company_slug}/{any}', [TelegramController::class, 'index'])
+//    ->where('any', '.*')
+//    ->name('home');
 
-Route::get('/telegram/{company_slug}/{any}', [TelegramController::class, 'index'])
+//Route::get('/login', [AuthController::class, 'login'])->name('login');
+
+// Все web-пути отдаём SPA (решение о редиректе принимает Vue-роутер)
+Route::get('/{any}', [WebController::class, 'index'])
+    ->where('any', '^(?!telegram).*')
+    ->name('web.index');
+
+// Telegram-версия
+Route::get('/telegram/{slug}/{any}', [TelegramController::class, 'index'])
     ->where('any', '.*')
-    ->name('home');
+    ->name('telegram.index');
 
-Route::get('/login', [AuthController::class, 'login'])->name('login');
-
-Route::post('/login', [AuthController::class, 'authenticate'])->name('admin.login');
+Route::post('/admin/login', [AuthController::class, 'authenticate'])->name('admin.login');
 
 
 Route::middleware(['auth:web'])->group(function () {

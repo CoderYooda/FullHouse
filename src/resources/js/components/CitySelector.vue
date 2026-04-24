@@ -12,19 +12,17 @@
 import axios from 'axios';
 
 export default {
-  props: {
-    visible: Boolean,
-  },
+  props: ['visible'],
   methods: {
     async selectCity(cityId) {
       try {
-        await axios.post('/api/set-city', { city_id: cityId });
-        // Обновить пользователя в сторе
-        const { data } = await axios.get('/api/me');
+        await axios.post('/api/set-city', {city_id: cityId});
+        // Обновляем данные пользователя
+        const {data} = await axios.get('/api/me');
         this.$store.commit('auth/SET_USER', data);
         this.$emit('city-selected');
       } catch (error) {
-        console.error('Failed to set city', error);
+        console.error('Ошибка сохранения города', error);
       }
     },
   },
@@ -44,16 +42,26 @@ export default {
   align-items: center;
   z-index: 9999;
 }
+
 .city-selector-modal {
   background: white;
   padding: 2rem;
   border-radius: 12px;
   text-align: center;
 }
+
 .city-btn {
   margin: 0 10px;
   padding: 10px 20px;
   font-size: 18px;
   cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: white;
+}
+
+.city-btn:hover {
+  background-color: #0056b3;
 }
 </style>

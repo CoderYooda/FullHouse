@@ -15,6 +15,7 @@ Route::post('/telegram/user/auth', [TelegramController::class, 'auth'])
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/verify-email', [AuthController::class, 'verifyEmail']);
+
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/telegram-login', [AuthController::class, 'telegramLogin']);
 

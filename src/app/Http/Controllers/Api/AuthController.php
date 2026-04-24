@@ -23,7 +23,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'public_name' => 'required|string|max:255',
             'agreement' => 'accepted',
-            'company_id' => 'required|exists:companies,id',
+//            'company_id' => 'required|exists:companies,id',
         ]);
 
         $user = User::create([
@@ -32,7 +32,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'agreement' => true,
-            'company_id' => $request->company_id,
+//            'company_id' => $request->company_id,
             'is_active' => true,
         ]);
 
@@ -74,6 +74,8 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json(['token' => $token, 'user' => $user]);
     }
+
+
 
     public function login(Request $request)
     {

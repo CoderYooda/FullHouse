@@ -263,6 +263,16 @@ services:
 #        done
 #        exit 0
 
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: mailpit
+    ports:
+      - "1025:1025"   # SMTP порт
+      - "8025:8025"   # Web интерфейс
+    networks:
+      - default          # или ваша сеть
+    restart: unless-stopped
+
 networks:
   holdem:
     name: holdem

@@ -14,26 +14,11 @@ use App\Http\Controllers\Admin\SeasonsController as AdminSeasonsController;
 use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 
 
-//Route::get('/', [HomeController::class, 'index'])
-//    ->name('home');
-//
-//Route::get('/telegram/{company_slug}/{any}', [TelegramController::class, 'index'])
-//    ->where('any', '.*')
-//    ->name('home');
 
-//Route::get('/login', [AuthController::class, 'login'])->name('login');
 
-// Все web-пути отдаём SPA (решение о редиректе принимает Vue-роутер)
-Route::get('/{any}', [WebController::class, 'index'])
-    ->where('any', '^(?!telegram).*')
-    ->name('web.index');
-
-// Telegram-версия
-Route::get('/telegram/{slug}/{any}', [TelegramController::class, 'index'])
-    ->where('any', '.*')
-    ->name('telegram.index');
-
-Route::post('/admin/login', [AuthController::class, 'authenticate'])->name('admin.login');
+// Админка (если есть)
+Route::get('/admin/login', [App\Http\Controllers\Auth\AuthController::class, 'login'])->name('admin.login');
+Route::post('/admin/login', [App\Http\Controllers\Auth\AuthController::class, 'authenticate'])->name('admin.login.post');
 
 
 Route::middleware(['auth:web'])->group(function () {
@@ -94,5 +79,8 @@ Route::middleware(['auth:web'])->group(function () {
 
 
 
+// Все web-маршруты отдаём SPA (без редиректов)
+Route::get('/{any}', [WebController::class, 'index'])
+    ->where('any', '.*');
 
 

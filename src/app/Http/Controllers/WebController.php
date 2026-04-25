@@ -9,12 +9,7 @@ class WebController extends Controller
 {
     public function index(): View
     {
-        // Для web-версии создаём заглушку компании (или берём первую)
-        $company = (object)['slug' => 'web'];
-
-        return view('app', [
-            'company' => $company,
-            'isWeb' => true,
-        ]);
+        // Просто отдаём шаблон, никаких проверок
+        return view('app', ['isWeb' => true]);
     }
 }

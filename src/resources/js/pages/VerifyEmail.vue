@@ -32,6 +32,7 @@
       </p>
     </div>
   </div>
+  <div class="body-backdrop" style="background-position-y: 0"></div>
 </template>
 
 <script>
@@ -104,41 +105,44 @@ export default {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 .verify-card {
-  background: white;
+  background: linear-gradient(180deg, #2A2A32 0%, #17161C 100%);
+  border: 1px solid #3C3A42;
   padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  border-radius: 40px;
+  text-align: center;
   width: 100%;
   max-width: 400px;
-  text-align: center;
 }
 .form-group {
   margin-bottom: 1rem;
 }
 .form-control {
+  color: #fff;
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 16px;
-  text-align: center;
-  letter-spacing: 4px;
+  padding: 13px 15px;
+  background: #18171C;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 24px;
+  box-sizing: border-box;
 }
 .btn-verify {
-  width: 100%;
-  padding: 10px;
-  background: #667eea;
-  color: white;
-  border: none;
-  border-radius: 6px;
+  padding: 10px 20px;
   font-size: 16px;
+  line-height: 150%;
+  font-weight: 700;
   cursor: pointer;
+  border-radius: 40px;
+  color: #513409;
+  background: linear-gradient(90deg, #F9C888 0%, #7A551E 100%), linear-gradient(90deg, rgba(176, 127, 52, 0.5) 52.5%, rgba(249, 200, 136, 0.5) 100%);
+  border: 1px solid #F3CD93;
+  width: 100%;
 }
 .btn-verify:hover:not(:disabled) {
-  background: #5a67d8;
+  background: linear-gradient(270deg, #F9C888 0%, #7A551E 100%), linear-gradient(90deg, rgba(176, 127, 52, 0.5) 52.5%, rgba(249, 200, 136, 0.5) 100%);
 }
 .resend-link {
   margin-top: 1rem;
@@ -147,18 +151,18 @@ export default {
 .resend-btn {
   background: none;
   border: none;
-  color: #667eea;
+  color: #cea164;
   cursor: pointer;
   text-decoration: underline;
 }
 .resend-btn:hover:not(:disabled) {
-  color: #5a67d8;
+  color: #cea164;
 }
 .login-link {
   margin-top: 1rem;
 }
 .login-link a {
-  color: #764ba2;
+  color: #cea164;
   text-decoration: none;
 }
 </style>

@@ -4,8 +4,8 @@
       <router-link :to="{ name: 'tournaments' }" class="right_button">все</router-link>
     </h3>
   </div>
-  <div v-if="tournaments">
-    <div v-for="tournament in tournaments" :key="tournament.id" class="tournament">
+  <div v-if="filteredTournaments.length">
+    <div v-for="tournament in filteredTournaments" :key="tournament.id" class="tournament">
       <router-link :to="{ name: 'tournament', params: { id: tournament.id } }" class="my-link-wrapper">
         <div class="background">
           <div class="title">
@@ -22,21 +22,50 @@
       </router-link>
     </div>
   </div>
-  <div class="module" v-if="!tournaments.length">
+  <div class="module" v-else>
     <div class="user-card" style="text-align: center">
-      В данный момент активных записей нет
+      Вы не записаны ни на один турнир в выбранном городе
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapGetters } from 'vuex';
 
 export default {
-  data: function () {
+  data() {
     return {
       tournaments: [],
-    }
+    };
+  },
+  computed: {
+    ...mapGetters('auth', ['User']),
+    user() {
+      return this.User || {};
+    },
+    filteredTournaments() {
+      if (!this.tournaments.length) return [];
+
+      const userCityId = this.user?.city_id;
+
+      return this.tournaments.filter(tournament => {
+        const isParticipant = tournament.participant === true;
+        const sameCity = userCityId ? tournament.city_id === userCityId : true;
+
+        return isParticipant && sameCity;
+      });
+    },
+  },
+  watch: {
+    // Следим за сменой города
+    'user.city_id': {
+      handler(newCityId, oldCityId) {
+        if (newCityId !== oldCityId && oldCityId !== undefined) {
+          console.log('City changed, reloading tournaments...');
+          this.getTournament();
+        }
+      },
+    },
   },
   mounted() {
     this.getTournament();
@@ -46,6 +75,7 @@ export default {
       try {
         const { data } = await axios.post('/api/tournament/get');
         this.tournaments = data.data;
+        console.log('Tournaments reloaded:', this.tournaments.length);
       } catch (error) {
         console.error('Error loading tournaments:', error);
       }
@@ -67,19 +97,7 @@ export default {
       } catch (error) {
         console.error('Error leaving tournament:', error);
       }
-    }
+    },
   },
-  computed: {
-    ...mapGetters('auth', ['Player']),
-    player() {
-      return this.Player;
-    },
-    slug() {
-      return window.Slug;
-    },
-    visible() {
-      return this.$store.state.state?._change_name_modal?.visible;
-    }
-  }
-}
+};
 </script>

@@ -10,6 +10,11 @@
             <div class="player_login">{{user.public_name}}</div>
             <div class="change_name_button"><button @click="openChangeNameModal">Изменить никнейм</button></div>
             <div class="module">
+              <div class="city-selector-row">
+                <button @click="openCitySelector" class="change-city-button">
+                  Сменить город ({{ currentCityName }})
+                </button>
+              </div>
 <!--                <div class="user-card">-->
 <!--                    <div class="card-header">-->
 <!--                        <div class="split_container">-->
@@ -102,13 +107,24 @@ export default {
         },
         openChangeNameModal(){
             this.$store.state.ui._modal_change_player_name = true
-        }
+        },
+        openCitySelector() {
+          // Просто вызываем мутацию
+          this.$store.commit('ui/SET_SHOW_CITY_SELECTOR', true);
+        },
     },
     computed:{
         ...mapGetters('auth', ['Player']),
         user() {
             return this.Player;
+        },
+        currentCityName() {
+          const cityId = this.user?.city_id;
+          if (cityId === 1) return 'Белгород';
+          if (cityId === 2) return 'Воронеж';
+          return 'не выбран';
         }
+
     },
     mounted() {
        this.loadPlayerData();
@@ -138,5 +154,20 @@ export default {
 .view-agreement-button:hover {
     background-color: #0066cc;
     color: white;
+}
+.change-city-button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #4a6fa5;
+  color: white;
+}
+
+.change-city-button:hover {
+  background-color: #3a5a8a;
 }
 </style>

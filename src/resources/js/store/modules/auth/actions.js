@@ -20,19 +20,28 @@ export default ({
             return false;
         }
     },
-    async GetPlayer({ getters, commit }) {
-        try {
-            const { data } = await axios({
-                method: 'GET',
-                url: '/api/player/getPlayer',
-            });
+    async GetPlayer({ commit, state }) {
+        console.log('GetPlayer called');
 
-            // Сохраняем пользователя в store
-            commit('SET_USER', data.data.user);
-            return data.data.user;
+        // Проверяем токен
+        const token = localStorage.getItem('_token');
+        if (!token) {
+            console.log('No token found');
+            return null;
+        }
+
+        try {
+            const { data } = await axios.get('/api/me');
+            console.log('User data received:', data);
+            commit('SET_USER', data);
+            return data;
         } catch (error) {
-            commit('SET_ERRORS', error.response.data);
-            return false;
+            console.error('GetPlayer error:', error.response?.status);
+            if (error.response?.status === 401) {
+                commit('LOGOUT');
+                localStorage.removeItem('_token');
+            }
+            throw error;
         }
     },
     async UpdateName({ getters, commit }, name) {
@@ -70,6 +79,21 @@ export default ({
             alert(error)
             commit('SET_ERRORS', error.response.data);
 
+            return false;
+        }
+    },
+
+    async restoreSession({ dispatch, commit }) {
+        const token = localStorage.getItem('_token');
+        if (!token) {
+            return false;
+        }
+
+        try {
+            await dispatch('GetPlayer');
+            return true;
+        } catch (error) {
+            commit('LOGOUT');
             return false;
         }
     },

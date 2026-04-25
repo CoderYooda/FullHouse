@@ -77,24 +77,23 @@ class TournamentController extends Controller
         throw new ModelNotFoundException();
     }
 
-    public function list(Request $request): TournamentCollectionResource
+    public function list(Request $request)
     {
-        $company = Company::query()
-            ->where('slug', $request->get('company'))
-            ->first();
+        $user = auth()->user();
+        $cityId = $user->city_id;
 
         $tournaments = Tournament::query()
             ->whereDate('event_date', '>=', Carbon::today())
-            ->where('is_actual', true)
-            ->where('company_id', $company->id)
-            ->orderBy('event_date')
-            ->get();
+            ->where('is_actual', true);
 
-        if ($tournaments) {
-            return new TournamentCollectionResource($tournaments);
+        // Если у пользователя выбран город – показываем турниры только этого города
+        if ($cityId) {
+            $tournaments->where('city_id', $cityId);
         }
 
-        throw new ModelNotFoundException();
+        $tournaments = $tournaments->orderBy('event_date')->get();
+
+        return new TournamentCollectionResource($tournaments);
     }
 
     public function join(Request $request, int $tournament_id): JsonResponse

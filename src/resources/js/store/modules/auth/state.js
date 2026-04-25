@@ -1,4 +1,4 @@
-export default ({
+export default {
     _token: null,
     _authenticated: false,
     _change_name_modal: false,
@@ -10,4 +10,5 @@ export default ({
         agreement: null,
     },
     user: null,
-});
+    _errors: null,
+};

@@ -21,10 +21,7 @@ const routes = [
         path: '/',
         redirect: () => {
             const token = localStorage.getItem('_token');
-            if (token) {
-                return '/player';
-            }
-            return '/login';
+            return token ? '/player' : '/login';
         },
     },
     {
@@ -201,14 +198,12 @@ const router = createRouter({
 });
 
 // Навигационный хук
-router.beforeEach((to, from, next) => {
-    const token = localStorage.getItem('_token');
-    const requiresAuth = to.meta.auth === true;
+router.beforeEach(async (to, from, next) => {
+    console.log('Router beforeEach:', to.path);
 
-    if (requiresAuth && !token) {
-        next({ name: 'login' });
-    } else if (!requiresAuth && token && (to.name === 'login' || to.name === 'register')) {
-        next({ name: 'player' });
+    // Простая проверка: если страница требует авторизации и нет токена
+    if (to.meta.auth === true && !localStorage.getItem('_token')) {
+        next('/login');
     } else {
         next();
     }

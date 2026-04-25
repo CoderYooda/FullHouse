@@ -270,7 +270,7 @@ services:
       - "1025:1025"   # SMTP порт
       - "8025:8025"   # Web интерфейс
     networks:
-      - default          # или ваша сеть
+      - default
     restart: unless-stopped
 
 networks:

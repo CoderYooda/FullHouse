@@ -12,17 +12,28 @@
 import axios from 'axios';
 
 export default {
-  props: ['visible'],
+  props: {
+    visible: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  emits: ['city-selected'],
   methods: {
     async selectCity(cityId) {
       try {
+        // Сохраняем город
         await axios.post('/api/set-city', {city_id: cityId});
-        // Обновляем данные пользователя
+
+        // Обновляем данные пользователя в store
         const {data} = await axios.get('/api/me');
         this.$store.commit('auth/SET_USER', data);
+
+        // Закрываем модалку и уведомляем родителя
         this.$emit('city-selected');
       } catch (error) {
         console.error('Ошибка сохранения города', error);
+        alert('Не удалось сохранить город. Попробуйте снова.');
       }
     },
   },

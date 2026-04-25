@@ -1,67 +1,47 @@
 <template>
-    <div class="content">
-        <ChangeNameModal/>
-        <div class="boxed">
-            <div class="avatar_guard">
-                <img class="player_avatar" v-bind:src="user.pic">
-            </div>
-            <div class="player_name">{{user.first_name}} {{user.last_name}}</div>
-            <div class="public_name_title">Игровой никнейм</div>
-            <div class="player_login">{{user.public_name}}</div>
-            <div class="change_name_button"><button @click="openChangeNameModal">Изменить никнейм</button></div>
-            <div class="module">
-              <div class="city-selector-row">
-                <button @click="openCitySelector" class="change-city-button">
-                  Сменить город ({{ currentCityName }})
-                </button>
-              </div>
-<!--                <div class="user-card">-->
-<!--                    <div class="card-header">-->
-<!--                        <div class="split_container">-->
-<!--                            <div class="left">Рейтинг 10992</div>-->
-<!--                            <div class="right text-gray">Winter tournament</div>-->
-<!--                        </div>-->
-<!--                        <div class="progress">-->
-<!--                            <div class="filler" style="width: 40%;"></div>-->
-<!--                        </div>-->
-<!--                        <div class="split_container">-->
-<!--                            <div class="left text-gray">-->
-<!--                                <span class="player_icon"></span>-->
-<!--                                <span>#3 в рейтинге</span>-->
-<!--                            </div>-->
-<!--                            <div class="right">-->
-<!--                                <router-link :to="{ path: '/rating'}"  class="button-link">-->
-<!--                                    Таблица рейтинга-->
-<!--                                </router-link>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-                <div class="user-split-card">
-                    <div class="user-card" style="margin-bottom: 0">
-                        <div class="card-header">
-                            ID Профиля
-                        </div>
-                        <span class="text-gray">{{ user.profile_id }}</span>
-                    </div>
-                    <div class="user-card" style="margin-bottom: 0">
-                        <div class="card-header">
-                            Регистрация
-                        </div>
-                        <span class="text-gray">{{ user.registration_date }}</span>
-                    </div>
+  <div class="content">
+    <ChangeNameModal/>
+    <div class="boxed">
+      <div class="avatar_guard">
+        <img class="player_avatar" :src="user.photo_url || '/images/default-avatar.png'">
+      </div>
+      <div class="player_name">{{ user.name }}</div>
+      <div class="public_name_title">Игровой никнейм</div>
+      <div class="player_login">{{ user.public_name }}</div>
+      <div class="change_name_button"><button @click="openChangeNameModal">Изменить никнейм</button></div>
 
-                </div>
-                <div class="view-agreement-row">
-                    <router-link :to="{ name: 'agreement', params: { slug: $route.params.slug } }" class="view-agreement-button">
-                        Просмотреть соглашение
-                    </router-link>
-                </div>
-            </div>
-            <Tournament/>
+      <div class="module">
+        <div class="city-selector row">
+          <span @click="openCitySelector" class="change-city-button">
+              Сменить город ({{ currentCityName }})
+          </span>
         </div>
-    </div>
+      </div>
 
+      <div class="module">
+        <div class="user-split-card">
+          <div class="user-card" style="margin-bottom: 0">
+            <div class="card-header">
+              ID Профиля
+            </div>
+            <span class="text-gray">{{ user.id }}</span>
+          </div>
+          <div class="user-card" style="margin-bottom: 0">
+            <div class="card-header">
+              Регистрация
+            </div>
+            <span class="text-gray">{{ formatDate(user.created_at) }}</span>
+          </div>
+        </div>
+        <div class="view-agreement-row">
+          <router-link :to="{ name: 'agreement', params: { slug: $route.params.slug } }" class="view-agreement-button">
+            Просмотреть соглашение
+          </router-link>
+        </div>
+      </div>
+      <Tournament/>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -70,66 +50,72 @@ import ChangeNameModal from '../pages/Player/ChangeNameModal.vue';
 import Tournament from '../pages/Player/Tournament.vue';
 
 export default {
-    components: { Tournament, ChangeNameModal},
-    data: function () {
-        return {
-            tournaments: [],
+  components: { Tournament, ChangeNameModal },
+  data() {
+    return {
+      tournaments: [],
+    }
+  },
+  computed: {
+    ...mapGetters('auth', ['User']),  // ← Используем User, а не Player
+    user() {
+      return this.User || {};
+    },
+    currentCityName() {
+      const cityId = this.user?.city_id;
+      if (cityId === 1) return 'Белгород';
+      if (cityId === 2) return 'Воронеж';
+      return 'не выбран';
+    }
+  },
+  methods: {
+    ...mapActions('auth', ['GetPlayer']),
+    ...mapMutations('auth', ['setPlayer']),
+
+    loadPlayerData() {
+      this.GetPlayer().then((player) => {
+        if (player?.agreement === false) {
+          this.$router.push({
+            slug: window.company_id,
+            path: 'agreement'
+          });
         }
+        this.setPlayer({ player: player });
+      });
     },
-    methods:{
-        ...mapActions('auth', ['GetPlayer']),
-        ...mapMutations('auth', ['setPlayer']),
-        loadPlayerData(){
-            this.GetPlayer().then((player) => {
 
-                if (player.agreement === false) {
-                    this.$router.push({
-                        slug: window.company_id,
-                        path: 'agreement'
-                    });
-                }
-
-                this.setPlayer({player:player})
-            })
-        },
-        async getTournament (){
-            try{
-                const { data } = await axios({
-                    method: 'POST',
-                    url: '/api/player/tournaments',
-                });
-                this.tournaments = data.data
-
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        openChangeNameModal(){
-            this.$store.state.ui._modal_change_player_name = true
-        },
-        openCitySelector() {
-          // Просто вызываем мутацию
-          this.$store.commit('ui/SET_SHOW_CITY_SELECTOR', true);
-        },
+    async getTournament() {
+      try {
+        const { data } = await axios.post('/api/player/tournaments');
+        this.tournaments = data.data;
+        return true;
+      } catch (error) {
+        return false;
+      }
     },
-    computed:{
-        ...mapGetters('auth', ['Player']),
-        user() {
-            return this.Player;
-        },
-        currentCityName() {
-          const cityId = this.user?.city_id;
-          if (cityId === 1) return 'Белгород';
-          if (cityId === 2) return 'Воронеж';
-          return 'не выбран';
-        }
 
+    openChangeNameModal() {
+      this.$store.state.ui._modal_change_player_name = true;
     },
-    mounted() {
-       this.loadPlayerData();
-       this.getTournament();
+
+    openCitySelector() {
+      this.$store.commit('ui/SET_SHOW_CITY_SELECTOR', true);
     },
+
+    formatDate(dateString) {
+      if (!dateString) return '—';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    },
+  },
+  mounted() {
+    this.loadPlayerData();
+    this.getTournament();
+  },
 }
 </script>
 
@@ -156,18 +142,13 @@ export default {
     color: white;
 }
 .change-city-button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  background: #EDB258;
+  border: 0;
+  padding: 5px 10px;
+  border-radius: 4px;
+  margin: 0 auto;
+  display: block;
+  color: #000000;
   cursor: pointer;
-  background-color: #4a6fa5;
-  color: white;
-}
-
-.change-city-button:hover {
-  background-color: #3a5a8a;
 }
 </style>

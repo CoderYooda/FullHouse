@@ -25,6 +25,15 @@
         <button type="submit" class="btn-login" :disabled="isLoading">
           {{ isLoading ? 'Вход...' : 'Войти' }}
         </button>
+        <!-- Разделитель -->
+        <div class="divider">
+          <span>или</span>
+        </div>
+
+        <!-- Кнопка входа через Telegram -->
+        <div class="telegram-login">
+          <div id="telegram-login-widget"></div>
+        </div>
       </form>
 
       <p class="register-link">
@@ -48,7 +57,63 @@ export default {
       isLoading: false,
     };
   },
+  mounted() {
+    this.initTelegramWidget();
+  },
   methods: {
+    initTelegramWidget() {
+      // Проверяем, что виджет ещё не загружен
+      if (document.getElementById('telegram-login-widget').innerHTML !== '') {
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://telegram.org/js/telegram-widget.js?22';
+      script.async = true;
+      script.setAttribute('data-telegram-login', window.TelegramBotUsername || 'YourBotUsername');
+      script.setAttribute('data-size', 'large');
+      script.setAttribute('data-radius', '8');
+      script.setAttribute('data-request-access', 'write');
+      script.setAttribute('data-userpic', 'true');
+      script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+
+      document.getElementById('telegram-login-widget').appendChild(script);
+
+      // Глобальная функция для обработки авторизации
+      window.onTelegramAuth = (user) => {
+        this.handleTelegramLogin(user);
+      };
+    },
+
+    async handleTelegramLogin(user) {
+      this.isLoading = true;
+      try {
+        const { data } = await axios.post('/api/telegram-login', {
+          id: user.id,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          username: user.username,
+          photo_url: user.photo_url,
+          auth_date: user.auth_date,
+          hash: user.hash,
+        });
+
+        localStorage.setItem('_token', data.token);
+        this.$store.commit('auth/SET_TOKEN', data.token);
+        this.$store.commit('auth/SET_USER', data.user);
+
+        this.setAxiosAuthHeader(data.token);
+        this.$router.push({ name: 'player' });
+      } catch (error) {
+        alert('Ошибка входа через Telegram');
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    setAxiosAuthHeader(token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    },
     async handleEmailLogin() {
       this.isLoading = true;
       try {

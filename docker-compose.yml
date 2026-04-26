@@ -64,8 +64,8 @@ services:
     command:
       - -xec
       - |-
-        php artisan -n --ansi db:ready --timeout=5
         /usr/local/bin/composer install --ansi
+        php artisan -n --ansi db:ready --timeout=5
         php artisan -n --ansi migrate --force
         php artisan -n --ansi cache:clear                      # Reset cache storage/framework/cache
         php artisan -n --ansi view:clear                       # Reset views cache storage/framework/views

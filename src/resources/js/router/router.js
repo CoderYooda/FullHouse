@@ -117,7 +117,7 @@ const routes = [
 
     // ==================== TELEGRAM-МАРШРУТЫ (с slug для обратной совместимости) ====================
     {
-        path: '/telegram/:slug/login',
+        path: '/telegram/login',
         name: 'login_telegram',
         component: LoginTelegram,
         meta: {
@@ -126,7 +126,7 @@ const routes = [
         },
     },
     {
-        path: '/telegram/:slug/player',
+        path: '/telegram/player',
         name: 'player_telegram',
         component: Player,
         meta: {
@@ -135,7 +135,7 @@ const routes = [
         },
     },
     {
-        path: '/telegram/:slug/agreement',
+        path: '/telegram/agreement',
         name: 'agreement_telegram',
         component: Agreement,
         meta: {
@@ -144,7 +144,7 @@ const routes = [
         },
     },
     {
-        path: '/telegram/:slug/tournaments',
+        path: '/telegram/tournaments',
         name: 'tournaments_telegram',
         component: Tournaments,
         meta: {
@@ -153,7 +153,7 @@ const routes = [
         },
     },
     {
-        path: '/telegram/:slug/tournaments/:id',
+        path: '/telegram/tournaments/:id',
         name: 'tournament_telegram',
         component: Tournament,
         meta: {
@@ -162,7 +162,7 @@ const routes = [
         },
     },
     {
-        path: '/telegram/:slug/report',
+        path: '/telegram/report',
         name: 'report_telegram',
         component: Report,
         meta: {
@@ -171,7 +171,7 @@ const routes = [
         },
     },
     {
-        path: '/telegram/:slug/rating',
+        path: '/telegram/rating',
         name: 'rating_telegram',
         component: Rating,
         meta: {
@@ -180,7 +180,7 @@ const routes = [
         },
     },
     {
-        path: '/telegram/:slug/game',
+        path: '/telegram/game',
         name: 'game_telegram',
         component: Game,
         meta: {
@@ -198,12 +198,16 @@ const router = createRouter({
 });
 
 // Навигационный хук
-router.beforeEach(async (to, from, next) => {
-    console.log('Router beforeEach:', to.path);
+router.beforeEach((to, from, next) => {
+    const token = localStorage.getItem('_token');
+    const requiresAuth = to.meta.auth === true;
 
-    // Простая проверка: если страница требует авторизации и нет токена
-    if (to.meta.auth === true && !localStorage.getItem('_token')) {
-        next('/login');
+    if (requiresAuth && !token) {
+        if (to.path.startsWith('/telegram/')) {
+            next('/telegram/login');   // ← без blg
+        } else {
+            next('/login');
+        }
     } else {
         next();
     }

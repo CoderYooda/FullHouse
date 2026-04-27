@@ -83,6 +83,7 @@ Route::get('/telegram/{slug}/{any}', [TelegramController::class, 'index'])
     ->where('any', '.*')
     ->name('telegram.index');
 
+Route::get('/', [WebController::class, 'index']);
 // ==================== SPA (должен быть последним) ====================
 Route::get('/{any}', [WebController::class, 'index'])
     ->where('any', '.*');

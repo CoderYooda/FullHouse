@@ -16,9 +16,9 @@ use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 
 
 
-// Админка (если есть)
-Route::get('/admin/login', [App\Http\Controllers\Auth\AuthController::class, 'login'])->name('admin.login');
-Route::post('/admin/login', [App\Http\Controllers\Auth\AuthController::class, 'authenticate'])->name('admin.login.post');
+// Админка
+Route::get('/admin/login', [AuthController::class, 'login'])->name('admin.login');
+Route::post('/admin/login', [AuthController::class, 'authenticate'])->name('admin.login.post');
 
 
 Route::middleware(['auth:web'])->group(function () {
@@ -78,8 +78,12 @@ Route::middleware(['auth:web'])->group(function () {
 });
 
 
+// ==================== TELEGRAM-ВЕРСИЯ (ДОБАВИТЬ ЭТО!) ====================
+Route::get('/telegram/{slug}/{any}', [TelegramController::class, 'index'])
+    ->where('any', '.*')
+    ->name('telegram.index');
 
-// Все web-маршруты отдаём SPA (без редиректов)
+// ==================== SPA (должен быть последним) ====================
 Route::get('/{any}', [WebController::class, 'index'])
     ->where('any', '.*');
 

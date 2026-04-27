@@ -46,7 +46,7 @@ Route::middleware(['auth:web'])->group(function () {
             Route::post('/{tournament_id}/players', [AdminTournamentController::class, 'players'])
                 ->name('admin.tournament.players');
             Route::post('/test', [AdminTournamentController::class, 'test'])
-                ->name('admin.tournament.actualToggle');
+                ->name('admin.tournament.testActualToggle');
         });
 
         Route::prefix('feedback')->group(function () {

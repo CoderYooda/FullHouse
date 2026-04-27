@@ -10,12 +10,11 @@
 import Auth from './layouts/Auth.vue';
 import Main from './layouts/Main.vue';
 import Clear from './layouts/Clear.vue';
-import {mapMutations} from 'vuex';
 import axios from 'axios';
 
 export default {
   name: 'app',
-  components: {Auth, Main, Clear},
+  components: { Auth, Main, Clear },
   data() {
     return {
       isLoading: true,
@@ -25,52 +24,19 @@ export default {
     layout() {
       return this.$route.meta.layout || 'Auth';
     },
-    isTelegramMode() {
-      return this.$route.path.startsWith('/telegram/');
-    },
   },
   async mounted() {
     const token = localStorage.getItem('_token');
 
-    // Если есть токен – загружаем пользователя
-    if (token && !this.$store.state.auth.user) {
+    if (token) {
       try {
         await this.$store.dispatch('auth/GetPlayer');
       } catch (error) {
         localStorage.removeItem('_token');
-        this.$store.commit('auth/LOGOUT');
       }
     }
 
-    // Просто выключаем загрузку, никаких редиректов
     this.isLoading = false;
-  },
-  methods: {
-    ...mapMutations('auth', ['setToken']),
-    async telegramAuth() {
-      try {
-        const initData = window.TelegramInitData;
-        if (!initData) {
-          if (this.$route.name !== 'login') {
-            this.$router.push({name: 'login'});
-          }
-          return;
-        }
-
-        const response = await axios.post('/api/telegram/user/auth', {
-          query: initData,
-        });
-
-        const token = response.data.token;
-        localStorage.setItem('_token', token);
-        this.setToken({token});
-        await this.$store.dispatch('auth/GetPlayer');
-      } catch (error) {
-        if (this.$route.name !== 'login') {
-          this.$router.push({name: 'login'});
-        }
-      }
-    },
   },
 };
 </script>

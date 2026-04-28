@@ -98,7 +98,14 @@ class AuthController extends Controller
 
     public function telegramLogin(Request $request)
     {
-        $this->validateTelegramHash($request);
+        $validateService = new \App\Service\Telegram\ValidateService();
+
+        if (!$validateService->validate(urldecode($request->get('query')), config('services.telegram.bot_token'))) {
+            return response()->json(['message' => 'Invalid Telegram data'], 403);
+        }
+
+//        $this->validateTelegramHash($request);
+
         $telegramId = $request->input('id');
 
         // Ищем существующую запись в user_credentials
@@ -116,6 +123,9 @@ class AuthController extends Controller
             }
         } else {
             // Нет записи – создаём нового пользователя
+            $companySlug = $request->input('company_slug');
+            $company = Company::where('slug', $companySlug)->firstOrFail();
+
             $telegramUser = TelegramUser::create([
                 'telegram_id' => $telegramId,
                 'first_name' => $request->input('first_name'),
@@ -130,6 +140,7 @@ class AuthController extends Controller
                 'public_name' => $request->input('username', ''),
                 'email' => $telegramId . '@telegram.com',
                 'password' => Hash::make('123456'),
+                'company_id' => $company->id,
                 'is_active' => true,
                 'telegram_user_id' => $telegramUser->id,
             ]);

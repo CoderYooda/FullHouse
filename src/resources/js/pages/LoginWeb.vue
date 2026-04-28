@@ -80,7 +80,7 @@ export default {
       script.setAttribute('data-radius', '8');
       script.setAttribute('data-request-access', 'write');
       script.setAttribute('data-userpic', 'true');
-      script.setAttribute('data-auth-url', redirectUrl); // Важно!
+      // script.setAttribute('data-auth-url', redirectUrl); // Важно!
       script.setAttribute('data-onauth', 'onTelegramAuth(user)');
 
       widgetContainer.appendChild(script);

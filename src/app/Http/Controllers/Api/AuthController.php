@@ -99,7 +99,7 @@ class AuthController extends Controller
     public function telegramLogin(Request $request)
     {
         $validateService = new \App\Service\Telegram\ValidateService();
-
+dd(urldecode($request->get('query')), config('services.telegram.bot_token'));
         if (!$validateService->validate(urldecode($request->get('query')), config('services.telegram.bot_token'))) {
             return response()->json(['message' => 'Invalid Telegram data'], 403);
         }

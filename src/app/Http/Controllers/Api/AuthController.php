@@ -98,64 +98,10 @@ class AuthController extends Controller
 
     public function telegramLogin(Request $request)
     {
-        $validateService = new \App\Service\Telegram\ValidateService();
 
-//dd(urldecode($request->get('query')), config('services.telegram.bot_token'));
+dd(urldecode($request->get('query')), config('services.telegram.bot_token'));
 
-        if (!$validateService->validate(urldecode($request->get('query')), config('services.telegram.bot_token'))) {
-            return response()->json(['message' => 'Invalid Telegram data'], 403);
-        }
-
-//        $this->validateTelegramHash($request);
-
-        $telegramId = $request->input('id');
-
-        // Ищем существующую запись в user_credentials
-        $credential = UserCredential::where('provider', 'telegram')
-            ->where('provider_uid', $telegramId)
-            ->first();
-
-        if ($credential) {
-            // Запись есть – используем связанного пользователя
-            $user = $credential->user;
-            if (!$user->is_active) {
-                // Если пользователь был деактивирован (слит), активируем его
-                $user->is_active = true;
-                $user->save();
-            }
-        } else {
-            // Нет записи – создаём нового пользователя
-            $companySlug = $request->input('company_slug');
-            $company = Company::where('slug', $companySlug)->firstOrFail();
-
-            $telegramUser = TelegramUser::create([
-                'telegram_id' => $telegramId,
-                'first_name' => $request->input('first_name'),
-                'last_name' => $request->input('last_name'),
-                'username' => $request->input('username'),
-                'language_code' => $request->input('language_code'),
-                'allows_write_to_pm' => true,
-            ]);
-
-            $user = User::create([
-                'name' => $request->input('first_name', ''),
-                'public_name' => $request->input('username', ''),
-                'email' => $telegramId . '@telegram.com',
-                'password' => Hash::make('123456'),
-                'company_id' => $company->id,
-                'is_active' => true,
-                'telegram_user_id' => $telegramUser->id,
-            ]);
-
-            $user->credentials()->create([
-                'provider' => 'telegram',
-                'provider_uid' => $telegramId,
-                'provider_data' => ['username' => $request->input('username')],
-            ]);
-        }
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-        return response()->json(['token' => $token, 'user' => $user]);
+        
     }
 
     public function linkTelegram(Request $request)

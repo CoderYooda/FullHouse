@@ -116,9 +116,6 @@ class AuthController extends Controller
             }
         } else {
             // Нет записи – создаём нового пользователя
-            $companySlug = $request->input('company_slug');
-            $company = Company::where('slug', $companySlug)->firstOrFail();
-
             $telegramUser = TelegramUser::create([
                 'telegram_id' => $telegramId,
                 'first_name' => $request->input('first_name'),
@@ -133,7 +130,6 @@ class AuthController extends Controller
                 'public_name' => $request->input('username', ''),
                 'email' => $telegramId . '@telegram.com',
                 'password' => Hash::make('123456'),
-                'company_id' => $company->id,
                 'is_active' => true,
                 'telegram_user_id' => $telegramUser->id,
             ]);
@@ -206,16 +202,14 @@ class AuthController extends Controller
 
     protected function validateTelegramHash(Request $request)
     {
-        return true;
-
-//        $bot_token = config('services.telegram.bot_token');
-//        $data_check_arr = $request->except('hash');
-//        ksort($data_check_arr);
-//        $data_check_string = http_build_query($data_check_arr);
-//        $secret_key = hash('sha256', $bot_token, true);
-//        $hash = hash_hmac('sha256', $data_check_string, $secret_key);
-//        if ($hash !== $request->input('hash')) {
-//            abort(403, 'Неверные данные Telegram');
-//        }
+        $bot_token = config('services.telegram.bot_token');
+        $data_check_arr = $request->except('hash');
+        ksort($data_check_arr);
+        $data_check_string = http_build_query($data_check_arr);
+        $secret_key = hash('sha256', $bot_token, true);
+        $hash = hash_hmac('sha256', $data_check_string, $secret_key);
+        if ($hash !== $request->input('hash')) {
+            abort(403, 'Неверные данные Telegram');
+        }
     }
 }

@@ -203,23 +203,31 @@ class AuthController extends Controller
         $data = $request->all();
 
         if (!isset($data['hash'])) {
-            abort(403, 'Хэш не найден');
+            abort(403, 'Hash not found');
         }
 
         $hash = $data['hash'];
         unset($data['hash']);
 
+        // Сортируем по ключам в алфавитном порядке
         ksort($data);
-        $data_check_string = http_build_query($data);
 
+        // Формируем строку для проверки
+        $data_check_arr = [];
+        foreach ($data as $key => $value) {
+            $data_check_arr[] = $key . '=' . $value;
+        }
+        $data_check_string = implode("\n", $data_check_arr);
+
+        // Вычисляем хеш
         $secret_key = hash('sha256', $bot_token, true);
         $calculated_hash = hash_hmac('sha256', $data_check_string, $secret_key);
 
-        // Логируем оба хеша для сравнения
-        \Log::info('Telegram hash check', [
-            'received' => $hash,
-            'calculated' => $calculated_hash,
+        // Логируем для отладки
+        Log::info('Telegram hash debug', [
             'data_check_string' => $data_check_string,
+            'calculated' => $calculated_hash,
+            'received' => $hash,
             'bot_token' => $bot_token,
         ]);
 

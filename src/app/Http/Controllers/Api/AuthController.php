@@ -198,8 +198,26 @@ class AuthController extends Controller
 
     protected function validateTelegramHash(Request $request)
     {
-        // Просто выводим данные и возвращаем true
-        \Log::info('Telegram data', $request->all());
+        $bot_token = config('services.telegram.bot_token');
+        $data = $request->all();
+
+        if (!isset($data['hash'])) {
+            abort(403, 'Хэш не найден');
+        }
+
+        $hash = $data['hash'];
+        unset($data['hash']);
+
+        ksort($data);
+        $data_check_string = http_build_query($data);
+
+        $secret_key = hash('sha256', $bot_token, true);
+        $calculated_hash = hash_hmac('sha256', $data_check_string, $secret_key);
+
+        if (!hash_equals($calculated_hash, $hash)) {
+            abort(403, 'Неверные данные Telegram');
+        }
+
         return true;
     }
 }

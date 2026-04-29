@@ -120,6 +120,7 @@ class AuthController extends Controller
                 'username' => $request->input('username'),
                 'language_code' => $request->input('language_code'),
                 'allows_write_to_pm' => true,
+                'photo_url' => $request->input('photo_url'),
             ]);
 
             $user = User::create([

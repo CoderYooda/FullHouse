@@ -215,7 +215,7 @@ class AuthController extends Controller
         $calculated_hash = hash_hmac('sha256', $data_check_string, $secret_key);
 
         if (!hash_equals($calculated_hash, $hash)) {
-            abort(403, 'Неверные данные Telegram');
+            abort(403, $calculated_hash . '<br>' . '<br>' . '<br>' . '<br>' . $hash);
         }
 
         return true;

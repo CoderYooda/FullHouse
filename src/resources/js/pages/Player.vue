@@ -16,6 +16,11 @@
               Сменить город ({{ currentCityName }})
           </span>
         </div>
+        <div class="logout-row">
+          <button @click="logout" class="logout-button">
+            Выйти из аккаунта
+          </button>
+        </div>
       </div>
 
       <div class="module">
@@ -111,6 +116,11 @@ export default {
         year: 'numeric'
       });
     },
+    logout() {
+      localStorage.removeItem('_token');
+      this.$store.commit('auth/LOGOUT');
+      this.$router.push('/login');
+    }
   },
   mounted() {
     this.loadPlayerData();
@@ -120,6 +130,20 @@ export default {
 </script>
 
 <style>
+.logout-button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #dc3545;
+  color: white;
+}
+.logout-button:hover {
+  background-color: #c82333;
+}
 .view-agreement-row {
     margin-bottom: 1rem;
 }

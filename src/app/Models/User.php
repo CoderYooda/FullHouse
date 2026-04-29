@@ -46,6 +46,7 @@ class User extends Authenticatable
         'password',
         'public_name',
     ];
+    protected $appends = ['photo_url'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -73,9 +74,14 @@ class User extends Authenticatable
         $query->where('company_id', auth()->user()->company_id);
     }
 
-    public function telegramUser(): BelongsTo
+    public function telegramUser()
     {
         return $this->belongsTo(TelegramUser::class, 'telegram_user_id');
+    }
+
+    public function getPhotoUrlAttribute()
+    {
+        return $this->telegramUser?->photo_url;
     }
 
     public function tournaments(): BelongsToMany

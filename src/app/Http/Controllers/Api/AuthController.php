@@ -94,6 +94,7 @@ class AuthController extends Controller
 
     public function telegramLogin(Request $request)
     {
+        Log::info('Full request data', $request->all());
         // Временно отключаем проверку хеша для теста
          $this->validateTelegramHash($request);
 
@@ -212,10 +213,10 @@ class AuthController extends Controller
         $data_check_string = http_build_query($data);
 
         $secret_key = hash('sha256', $bot_token, true);
-        $calculated_hash = hash_hmac('sha256', $data_check_string, $bot_token);
+        $calculated_hash = hash_hmac('sha256', $data_check_string, $secret_key);
 
         if (!hash_equals($calculated_hash, $hash)) {
-            abort(403, $calculated_hash . '<br>' . '<br>' . '<br>' . '<br>' . $hash);
+            abort(403, $calculated_hash);
         }
 
         return true;

@@ -215,8 +215,16 @@ class AuthController extends Controller
         $secret_key = hash('sha256', $bot_token, true);
         $calculated_hash = hash_hmac('sha256', $data_check_string, $secret_key);
 
+        // Логируем оба хеша для сравнения
+        \Log::info('Telegram hash check', [
+            'received' => $hash,
+            'calculated' => $calculated_hash,
+            'data_check_string' => $data_check_string,
+            'bot_token' => $bot_token,
+        ]);
+
         if (!hash_equals($calculated_hash, $hash)) {
-            abort(403, $calculated_hash);
+            abort(403, 'Invalid Telegram data');
         }
 
         return true;

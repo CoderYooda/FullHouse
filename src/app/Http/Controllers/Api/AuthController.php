@@ -212,7 +212,7 @@ class AuthController extends Controller
         $data_check_string = http_build_query($data);
 
         $secret_key = hash('sha256', $bot_token, true);
-        $calculated_hash = hash_hmac('sha256', $data_check_string, $secret_key);
+        $calculated_hash = hash_hmac('sha256', $data_check_string, $bot_token);
 
         if (!hash_equals($calculated_hash, $hash)) {
             abort(403, $calculated_hash . '<br>' . '<br>' . '<br>' . '<br>' . $hash);

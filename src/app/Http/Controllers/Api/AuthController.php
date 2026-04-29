@@ -94,7 +94,7 @@ class AuthController extends Controller
 
     public function telegramLogin(Request $request)
     {
-        Log::info('Full request data', $request->all());
+        \Log::info('Full request data', $request->all());
         // Временно отключаем проверку хеша для теста
          $this->validateTelegramHash($request);
 

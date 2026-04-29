@@ -87,11 +87,13 @@ export default {
 
       // Глобальная функция для обработки авторизации
       window.onTelegramAuth = (user) => {
+        console.log('onTelegramAuth triggered', user);
         this.handleTelegramLogin(user);
       };
     },
 
     async handleTelegramLogin(user) {
+      console.log('handleTelegramLogin called', user);
       this.isLoading = true;
       try {
         const { data } = await axios.post('/api/telegram-login', {

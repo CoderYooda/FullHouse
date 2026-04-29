@@ -224,7 +224,7 @@ class AuthController extends Controller
         ]);
 
         if (!hash_equals($calculated_hash, $hash)) {
-            abort(403, 'Invalid Telegram data');
+            abort(403, 'Invalid Telegram data272727');
         }
 
         return true;

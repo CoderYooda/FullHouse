@@ -113,6 +113,7 @@ export default {
         this.setAxiosAuthHeader(data.token);
         this.$router.push({ name: 'player' });
       } catch (error) {
+        console.log(data)
         alert('Ошибка входа через Telegram');
       } finally {
         this.isLoading = false;

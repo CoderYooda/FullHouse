@@ -79,7 +79,7 @@ Route::middleware(['auth:web'])->group(function () {
 
 
 // ==================== TELEGRAM-ВЕРСИЯ (ДОБАВИТЬ ЭТО!) ====================
-Route::get('/telegram/{slug}/{any}', [TelegramController::class, 'index'])
+Route::get('/telegram/{any}', [TelegramController::class, 'index'])
     ->where('any', '.*')
     ->name('telegram.index');
 

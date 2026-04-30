@@ -45,6 +45,7 @@ class User extends Authenticatable
         'email',
         'password',
         'public_name',
+        'telegram_user_id',
     ];
     protected $appends = ['photo_url'];
 

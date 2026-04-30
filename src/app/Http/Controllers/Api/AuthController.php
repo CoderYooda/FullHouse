@@ -214,30 +214,22 @@ class AuthController extends Controller
         $hash = $data['hash'];
         unset($data['hash']);
 
-        // Сортируем по ключам в алфавитном порядке
         ksort($data);
 
-        // Формируем строку для проверки
         $data_check_arr = [];
         foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $value = json_encode($value, JSON_UNESCAPED_UNICODE);
+            }
             $data_check_arr[] = $key . '=' . $value;
         }
         $data_check_string = implode("\n", $data_check_arr);
 
-        // Вычисляем хеш
         $secret_key = hash('sha256', $bot_token, true);
         $calculated_hash = hash_hmac('sha256', $data_check_string, $secret_key);
 
-        // Логируем для отладки
-        Log::info('Telegram hash debug', [
-            'data_check_string' => $data_check_string,
-            'calculated' => $calculated_hash,
-            'received' => $hash,
-            'bot_token' => $bot_token,
-        ]);
-
         if (!hash_equals($calculated_hash, $hash)) {
-            abort(403, $calculated_hash . '<br>' . '<br>' . '<br>' . $hash);
+            abort(403, 'Invalid Telegram data');
         }
 
         return true;

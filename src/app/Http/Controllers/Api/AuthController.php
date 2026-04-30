@@ -94,23 +94,10 @@ class AuthController extends Controller
 
     public function telegramLogin(Request $request)
     {
-        $initData = $request->input('init_data');
+        // Временно отключаем проверку хеша для теста
+         $this->validateTelegramHash($request);
 
-        if (!$initData) {
-            return response()->json(['message' => 'No init_data provided'], 400);
-        }
-
-        // Парсим строку initData
-        parse_str($initData, $data);
-
-        // Проверяем хеш
-        $this->validateTelegramHash($data);
-
-        $telegramId = $data['id'] ?? $data['user']['id'] ?? null;
-
-        if (!$telegramId) {
-            return response()->json(['message' => 'No user id'], 400);
-        }
+        $telegramId = $request->input('id');
 
         // Ищем существующую запись в user_credentials
         $credential = UserCredential::where('provider', 'telegram')
@@ -124,27 +111,21 @@ class AuthController extends Controller
                 $user->save();
             }
         } else {
-            // Извлекаем данные пользователя из строки
-            $userData = $data['user'] ?? [];
-            if (is_string($userData)) {
-                $userData = json_decode($userData, true);
-            }
-
             // Создаём TelegramUser
             $telegramUser = TelegramUser::create([
                 'telegram_id' => $telegramId,
-                'first_name' => $userData['first_name'] ?? '',
-                'last_name' => $userData['last_name'] ?? '',
-                'username' => $userData['username'] ?? '',
-                'language_code' => $userData['language_code'] ?? '',
+                'first_name' => $request->input('first_name'),
+                'last_name' => $request->input('last_name'),
+                'username' => $request->input('username'),
+                'language_code' => $request->input('language_code'),
                 'allows_write_to_pm' => true,
-                'photo_url' => $userData['photo_url'] ?? null,
+                'photo_url' => $request->input('photo_url'),
             ]);
 
             $user = User::create([
-                'name' => $userData['first_name'] ?? '',
-                'public_name' => $userData['username'] ?? '',
-                'email' => $telegramId . '@telegram.com',
+                'name' => $request->input('first_name', ''),
+                'public_name' => $request->input('username', ''),
+                'email' => $telegramId . '@telegram.com235',
                 'password' => Hash::make('123456'),
                 'is_active' => true,
                 'telegram_user_id' => $telegramUser->id,
@@ -153,7 +134,7 @@ class AuthController extends Controller
             $user->credentials()->create([
                 'provider' => 'telegram',
                 'provider_uid' => $telegramId,
-                'provider_data' => ['username' => $userData['username'] ?? ''],
+                'provider_data' => ['username' => $request->input('username')],
             ]);
         }
 
@@ -216,9 +197,10 @@ class AuthController extends Controller
         return $request->user();
     }
 
-    protected function validateTelegramHash(array $data)
+    protected function validateTelegramHash(Request $request)
     {
         $bot_token = config('services.telegram.bot_token');
+        $data = $request->all();
 
         if (!isset($data['hash'])) {
             abort(403, 'Hash not found');
@@ -227,19 +209,30 @@ class AuthController extends Controller
         $hash = $data['hash'];
         unset($data['hash']);
 
+        // Сортируем по ключам в алфавитном порядке
         ksort($data);
 
+        // Формируем строку для проверки
         $data_check_arr = [];
         foreach ($data as $key => $value) {
             $data_check_arr[] = $key . '=' . $value;
         }
         $data_check_string = implode("\n", $data_check_arr);
 
+        // Вычисляем хеш
         $secret_key = hash('sha256', $bot_token, true);
         $calculated_hash = hash_hmac('sha256', $data_check_string, $secret_key);
 
+        // Логируем для отладки
+        Log::info('Telegram hash debug', [
+            'data_check_string' => $data_check_string,
+            'calculated' => $calculated_hash,
+            'received' => $hash,
+            'bot_token' => $bot_token,
+        ]);
+
         if (!hash_equals($calculated_hash, $hash)) {
-            abort(403, 'Invalid Telegram data');
+            abort(403, $calculated_hash . '<br>' . '<br>' . '<br>' . $hash);
         }
 
         return true;

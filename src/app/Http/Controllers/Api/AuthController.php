@@ -237,7 +237,7 @@ class AuthController extends Controller
         ]);
 
         if (!hash_equals($calculated_hash, $hash)) {
-            abort(403, $calculated_hash . '<br>' . '<br>' . '<br>' . $hash);
+            abort(403, $data);
         }
 
         return true;

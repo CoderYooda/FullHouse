@@ -73,6 +73,7 @@ export default {
           auth_date: window.Telegram.WebApp.initDataUnsafe?.auth_date,
           hash: initData
         };
+        console.log('приветики', data)
         this.handleTelegramLogin(data);
       } else {
         this.error = 'Не удалось получить данные пользователя';

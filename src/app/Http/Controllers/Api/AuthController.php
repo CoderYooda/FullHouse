@@ -206,7 +206,8 @@ class AuthController extends Controller
     {
         $bot_token = config('services.telegram.bot_token');
         $data = $request->all();
-dd($data);
+        dd($data);
+die();
         if (!isset($data['hash'])) {
             abort(403, 'Hash not found');
         }

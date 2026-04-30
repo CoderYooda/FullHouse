@@ -125,7 +125,7 @@ class AuthController extends Controller
             $user = User::create([
                 'name' => $request->input('first_name', ''),
                 'public_name' => $request->input('username', ''),
-                'email' => $telegramId . '@telegram.com',
+                'email' => $telegramId . '@telegram.com235',
                 'password' => Hash::make('123456'),
                 'is_active' => true,
                 'telegram_user_id' => $telegramUser->id,

@@ -37,16 +37,9 @@ class TelegramController extends Controller
 //
 //        return view('telegram', compact('company'));
 //    }
-    public function index($company_slug): View
+    public function index(): View
     {
-        // Находим компанию по slug (или заглушку)
-        $company = Company::where('slug', $company_slug)->first();
-        if (!$company) {
-            $company = (object)['slug' => $company_slug];
-        }
-
         return view('app', [
-            'company' => $company,
             'isWeb' => false,
         ]);
     }

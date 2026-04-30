@@ -25,15 +25,15 @@ class UserSeeder extends Seeder
             'password' => Hash::make('FHPC313131'),
         ]);
 
-        $user1 = User::create([
-            'name' => 'Mihail',
-            'is_admin' => 0,
-            'public_name' => 'Mihail',
-            'telegram_user_id' => 2,
-            'email' => 'Mihail@telegram.com',
-            'password' => Hash::make('123123'),
-            'agreement' => true,
-        ]);
+//        $user1 = User::create([
+//            'name' => 'Mihail',
+//            'is_admin' => 0,
+//            'public_name' => 'Mihail',
+//            'telegram_user_id' => 2,
+//            'email' => 'Mihail@telegram.com',
+//            'password' => Hash::make('123123'),
+//            'agreement' => true,
+//        ]);
         $user2 = User::create([
             'name' => 'Vlad',
             'is_admin' => 0,
@@ -127,7 +127,7 @@ class UserSeeder extends Seeder
 
         $tournament = Tournament::first();
 
-        $users = [$user1, $user2, $user4, $user5, $user6, $user7, $user8, $user9, $user10, $user11];
+        $users = [$user2, $user4];
 
         $tournament->users()->attach($users);
 

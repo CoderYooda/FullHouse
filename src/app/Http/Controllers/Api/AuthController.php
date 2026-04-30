@@ -212,7 +212,7 @@ class AuthController extends Controller
         }
 
 //        $hash = $data['hash'];
-        $hash = json_decode($data)['hash'];
+        $hash = json_encode($data)['hash'];
         unset($data['hash']);
 
         // Сортируем по ключам в алфавитном порядке

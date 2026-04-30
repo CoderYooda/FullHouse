@@ -30,18 +30,11 @@ export default {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     },
 
-    async handleTelegramLogin(user) {
-      console.log('Telegram user data:', user);
+    async handleTelegramLogin(initData) {
       this.isLoading = true;
       try {
         const { data } = await axios.post('/api/telegram-login', {
-          id: user.id,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          username: user.username,
-          photo_url: user.photo_url,
-          auth_date: user.auth_date,
-          hash: user.hash,
+          init_data: initData,  // ← отправляем всю строку initData
         });
 
         localStorage.setItem('_token', data.token);
@@ -49,7 +42,10 @@ export default {
         this.$store.commit('auth/SET_USER', data.user);
 
         this.setAxiosAuthHeader(data.token);
-        this.$router.push({ name: 'player_telegram', params: { slug: this.$route.params.slug || window.Slug || 'blg' } });
+        this.$router.push({
+          name: 'player_telegram',
+          params: { slug: this.$route.params.slug || window.Slug || 'blg' }
+        });
       } catch (error) {
         console.error(error);
         this.error = error.response?.data?.message || 'Ошибка входа через Telegram';
@@ -59,31 +55,15 @@ export default {
     },
   },
   mounted() {
-    if (window.Telegram?.WebApp?.initData) {
-      const initData = window.Telegram.WebApp.initData;
-      const user = window.Telegram.WebApp.initDataUnsafe?.user;
-
-      if (user && user.id) {
-        const data = {
-          id: user.id,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          username: user.username,
-          photo_url: user.photo_url,
-          auth_date: window.Telegram.WebApp.initDataUnsafe?.auth_date,
-          hash: initData
-        };
-        console.log('приветики', data)
-        this.handleTelegramLogin(data);
-      } else {
-        this.error = 'Не удалось получить данные пользователя';
-        this.isLoading = false;
-      }
+    const webApp = window.Telegram?.WebApp;
+    if (webApp?.initData) {
+      // Отправляем на сервер строку initData
+      this.handleTelegramLogin(webApp.initData);
     } else {
       this.error = 'Интерфейс доступен только через Telegram MiniApp';
       this.isLoading = false;
     }
-  }
+  },
 
 
   // methods: {

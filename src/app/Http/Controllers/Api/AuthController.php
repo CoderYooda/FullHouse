@@ -211,7 +211,8 @@ class AuthController extends Controller
             abort(403, 'Hash not found');
         }
 
-        $hash = $data['hash'];
+//        $hash = $data['hash'];
+        $hash = json_decode($data)['hash'];
         unset($data['hash']);
 
         // Сортируем по ключам в алфавитном порядке

@@ -206,8 +206,7 @@ class AuthController extends Controller
     {
         $bot_token = config('services.telegram.bot_token');
         $data = $request->all();
-        dd($data);
-die();
+
         if (!isset($data['hash'])) {
             abort(403, 'Hash not found');
         }
@@ -229,16 +228,8 @@ die();
         $secret_key = hash('sha256', $bot_token, true);
         $calculated_hash = hash_hmac('sha256', $data_check_string, $secret_key);
 
-        // Логируем для отладки
-        Log::info('Telegram hash debug', [
-            'data_check_string' => $data_check_string,
-            'calculated' => $calculated_hash,
-            'received' => $hash,
-            'bot_token' => $bot_token,
-        ]);
-
         if (!hash_equals($calculated_hash, $hash)) {
-            abort(403, $data);
+            abort(403, $calculated_hash);
         }
 
         return true;

@@ -6,7 +6,7 @@
     <meta name="format-detection" content="telephone=no" />
     <title>Gameplay</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="icon" type="image/png" href="/images/favicon.png" />
+    <link rel="icon" type="image/png" href="/favicon.ico" />
 {{--    <script src="https://telegram.org/js/telegram-web-app.js?2"></script>--}}
 
     <script>

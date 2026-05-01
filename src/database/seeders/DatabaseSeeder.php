@@ -7,6 +7,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Artisan;
 
 class DatabaseSeeder extends Seeder
 {
@@ -22,5 +23,8 @@ class DatabaseSeeder extends Seeder
             TelegramUserSeeder::class,
             UserSeeder::class,
         ]);
+
+        // Запускаем миграцию credentials после всех сидов
+        Artisan::call('users:migrate-credentials');
     }
 }

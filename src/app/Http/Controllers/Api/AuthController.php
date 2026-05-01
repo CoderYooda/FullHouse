@@ -9,6 +9,7 @@ use App\Models\EmailVerification;
 use App\Models\UserCredential;
 use App\Service\UserMergeService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
@@ -25,29 +26,40 @@ class AuthController extends Controller
             'agreement' => 'accepted',
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'public_name' => $request->public_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'agreement' => true,
-            'is_active' => true,
-        ]);
+        try {
 
-        $user->credentials()->create([
-            'provider' => 'email',
-            'provider_uid' => $request->email,
-        ]);
+            DB::transaction(function () use ($request) {
 
-        $code = random_int(100000, 999999);
-        EmailVerification::updateOrCreate(
-            ['email' => $request->email],
-            ['code' => $code, 'expires_at' => now()->addMinutes(15)]
-        );
+                $user = User::create([
+                    'name' => $request->name,
+                    'public_name' => $request->public_name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'agreement' => true,
+                    'is_active' => true,
+                ]);
 
-        Mail::raw("Ваш код подтверждения: $code", function ($message) use ($request) {
-            $message->to($request->email)->subject('Подтверждение email');
-        });
+                $user->credentials()->create([
+                    'provider' => 'email',
+                    'provider_uid' => $request->email,
+                ]);
+
+                $code = random_int(100000, 999999);
+                EmailVerification::updateOrCreate(
+                    ['email' => $request->email],
+                    ['code' => $code, 'expires_at' => now()->addMinutes(15)]
+                );
+
+                Mail::raw("Ваш код подтверждения: $code", function ($message) use ($request) {
+                    $message->to($request->email)->subject('Подтверждение email');
+                });
+
+            });
+
+        } catch (\Exception $e) {
+
+        }
+
 
         return response()->json(['message' => 'Код подтверждения отправлен']);
     }

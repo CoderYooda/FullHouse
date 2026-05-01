@@ -26,6 +26,10 @@ class AuthController extends Controller
             'agreement' => 'accepted',
         ]);
 
+        User::where('email', $request->email)
+            ->whereNull('email_verified_at')
+            ->delete();
+
         try {
 
             DB::transaction(function () use ($request) {

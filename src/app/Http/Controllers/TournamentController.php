@@ -84,14 +84,9 @@ class TournamentController extends Controller
 
         $tournaments = Tournament::query()
             ->whereDate('event_date', '>=', Carbon::today())
-            ->where('is_actual', true);
-
-        // Если у пользователя выбран город – показываем турниры только этого города
-        if ($cityId) {
-            $tournaments->where('city_id', $cityId);
-        }
-
-        $tournaments = $tournaments->orderBy('event_date')->get();
+            ->where('is_actual', true)
+            ->where('city_id', $cityId)
+            ->orderBy('event_date')->get();
 
         return new TournamentCollectionResource($tournaments);
     }

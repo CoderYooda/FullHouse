@@ -12,10 +12,6 @@
         <script src="https://telegram.org/js/telegram-web-app.js?2"></script>
     @endif
 
-{{--    @if(str_contains(request()->path(), '/telegram/'))--}}
-{{--        <script src="https://telegram.org/js/telegram-web-app.js?2"></script>--}}
-{{--    @endif--}}
-
     <script>
         window.mode = '{{ env('APP_ENV') }}';
         window.Telegram = Telegram;

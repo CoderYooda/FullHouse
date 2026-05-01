@@ -197,44 +197,47 @@ class AuthController extends Controller
         return $request->user();
     }
 
-    protected function validateTelegramHash(Request $request)
+    protected function validateTelegramHash(array $data): bool
     {
         $bot_token = config('services.telegram.bot_token');
-        $data = $request->all();
 
+        // 1. Хеш должен быть
         if (!isset($data['hash'])) {
-            abort(403, 'Hash not found');
+            \Log::error('Hash missing', $data);
+            return false;
         }
 
         $hash = $data['hash'];
-        unset($data['hash']);
+        unset($data['hash']); // Удаляем хеш из данных для проверки
 
-        // Сортируем по ключам в алфавитном порядке
+        // 2. Сортируем по ключам (обязательно!)
         ksort($data);
 
-        // Формируем строку для проверки
+        // 3. Формируем строку для проверки
         $data_check_arr = [];
         foreach ($data as $key => $value) {
-            $data_check_arr[] = $key . '=' . $value;
+            // Значение всегда должно быть строкой (и не содержать лишних пробелов)
+            $data_check_arr[] = $key . '=' . (string)$value;
         }
         $data_check_string = implode("\n", $data_check_arr);
 
-        // Вычисляем хеш
+        // 4. Вычисляем хеш
         $secret_key = hash('sha256', $bot_token, true);
         $calculated_hash = hash_hmac('sha256', $data_check_string, $secret_key);
 
-        // Логируем для отладки
-        Log::info('Telegram hash debug', [
+        // 5. Сравниваем
+        $isValid = hash_equals($calculated_hash, $hash);
+
+        // Логируем для отладки (потом можно убрать)
+        \Log::info('Hash validation', [
+            'data_received' => $data,
+            'data_sorted_keys' => array_keys($data),
             'data_check_string' => $data_check_string,
-            'calculated' => $calculated_hash,
-            'received' => $hash,
-            'bot_token' => $bot_token,
+            'hash_calculated' => $calculated_hash,
+            'hash_received' => $hash,
+            'is_valid' => $isValid
         ]);
 
-        if (!hash_equals($calculated_hash, $hash)) {
-            abort(403, $calculated_hash . '<br>' . '<br>' . '<br>' . $hash);
-        }
-
-        return true;
+        return $isValid;
     }
 }

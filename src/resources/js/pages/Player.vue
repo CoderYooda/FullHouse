@@ -16,7 +16,7 @@
               Сменить город ({{ currentCityName }})
           </span>
         </div>
-        <div class="logout-row">
+        <div class="logout-row" v-if="!isTelegramMode">
           <button @click="logout" class="logout-button">
             Выйти из аккаунта
           </button>
@@ -59,10 +59,10 @@ export default {
   data() {
     return {
       tournaments: [],
-    }
+    };
   },
   computed: {
-    ...mapGetters('auth', ['User']),  // ← Используем User, а не Player
+    ...mapGetters('auth', ['User']),
     user() {
       return this.User || {};
     },
@@ -71,7 +71,10 @@ export default {
       if (cityId === 1) return 'Белгород';
       if (cityId === 2) return 'Воронеж';
       return 'не выбран';
-    }
+    },
+    isTelegramMode() {
+      return !!window.Telegram?.WebApp?.initData;
+    },
   },
   methods: {
     ...mapActions('auth', ['GetPlayer']),
@@ -82,10 +85,10 @@ export default {
         if (player?.agreement === false) {
           this.$router.push({
             slug: window.company_id,
-            path: 'agreement'
+            path: 'agreement',
           });
         }
-        this.setPlayer({ player: player });
+        this.setPlayer({ player });
       });
     },
 
@@ -113,20 +116,21 @@ export default {
       return date.toLocaleDateString('ru-RU', {
         day: '2-digit',
         month: '2-digit',
-        year: 'numeric'
+        year: 'numeric',
       });
     },
+
     logout() {
       localStorage.removeItem('_token');
       this.$store.commit('auth/LOGOUT');
       this.$router.push('/login');
-    }
+    },
   },
   mounted() {
     this.loadPlayerData();
     this.getTournament();
   },
-}
+};
 </script>
 
 <style>

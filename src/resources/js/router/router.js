@@ -1,10 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import store from '../store/store';
-
-// Импорт компонентов
-import Loading from '../pages/Loading.vue';
 import LoginWeb from '../pages/LoginWeb.vue';
-import LoginTelegram from '../pages/LoginTelegram.vue';
 import Register from '../pages/Register.vue';
 import VerifyEmail from '../pages/VerifyEmail.vue';
 import Player from '../pages/Player.vue';
@@ -16,198 +11,92 @@ import Rating from '../pages/Rating.vue';
 import Game from '../pages/Game.vue';
 
 const routes = [
-    // ==================== WEB-МАРШРУТЫ (БЕЗ slug) ====================
     {
         path: '/',
-        redirect: () => {
-            const token = localStorage.getItem('_token');
-            return token ? '/player' : '/login';
-        },
+        redirect: '/login',
     },
     {
         path: '/login',
         name: 'login',
         component: LoginWeb,
-        meta: {
-            layout: 'Auth',
-            auth: false,
-        },
+        meta: { layout: 'Auth', auth: false },
     },
     {
         path: '/register',
         name: 'register',
         component: Register,
-        meta: {
-            layout: 'Auth',
-            auth: false,
-        },
+        meta: { layout: 'Auth', auth: false },
     },
     {
         path: '/verify-email/:email?',
         name: 'verify-email',
         component: VerifyEmail,
-        meta: {
-            layout: 'Auth',
-            auth: false,
-        },
+        meta: { layout: 'Auth', auth: false },
     },
     {
         path: '/player',
         name: 'player',
         component: Player,
-        meta: {
-            layout: 'Main',
-            auth: true,
-        },
+        meta: { layout: 'Main', auth: true },
     },
     {
         path: '/agreement',
         name: 'agreement',
         component: Agreement,
-        meta: {
-            layout: 'Clear',
-            auth: true,
-        },
+        meta: { layout: 'Clear', auth: true },
     },
     {
         path: '/tournaments',
         name: 'tournaments',
         component: Tournaments,
-        meta: {
-            layout: 'Main',
-            auth: true,
-        },
+        meta: { layout: 'Main', auth: true },
     },
     {
         path: '/tournaments/:id',
         name: 'tournament',
         component: Tournament,
-        meta: {
-            layout: 'Main',
-            auth: true,
-        },
+        meta: { layout: 'Main', auth: true },
     },
     {
         path: '/report',
         name: 'report',
         component: Report,
-        meta: {
-            layout: 'Main',
-            auth: true,
-        },
+        meta: { layout: 'Main', auth: true },
     },
     {
         path: '/rating',
         name: 'rating',
         component: Rating,
-        meta: {
-            layout: 'Main',
-            auth: true,
-        },
+        meta: { layout: 'Main', auth: true },
     },
     {
         path: '/game',
         name: 'game',
         component: Game,
-        meta: {
-            layout: 'Main',
-            auth: true,
-        },
+        meta: { layout: 'Main', auth: true },
     },
-
-    // ==================== TELEGRAM-МАРШРУТЫ (с slug для обратной совместимости) ====================
-    {
-        path: '/telegram/login',
-        name: 'login_telegram',
-        component: LoginTelegram,
-        meta: {
-            layout: 'Auth',
-            auth: false,
-        },
-    },
+    // Единственный Telegram-маршрут — только для входа через бота
     {
         path: '/telegram/player',
-        name: 'player_telegram',
+        name: 'telegram-entry',
         component: Player,
-        meta: {
-            layout: 'Main',
-            auth: true,
-        },
-    },
-    {
-        path: '/telegram/agreement',
-        name: 'agreement_telegram',
-        component: Agreement,
-        meta: {
-            layout: 'Clear',
-            auth: true,
-        },
-    },
-    {
-        path: '/telegram/tournaments',
-        name: 'tournaments_telegram',
-        component: Tournaments,
-        meta: {
-            layout: 'Main',
-            auth: true,
-        },
-    },
-    {
-        path: '/telegram/tournaments/:id',
-        name: 'tournament_telegram',
-        component: Tournament,
-        meta: {
-            layout: 'Main',
-            auth: true,
-        },
-    },
-    {
-        path: '/telegram/report',
-        name: 'report_telegram',
-        component: Report,
-        meta: {
-            layout: 'Main',
-            auth: true,
-        },
-    },
-    {
-        path: '/telegram/rating',
-        name: 'rating_telegram',
-        component: Rating,
-        meta: {
-            layout: 'Main',
-            auth: true,
-        },
-    },
-    {
-        path: '/telegram/game',
-        name: 'game_telegram',
-        component: Game,
-        meta: {
-            layout: 'Main',
-            auth: true,
-        },
+        meta: { layout: 'Main', auth: true },
     },
 ];
 
 const router = createRouter({
     history: createWebHistory(),
     routes,
-    linkActiveClass: 'active',
-    linkExactActiveClass: 'active',
 });
 
-// Навигационный хук
 router.beforeEach((to, from, next) => {
     const token = localStorage.getItem('_token');
     const requiresAuth = to.meta.auth === true;
 
     if (requiresAuth && !token) {
-        if (to.path.startsWith('/telegram/')) {
-            next('/telegram/login');   // ← без blg
-        } else {
-            next('/login');
-        }
+        next('/login');
+    } else if (!requiresAuth && token && (to.path === '/login' || to.path === '/register')) {
+        next('/player');
     } else {
         next();
     }

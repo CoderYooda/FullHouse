@@ -31,7 +31,7 @@ export default {
     },
 
     async handleTelegramLogin(user) {
-      console.log('Telegram user data:', user);
+
       this.isLoading = true;
       try {
         const { data } = await axios.post('/api/telegram-login', {
@@ -49,9 +49,9 @@ export default {
         this.$store.commit('auth/SET_USER', data.user);
 
         this.setAxiosAuthHeader(data.token);
-        this.$router.push({ name: 'player_telegram', params: { slug: this.$route.params.slug || window.Slug || 'blg' } });
+        this.$router.push('/player');
       } catch (error) {
-        console.error(error);
+        // console.error(error);
         this.error = error.response?.data?.message || 'Ошибка входа через Telegram';
       } finally {
         this.isLoading = false;
@@ -67,13 +67,13 @@ export default {
 
       const decodedString = decodeURIComponent(initData);
 
-// 2. Превращаем строку в объект URLSearchParams
+//Превращаем строку в объект URLSearchParams
       const params = new URLSearchParams(decodedString);
 
-// 3. Создаём итоговый объект
+//Создаём итоговый объект
       const result = {};
 
-// 4. Проходим по всем параметрам
+//Проходим по всем параметрам
       for (const [key, value] of params) {
         // Если это поле user, превращаем его строку в настоящий объект
         if (key === 'user') {
@@ -88,9 +88,6 @@ export default {
         }
       }
 
-// Готово! Теперь в result лежит готовый объект
-      console.log(result);
-
       user = result.user;
 
       if (user && user.id) {
@@ -103,11 +100,6 @@ export default {
           auth_date: result.auth_date,
           hash: result.hash
         };
-        console.log('СТРОКА', initData)
-        console.log('распарсеная строка', result)
-        console.log('ПОЛЬЗОВАТЕЛЬ ИЗ СТРОКИ initData', user)
-        // console.log('ПОЛЬЗОВАТЕЛЬ111', window.Telegram.WebApp.initDataUnsafe)
-        console.log('то что отправляем на бэк', data)
 
         this.handleTelegramLogin(data);
       } else {

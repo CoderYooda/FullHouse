@@ -72,8 +72,12 @@ export default {
       if (cityId === 2) return 'Воронеж';
       return 'не выбран';
     },
-    isTelegramMode() {
+    isTelegramMode1() {
       return !!window.Telegram?.WebApp?.initData;
+    },
+    isTelegramMode() {
+      // Если есть объект Telegram.WebApp и внутри него initData — значит мы в Telegram
+      return !!(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData);
     },
   },
   methods: {
@@ -127,6 +131,9 @@ export default {
     },
   },
   mounted() {
+    console.log('Telegram object:', window.Telegram);
+    console.log('isTelegramMode:', this.isTelegramMode);
+
     this.loadPlayerData();
     this.getTournament();
   },

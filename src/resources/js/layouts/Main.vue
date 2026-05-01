@@ -5,11 +5,35 @@
 
     <div class="footer boxed">
       <div class="buttons">
-        <router-link activeClass="active" :to="{ name: 'report' }" class="footer_button report_button"><div class="active-arrow"></div></router-link>
-        <router-link activeClass="active" :to="{ name: 'player' }" class="footer_button profile_button"><div class="active-arrow"></div></router-link>
+        <router-link
+            activeClass="active"
+            :to="{ name: 'report' }"
+            class="footer_button report_button"
+        >
+          <div class="active-arrow"></div>
+        </router-link>
+        <router-link
+            activeClass="active"
+            :to="{ name: 'player' }"
+            class="footer_button profile_button"
+        >
+          <div class="active-arrow"></div>
+        </router-link>
         <router-link activeClass="active" :to="{ name: 'tournaments' }" class="footer_button main_button" />
-        <router-link activeClass="active" :to="{ name: 'rating' }" class="footer_button rating_button"><div class="active-arrow"></div></router-link>
-        <router-link activeClass="active" :to="{ name: 'game' }" class="footer_button cards_button"><div class="active-arrow"></div></router-link>
+        <router-link
+            activeClass="active"
+            :to="{ name: 'rating' }"
+            class="footer_button rating_button"
+        >
+          <div class="active-arrow"></div>
+        </router-link>
+        <router-link
+            activeClass="active"
+            :to="{ name: 'game' }"
+            class="footer_button cards_button"
+        >
+          <div class="active-arrow"></div>
+        </router-link>
       </div>
     </div>
   </div>
@@ -45,6 +69,25 @@ export default {
     },
     isLoading() {
       return this.$store.state._fullscreenLoading;
+    },
+    isTelegramMode() {
+      return this.$route.path.startsWith('/telegram/');
+    },
+
+    playerRouteName() {
+      return this.isTelegramMode ? 'player_telegram' : 'player';
+    },
+    tournamentsRouteName() {
+      return this.isTelegramMode ? 'tournaments_telegram' : 'tournaments';
+    },
+    reportRouteName() {
+      return this.isTelegramMode ? 'report_telegram' : 'report';
+    },
+    ratingRouteName() {
+      return this.isTelegramMode ? 'rating_telegram' : 'rating';
+    },
+    gameRouteName() {
+      return this.isTelegramMode ? 'game_telegram' : 'game';
     },
   },
   watch: {

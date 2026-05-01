@@ -8,7 +8,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/png" href="/favicon.ico" />
 
-    @if(isset($isWeb) && !$isWeb)
+{{--    @if(isset($isWeb) && !$isWeb)--}}
+{{--        <script src="https://telegram.org/js/telegram-web-app.js?2"></script>--}}
+{{--    @endif--}}
+
+    @if(str_contains(request()->path(), '/telegram/'))
         <script src="https://telegram.org/js/telegram-web-app.js?2"></script>
     @endif
 

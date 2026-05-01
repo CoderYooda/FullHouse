@@ -57,11 +57,41 @@ export default {
         this.isLoading = false;
       }
     },
+
+
   },
   mounted() {
     if (window.Telegram?.WebApp?.initData) {
       const initData = window.Telegram.WebApp.initData;
-      const user = window.Telegram.WebApp.initDataUnsafe?.user;
+      let user = window.Telegram.WebApp.initDataUnsafe?.user;
+
+      const decodedString = decodeURIComponent(initData);
+
+// 2. Превращаем строку в объект URLSearchParams
+      const params = new URLSearchParams(decodedString);
+
+// 3. Создаём итоговый объект
+      const result = {};
+
+// 4. Проходим по всем параметрам
+      for (const [key, value] of params) {
+        // Если это поле user, превращаем его строку в настоящий объект
+        if (key === 'user') {
+          try {
+            result.user = JSON.parse(value);
+          } catch (e) {
+            console.error('Ошибка парсинга user:', e);
+            result.user = value;
+          }
+        } else {
+          result[key] = value;
+        }
+      }
+
+// Готово! Теперь в result лежит готовый объект
+      console.log(result);
+
+      user = result.user;
 
       if (user && user.id) {
         const data = {
@@ -70,11 +100,15 @@ export default {
           last_name: user.last_name,
           username: user.username,
           photo_url: user.photo_url,
-          auth_date: window.Telegram.WebApp.initDataUnsafe?.auth_date,
-          hash: initData
+          auth_date: result.auth_date,
+          hash: result.hash
         };
-        console.log('приветики', data)
-        console.log('приветики2', initData)
+        console.log('СТРОКА', initData)
+        console.log('распарсеная строка', result)
+        console.log('ПОЛЬЗОВАТЕЛЬ ИЗ СТРОКИ initData', user)
+        // console.log('ПОЛЬЗОВАТЕЛЬ111', window.Telegram.WebApp.initDataUnsafe)
+        console.log('то что отправляем на бэк', data)
+
         this.handleTelegramLogin(data);
       } else {
         this.error = 'Не удалось получить данные пользователя';
@@ -84,10 +118,41 @@ export default {
       this.error = 'Интерфейс доступен только через Telegram MiniApp';
       this.isLoading = false;
     }
-  }
+  },
 
 
-  // methods: {
+
+  // mounted() {
+  //   if (window.Telegram?.WebApp?.initData) {
+  //     const initData = window.Telegram.WebApp.initData;
+  //     const user = window.Telegram.WebApp.initDataUnsafe?.user;
+  //
+  //     if (user && user.id) {
+  //       const data = {
+  //         id: user.id,
+  //         first_name: user.first_name,
+  //         last_name: user.last_name,
+  //         username: user.username,
+  //         photo_url: user.photo_url,
+  //         auth_date: window.Telegram.WebApp.initDataUnsafe?.auth_date,
+  //         hash: window.Telegram.WebApp.initDataUnsafe?.hash
+  //       };
+  //       console.log('ПОЛЬЗОВАТЕЛЬ', window.Telegram.WebApp.initDataUnsafe)
+  //       console.log('приветики', data)
+  //       console.log('приветики2', initData)
+  //
+  //       this.handleTelegramLogin(data);
+  //     } else {
+  //       this.error = 'Не удалось получить данные пользователя';
+  //       this.isLoading = false;
+  //     }
+  //   } else {
+  //     this.error = 'Интерфейс доступен только через Telegram MiniApp';
+  //     this.isLoading = false;
+  //   }
+  // }
+
+// methods: {
   //   ...mapActions('auth', ['TelegramAuth']),
   //   ...mapMutations('auth', ['setToken']),
   //

@@ -57,7 +57,8 @@ class AuthController extends Controller
             });
 
         } catch (\Exception $e) {
-
+            Log::error('Registration failed: ' . $e->getMessage());
+            return response()->json(['message' => 'Ошибка при регистрации. Попробуйте позже.'], 500);
         }
 
 

@@ -16,6 +16,7 @@
               Сменить город ({{ currentCityName }})
           </span>
         </div>
+        <div style="color: red">DEBUG: isTelegramMode = {{ isTelegramMode }}, user.email = {{ user.email }}</div>
         <div class="logout-row" v-if="!isTelegramMode">
           <button @click="logout" class="logout-button">
             Выйти из аккаунта
@@ -24,8 +25,8 @@
       </div>
 
       <div class="module">
-        <!-- Привязка email (для Telegram-пользователей) -->
-        <div class="email-link-section" v-if="isTelegramMode && (!user.email || user.email.includes('@telegram.com'))">
+        <!-- Привязка email (для пользователей с фейковым email) -->
+        <div class="email-link-section" v-if="!user.email_verified_at && user.email && user.email.includes('@telegram.com')">
           <div v-if="!showEmailCodeForm">
             <input type="email" v-model="linkEmail" placeholder="Введите email" class="form-control" />
             <button @click="sendLinkEmail" class="btn-link">Привязать email</button>
@@ -39,25 +40,6 @@
         <!-- Привязка Telegram (для email-пользователей) -->
         <div class="telegram-link-section" v-if="!isTelegramMode && !user.telegram_user_id">
           <div id="telegram-link-widget"></div>
-        </div>
-      </div>
-
-      <div class="module">
-        <!-- Привязка email (для Telegram-пользователей) -->
-        <div class="email-link-section" v-if="isTelegramMode && (!user.email || user.email.includes('@telegram.com'))">
-          <div v-if="!showEmailCodeForm">
-            <input type="email" v-model="linkEmail" placeholder="Введите email" class="form-control" />
-            <button @click="sendLinkEmail" class="btn-link">Привязать email</button>
-          </div>
-          <div v-else>
-            <input type="text" v-model="emailCode" placeholder="Код из письма" class="form-control" />
-            <button @click="verifyLinkEmail" class="btn-link">Подтвердить</button>
-          </div>
-        </div>
-
-        <!-- Привязка Telegram (для email-пользователей) -->
-        <div class="telegram-link-section" v-if="!isTelegramMode && !user.telegram_user_id">
-          <div id="telegram-bind-widget"></div>
         </div>
       </div>
 
@@ -189,6 +171,7 @@ export default {
         });
         alert('Email привязан');
         await this.$store.dispatch('auth/GetPlayer');
+        await this.getTournament();
         this.showEmailCodeForm = false;
         this.linkEmail = '';
         this.emailCode = '';

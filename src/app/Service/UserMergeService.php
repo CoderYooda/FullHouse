@@ -63,16 +63,14 @@ class UserMergeService
 
     protected function mergeUserData(User $source, User $target)
     {
-        // Если у источника (Telegram) есть имя — обновляем цель
         if ($source->name) {
             $target->name = $source->name;
         }
         if ($source->public_name) {
             $target->public_name = $source->public_name;
         }
-        // Аватарка — через связь с TelegramUser
+
         if ($source->telegramUser && $source->telegramUser->photo_url) {
-            // Создаём или обновляем TelegramUser у цели
             $telegramUser = $target->telegramUser;
             if (!$telegramUser) {
                 $telegramUser = new TelegramUser();
@@ -88,7 +86,8 @@ class UserMergeService
 
             $target->telegram_user_id = $telegramUser->id;
         }
-        $target->save();
+
+        $target->save(); // ← Убедись, что эта строка есть
     }
 
     protected function mergeParticipants(User $source, User $target)

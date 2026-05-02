@@ -25,6 +25,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Запускаем миграцию credentials после всех сидов
-//        Artisan::call('users:migrate-credentials');
+        Artisan::call('users:migrate-credentials');
     }
 }

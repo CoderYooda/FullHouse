@@ -206,27 +206,9 @@ export default {
       script.async = true;
       script.setAttribute('data-telegram-login', 'test_fullhouse_bot');
       script.setAttribute('data-size', 'large');
-      script.setAttribute('data-onauth', 'onTelegramBindAuth');
+      script.setAttribute('data-auth-url', window.location.origin + '/api/link-telegram');
+      script.setAttribute('data-request-access', 'write');
       container.appendChild(script);
-
-      window.onTelegramBindAuth = async (user) => {
-        try {
-          const { data } = await axios.post('/api/link-telegram', {
-            id: user.id,
-            first_name: user.first_name,
-            last_name: user.last_name,
-            username: user.username,
-            photo_url: user.photo_url,
-            auth_date: user.auth_date,
-            hash: user.hash,
-          });
-          alert(data.message || 'Telegram привязан');
-          await this.$store.dispatch('auth/GetPlayer');
-        } catch (error) {
-          const msg = error.response?.data?.message || 'Ошибка привязки';
-          alert(msg);
-        }
-      };
     },
   },
   async mounted() {

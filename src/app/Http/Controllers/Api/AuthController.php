@@ -169,8 +169,9 @@ class AuthController extends Controller
             'currentUser' => $currentUser->id,
         ]);
 
+        // Если уже привязан — просто возвращаем успех
         if ($currentUser->credentials()->where('provider', 'telegram')->where('provider_uid', $telegramId)->exists()) {
-            return response()->json(['message' => 'Telegram уже привязан'], 400);
+            return response()->json(['message' => 'Telegram уже привязан'], 200);
         }
 
         $telegramUser = TelegramUser::where('telegram_id', $telegramId)->first();
@@ -185,36 +186,40 @@ class AuthController extends Controller
         $mergeService = new UserMergeService();
 
         if ($sourceUser && $sourceUser->is_active && $sourceUser->id !== $currentUser->id) {
-            \Log::info('Merging users', ['source' => $sourceUser->id, 'target' => $currentUser->id]);
+            Log::info('Merging users', ['source' => $sourceUser->id, 'target' => $currentUser->id]);
             $mergeService->merge($sourceUser, $currentUser, 'link_telegram_to_web', $request->resolved_city_id ?? null);
 
-            // После слияния пользователь в сессии может быть старый
-            auth()->login($currentUser->fresh());
-            
-            return response()->json(['message' => 'Аккаунты объединены']);
-        } else {
-            Log::info('Creating new TelegramUser and linking', ['currentUser' => $currentUser->id]);
-            if (!$telegramUser) {
-                $telegramUser = TelegramUser::create([
-                    'telegram_id' => $telegramId,
-                    'first_name' => $request->input('first_name'),
-                    'last_name' => $request->input('last_name'),
-                    'username' => $request->input('username'),
-                    'language_code' => $request->input('language_code'),
-                    'allows_write_to_pm' => true,
-                ]);
-            }
-            $currentUser->telegram_user_id = $telegramUser->id;
-            $currentUser->save();
+            // Обновляем текущего пользователя после слияния
+            $currentUser = $currentUser->fresh();
 
-            $currentUser->credentials()->create([
-                'provider' => 'telegram',
-                'provider_uid' => $telegramId,
-                'provider_data' => ['username' => $request->input('username')],
-            ]);
-
-            return response()->json(['message' => 'Telegram привязан']);
+            return response()->json(['message' => 'Аккаунты объединены', 'user' => $currentUser]);
         }
+
+        // Если TelegramUser не найден или он неактивен — создаём новый и привязываем
+        Log::info('Creating new TelegramUser and linking', ['currentUser' => $currentUser->id]);
+
+        if (!$telegramUser) {
+            $telegramUser = TelegramUser::create([
+                'telegram_id' => $telegramId,
+                'first_name' => $request->input('first_name'),
+                'last_name' => $request->input('last_name'),
+                'username' => $request->input('username'),
+                'language_code' => $request->input('language_code'),
+                'allows_write_to_pm' => true,
+                'photo_url' => $request->input('photo_url'),
+            ]);
+        }
+
+        $currentUser->telegram_user_id = $telegramUser->id;
+        $currentUser->save();
+
+        $currentUser->credentials()->create([
+            'provider' => 'telegram',
+            'provider_uid' => $telegramId,
+            'provider_data' => ['username' => $request->input('username')],
+        ]);
+
+        return response()->json(['message' => 'Telegram привязан', 'user' => $currentUser]);
     }
 
     public function unlinkTelegram(Request $request)

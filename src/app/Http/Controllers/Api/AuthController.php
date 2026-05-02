@@ -187,6 +187,10 @@ class AuthController extends Controller
         if ($sourceUser && $sourceUser->is_active && $sourceUser->id !== $currentUser->id) {
             \Log::info('Merging users', ['source' => $sourceUser->id, 'target' => $currentUser->id]);
             $mergeService->merge($sourceUser, $currentUser, 'link_telegram_to_web', $request->resolved_city_id ?? null);
+
+            // После слияния пользователь в сессии может быть старый
+            auth()->login($currentUser->fresh());
+            
             return response()->json(['message' => 'Аккаунты объединены']);
         } else {
             Log::info('Creating new TelegramUser and linking', ['currentUser' => $currentUser->id]);

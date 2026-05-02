@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Models\TelegramUser;
 use App\Models\User;
 use App\Models\Feedback;
 use App\Models\Participant;
@@ -23,6 +24,8 @@ class UserMergeService
         $finalCityId = $this->resolveCityConflict($source, $target, $resolvedCityId);
 
         DB::transaction(function () use ($source, $target, $reason, $finalCityId) {
+            $this->mergeUserData($source, $target);
+
             // 1. Перенос участников турниров (через модель Participant)
             $this->mergeParticipants($source, $target);
 
@@ -56,6 +59,36 @@ class UserMergeService
             $source->is_active = false;
             $source->save();
         });
+    }
+
+    protected function mergeUserData(User $source, User $target)
+    {
+        // Если у источника (Telegram) есть имя — обновляем цель
+        if ($source->name) {
+            $target->name = $source->name;
+        }
+        if ($source->public_name) {
+            $target->public_name = $source->public_name;
+        }
+        // Аватарка — через связь с TelegramUser
+        if ($source->telegramUser && $source->telegramUser->photo_url) {
+            // Создаём или обновляем TelegramUser у цели
+            $telegramUser = $target->telegramUser;
+            if (!$telegramUser) {
+                $telegramUser = new TelegramUser();
+                $telegramUser->telegram_id = $source->telegramUser->telegram_id;
+                $telegramUser->allows_write_to_pm = true;
+            }
+            $telegramUser->first_name = $source->telegramUser->first_name;
+            $telegramUser->last_name = $source->telegramUser->last_name;
+            $telegramUser->username = $source->telegramUser->username;
+            $telegramUser->photo_url = $source->telegramUser->photo_url;
+            $telegramUser->language_code = $source->telegramUser->language_code;
+            $telegramUser->save();
+
+            $target->telegram_user_id = $telegramUser->id;
+        }
+        $target->save();
     }
 
     protected function mergeParticipants(User $source, User $target)

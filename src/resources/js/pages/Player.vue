@@ -57,7 +57,7 @@
 
         <!-- Привязка Telegram (для email-пользователей) -->
         <div class="telegram-link-section" v-if="!isTelegramMode && !user.telegram_user_id">
-          <div id="telegram-link-widget"></div>
+          <div id="telegram-bind-widget"></div>
         </div>
       </div>
 
@@ -198,7 +198,7 @@ export default {
     },
 
     initTelegramLinkWidget() {
-      const container = document.getElementById('telegram-link-widget');
+      const container = document.getElementById('telegram-bind-widget');
       if (!container) return;
 
       const script = document.createElement('script');
@@ -206,12 +206,12 @@ export default {
       script.async = true;
       script.setAttribute('data-telegram-login', 'test_fullhouse_bot');
       script.setAttribute('data-size', 'large');
-      script.setAttribute('data-onauth', 'onTelegramLinkAuth');
+      script.setAttribute('data-onauth', 'onTelegramBindAuth');
       container.appendChild(script);
 
-      window.onTelegramLinkAuth = async (user) => {
+      window.onTelegramBindAuth = async (user) => {
         try {
-          await axios.post('/api/link-telegram', {
+          const { data } = await axios.post('/api/link-telegram', {
             id: user.id,
             first_name: user.first_name,
             last_name: user.last_name,
@@ -220,10 +220,11 @@ export default {
             auth_date: user.auth_date,
             hash: user.hash,
           });
-          alert('Telegram привязан');
+          alert(data.message || 'Telegram привязан');
           await this.$store.dispatch('auth/GetPlayer');
         } catch (error) {
-          alert(error.response?.data?.message || 'Ошибка привязки');
+          const msg = error.response?.data?.message || 'Ошибка привязки';
+          alert(msg);
         }
       };
     },

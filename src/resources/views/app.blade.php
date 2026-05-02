@@ -10,11 +10,14 @@
 
     @if(isset($isWeb) && !$isWeb)
         <script src="https://telegram.org/js/telegram-web-app.js?2"></script>
+        <script>
+            window.Telegram = Telegram;
+        </script>
     @endif
 
     <script>
         window.mode = '{{ env('APP_ENV') }}';
-        window.Telegram = Telegram;
+        // window.Telegram = Telegram;
 
         // Определяем slug и режим
         {{--window.Slug = '{{ $company->slug ?? 'blg' }}';--}}

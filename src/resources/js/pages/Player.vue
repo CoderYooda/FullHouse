@@ -220,6 +220,7 @@ export default {
         const { data } = await axios.post('/api/link-telegram', user);
         alert(data.message || 'Telegram привязан');
         await this.$store.dispatch('auth/GetPlayer');
+        await this.getTournament();
       } catch (error) {
         alert(error.response?.data?.message || 'Ошибка привязки');
       }

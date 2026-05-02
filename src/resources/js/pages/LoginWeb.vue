@@ -166,17 +166,7 @@ export default {
 .form-group {
   margin-bottom: 1rem;
 }
-.form-control {
-  color: #fff;
-  width: 100%;
-  padding: 13px 15px;
-  background: #18171C;
-  border: none;
-  border-radius: 12px;
-  font-size: 14px;
-  line-height: 24px;
-  box-sizing: border-box;
-}
+
 .btn-login {
   padding: 10px 20px;
   font-size: 16px;

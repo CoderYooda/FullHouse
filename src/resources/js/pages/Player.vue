@@ -16,7 +16,7 @@
               Сменить город ({{ currentCityName }})
           </span>
         </div>
-        <div style="color: red">DEBUG: isTelegramMode = {{ isTelegramMode }}, user.email = {{ user.email }}</div>
+
         <div class="logout-row" v-if="!isTelegramMode">
           <button @click="logout" class="logout-button">
             Выйти из аккаунта
@@ -27,13 +27,14 @@
       <div class="module">
         <!-- Привязка email (для пользователей с фейковым email) -->
         <div class="email-link-section" v-if="!user.email_verified_at && user.email && user.email.includes('@telegram.com')">
-          <div v-if="!showEmailCodeForm">
+          <label class="form-label">Привязать Email</label>
+          <div v-if="!showEmailCodeForm" class="row row-form">
             <input type="email" v-model="linkEmail" placeholder="Введите email" class="form-control" />
-            <button @click="sendLinkEmail" class="btn-link">Привязать email</button>
+            <button @click="sendLinkEmail" class="btn-default">Привязать</button>
           </div>
-          <div v-else>
+          <div v-else class="row row-form">
             <input type="text" v-model="emailCode" placeholder="Код из письма" class="form-control" />
-            <button @click="verifyLinkEmail" class="btn-link">Подтвердить</button>
+            <button @click="verifyLinkEmail" class="btn-default">Подтвердить</button>
           </div>
         </div>
 
@@ -226,6 +227,7 @@ export default {
 </script>
 
 <style>
+
 .logout-button {
   width: 100%;
   padding: 10px;

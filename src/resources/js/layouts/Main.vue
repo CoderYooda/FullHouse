@@ -180,4 +180,51 @@ export default {
 .main {
   background-image: url(/public/img/game_bg.png);
 }
+.form-control {
+  color: #fff;
+  width: 100%;
+  padding: 12px 15px;
+  background: #18171C;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 24px;
+  box-sizing: border-box;
+}
+.btn-default {
+  padding: 12px 15px;
+  font-size: 16px;
+  line-height: 150%;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 12px;
+  color: #513409;
+  background: linear-gradient(90deg, #F9C888 0%, #7A551E 100%), linear-gradient(90deg, rgba(176, 127, 52, 0.5) 52.5%, rgba(249, 200, 136, 0.5) 100%);
+  border: none;
+  width: 100%;
+}
+.btn-default:hover:not(:disabled) {
+  background: linear-gradient(270deg, #F9C888 0%, #7A551E 100%), linear-gradient(90deg, rgba(176, 127, 52, 0.5) 52.5%, rgba(249, 200, 136, 0.5) 100%);
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+.row-form {
+  .form-control {
+    width: auto;
+    flex: 1 0;
+    border-radius: 12px 0px 0px 12px;
+  }
+  .btn-default {
+    width: auto;
+    border-radius: 0 12px 12px 0;
+  }
+  .form-label {
+    color: #6B6581;
+    display: inline-block;
+    margin-bottom: 5px;
+    padding-left: 15px;
+  }
+}
 </style>

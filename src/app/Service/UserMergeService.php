@@ -92,17 +92,22 @@ class UserMergeService
 
     protected function mergeParticipants(User $source, User $target)
     {
-        $sourceParticipants = Participant::where('user_id', $source->id)->get();
+        $sourceParticipants = DB::table('participants')->where('user_id', $source->id)->get();
         foreach ($sourceParticipants as $participant) {
-            $existing = Participant::where('user_id', $target->id)
+            $existing = DB::table('participants')
+                ->where('user_id', $target->id)
                 ->where('tournament_id', $participant->tournament_id)
                 ->first();
             if ($existing) {
-                // Если запись уже есть – удаляем дубль источника
-                $participant->delete();
+                DB::table('participants')
+                    ->where('user_id', $source->id)
+                    ->where('tournament_id', $participant->tournament_id)
+                    ->delete();
             } else {
-                $participant->user_id = $target->id;
-                $participant->save();
+                DB::table('participants')
+                    ->where('user_id', $source->id)
+                    ->where('tournament_id', $participant->tournament_id)
+                    ->update(['user_id' => $target->id]);
             }
         }
     }

@@ -19,8 +19,8 @@ class TelegramUser extends Model
         'photo_url',
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'telegram_user_id');
-    }
+//    public function user()
+//    {
+//        return $this->belongsTo(User::class, 'id', 'telegram_user_id');
+//    }
 }

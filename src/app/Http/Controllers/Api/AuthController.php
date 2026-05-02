@@ -175,7 +175,7 @@ class AuthController extends Controller
         }
 
         $telegramUser = TelegramUser::where('telegram_id', $telegramId)->first();
-        $sourceUser = $telegramUser ? $telegramUser->user : null;
+        $sourceUser = $telegramUser ? User::where('telegram_user_id', $telegramUser->id)->first() : null;
 
         Log::info('linkTelegram check', [
             'telegramUser' => $telegramUser?->id,

@@ -39,6 +39,7 @@
     <script src="{{ mix('js/app_v1.js') }}"></script>
 </head>
 <body>
+{{dd($isWeb)}}
 <div id="app"></div>
 </body>
 </html>

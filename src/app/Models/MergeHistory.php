@@ -10,6 +10,7 @@ class MergeHistory extends Model
     use HasFactory;
 
     protected $table = 'merge_history';
+    public $timestamps = false;
 
     protected $fillable = [
         'from_user_id',

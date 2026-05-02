@@ -20,8 +20,8 @@ class DatabaseSeeder extends Seeder
             CompanySeeder::class,
             SeasonSeeder::class,
             TournamentSeeder::class,
-            TelegramUserSeeder::class,
-            UserSeeder::class,
+//            TelegramUserSeeder::class,
+//            UserSeeder::class,
         ]);
 
         // Запускаем миграцию credentials после всех сидов

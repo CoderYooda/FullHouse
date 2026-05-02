@@ -164,18 +164,32 @@ class AuthController extends Controller
         $telegramId = $request->input('id');
         $currentUser = $request->user();
 
+        Log::info('linkTelegram started', [
+            'telegramId' => $telegramId,
+            'currentUser' => $currentUser->id,
+        ]);
+
         if ($currentUser->credentials()->where('provider', 'telegram')->where('provider_uid', $telegramId)->exists()) {
             return response()->json(['message' => 'Telegram уже привязан'], 400);
         }
 
         $telegramUser = TelegramUser::where('telegram_id', $telegramId)->first();
         $sourceUser = $telegramUser ? $telegramUser->user : null;
+
+        Log::info('linkTelegram check', [
+            'telegramUser' => $telegramUser?->id,
+            'sourceUser' => $sourceUser?->id,
+            'sourceUser_active' => $sourceUser?->is_active,
+        ]);
+
         $mergeService = new UserMergeService();
 
         if ($sourceUser && $sourceUser->is_active && $sourceUser->id !== $currentUser->id) {
+            \Log::info('Merging users', ['source' => $sourceUser->id, 'target' => $currentUser->id]);
             $mergeService->merge($sourceUser, $currentUser, 'link_telegram_to_web', $request->resolved_city_id ?? null);
             return response()->json(['message' => 'Аккаунты объединены']);
         } else {
+            Log::info('Creating new TelegramUser and linking', ['currentUser' => $currentUser->id]);
             if (!$telegramUser) {
                 $telegramUser = TelegramUser::create([
                     'telegram_id' => $telegramId,

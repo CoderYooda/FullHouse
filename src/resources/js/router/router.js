@@ -81,7 +81,7 @@ const routes = [
         path: '/telegram/player',
         name: 'telegram-entry',
         component: LoginTelegram,
-        meta: { layout: 'Main', auth: true },
+        meta: { layout: 'Clear', auth: false },
     },
 ];
 

@@ -17,7 +17,7 @@
         window.Telegram = Telegram;
 
         // Определяем slug и режим
-        window.Slug = '{{ $company->slug ?? 'blg' }}';
+        {{--window.Slug = '{{ $company->slug ?? 'blg' }}';--}}
         window.IsWeb = {{ isset($isWeb) && $isWeb ? 'true' : 'false' }};
 
         // Для Telegram-режима: сохраняем initData

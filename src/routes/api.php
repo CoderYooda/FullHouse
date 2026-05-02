@@ -38,5 +38,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/link-telegram', [AuthController::class, 'linkTelegram']);
     Route::post('/unlink-telegram', [AuthController::class, 'unlinkTelegram']);
     Route::post('/set-city', [UserController::class, 'setCity']);
+
+    Route::post('/link-email', [AuthController::class, 'linkEmail']);
+    Route::post('/verify-link-email', [AuthController::class, 'verifyLinkEmail']);
+
 });
 

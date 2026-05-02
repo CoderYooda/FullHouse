@@ -111,8 +111,7 @@ class AuthController extends Controller
 
     public function telegramLogin(Request $request)
     {
-        // Временно отключаем проверку хеша для теста
-         $this->validateTelegramHash($request->all());
+        $this->validateTelegramHash($request->all());
 
         $telegramId = $request->input('id');
 
@@ -142,7 +141,7 @@ class AuthController extends Controller
             $user = User::create([
                 'name' => $request->input('first_name', ''),
                 'public_name' => $request->input('username', ''),
-                'email' => $telegramId . '@telegram.com235',
+                'email' => $telegramId . '@telegram.com',
                 'password' => Hash::make('123456'),
                 'is_active' => true,
                 'telegram_user_id' => $telegramUser->id,
@@ -245,16 +244,68 @@ class AuthController extends Controller
         // 5. Сравниваем
         $isValid = hash_equals($calculated_hash, $hash);
 
-        // Логируем для отладки (потом можно убрать)
-        \Log::info('Hash validation', [
-            'data_received' => $data,
-            'data_sorted_keys' => array_keys($data),
-            'data_check_string' => $data_check_string,
-            'hash_calculated' => $calculated_hash,
-            'hash_received' => $hash,
-            'is_valid' => $isValid
-        ]);
 
         return $isValid;
+    }
+
+    public function linkEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|unique:users,email',
+        ]);
+
+        $user = $request->user();
+
+        // Проверяем, что email фейковый (создан при входе через Telegram)
+        if (!$user->email_verified_at && str_contains($user->email, '@telegram.com')) {
+            $code = random_int(100000, 999999);
+            EmailVerification::updateOrCreate(
+                ['email' => $request->email],
+                ['code' => $code, 'expires_at' => now()->addMinutes(15)]
+            );
+
+            Mail::raw("Код для привязки email: $code", function ($message) use ($request) {
+                $message->to($request->email)->subject('Привязка email');
+            });
+
+            session(['temp_email' => $request->email]);
+
+            return response()->json(['message' => 'Код отправлен']);
+        }
+
+        return response()->json(['message' => 'Email уже привязан'], 400);
+    }
+
+    public function verifyLinkEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'code' => 'required|string|size:6',
+        ]);
+
+        $tempEmail = session('temp_email');
+        if (!$tempEmail || $tempEmail !== $request->email) {
+            return response()->json(['message' => 'Неверный email'], 400);
+        }
+
+        $verification = EmailVerification::where('email', $request->email)
+            ->where('code', $request->code)
+            ->where('expires_at', '>', now())
+            ->firstOrFail();
+
+        $user = $request->user();
+        $user->email = $request->email;
+        $user->email_verified_at = now();
+        $user->save();
+
+        $user->credentials()->create([
+            'provider' => 'email',
+            'provider_uid' => $request->email,
+        ]);
+
+        $verification->delete();
+        session()->forget('temp_email');
+
+        return response()->json(['message' => 'Email привязан']);
     }
 }

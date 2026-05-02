@@ -43,6 +43,25 @@
       </div>
 
       <div class="module">
+        <!-- Привязка email (для Telegram-пользователей) -->
+        <div class="email-link-section" v-if="isTelegramMode && (!user.email || user.email.includes('@telegram.com'))">
+          <div v-if="!showEmailCodeForm">
+            <input type="email" v-model="linkEmail" placeholder="Введите email" class="form-control" />
+            <button @click="sendLinkEmail" class="btn-link">Привязать email</button>
+          </div>
+          <div v-else>
+            <input type="text" v-model="emailCode" placeholder="Код из письма" class="form-control" />
+            <button @click="verifyLinkEmail" class="btn-link">Подтвердить</button>
+          </div>
+        </div>
+
+        <!-- Привязка Telegram (для email-пользователей) -->
+        <div class="telegram-link-section" v-if="!isTelegramMode && !user.telegram_user_id">
+          <div id="telegram-link-widget"></div>
+        </div>
+      </div>
+
+      <div class="module">
         <div class="user-split-card">
           <div class="user-card" style="margin-bottom: 0">
             <div class="card-header">
@@ -78,6 +97,9 @@ export default {
   data() {
     return {
       tournaments: [],
+      linkEmail: '',
+      emailCode: '',
+      showEmailCodeForm: false,
     };
   },
   computed: {
@@ -148,11 +170,72 @@ export default {
       this.$store.commit('auth/LOGOUT');
       this.$router.push('/login');
     },
+
+    async sendLinkEmail() {
+      try {
+        await axios.post('/api/link-email', { email: this.linkEmail });
+        this.showEmailCodeForm = true;
+        alert('Код отправлен на email');
+      } catch (error) {
+        alert(error.response?.data?.message || 'Ошибка');
+      }
+    },
+
+    async verifyLinkEmail() {
+      try {
+        await axios.post('/api/verify-link-email', {
+          email: this.linkEmail,
+          code: this.emailCode,
+        });
+        alert('Email привязан');
+        await this.$store.dispatch('auth/GetPlayer');
+        this.showEmailCodeForm = false;
+        this.linkEmail = '';
+        this.emailCode = '';
+      } catch (error) {
+        alert('Неверный код');
+      }
+    },
+
+    initTelegramLinkWidget() {
+      const container = document.getElementById('telegram-link-widget');
+      if (!container) return;
+
+      const script = document.createElement('script');
+      script.src = 'https://telegram.org/js/telegram-widget.js?22';
+      script.async = true;
+      script.setAttribute('data-telegram-login', 'test_fullhouse_bot');
+      script.setAttribute('data-size', 'large');
+      script.setAttribute('data-onauth', 'onTelegramLinkAuth');
+      container.appendChild(script);
+
+      window.onTelegramLinkAuth = async (user) => {
+        try {
+          await axios.post('/api/link-telegram', {
+            id: user.id,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            username: user.username,
+            photo_url: user.photo_url,
+            auth_date: user.auth_date,
+            hash: user.hash,
+          });
+          alert('Telegram привязан');
+          await this.$store.dispatch('auth/GetPlayer');
+        } catch (error) {
+          alert(error.response?.data?.message || 'Ошибка привязки');
+        }
+      };
+    },
   },
   async mounted() {
     // Если есть данные от Telegram и нет токена — авторизуемся
     if (window.Telegram?.WebApp?.initData && !localStorage.getItem('_token')) {
       await this.telegramAuth();
+    }
+
+    if (!this.isTelegramMode) {
+      this.initTelegramLinkWidget();
     }
 
     this.loadPlayerData();

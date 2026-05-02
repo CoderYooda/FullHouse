@@ -9,6 +9,7 @@ import Tournament from '../pages/Tournament.vue';
 import Report from '../pages/Report.vue';
 import Rating from '../pages/Rating.vue';
 import Game from '../pages/Game.vue';
+import LoginTelegram from '../pages/LoginTelegram.vue';
 
 const routes = [
     {
@@ -79,7 +80,7 @@ const routes = [
     {
         path: '/telegram/player',
         name: 'telegram-entry',
-        component: Player,
+        component: LoginTelegram,
         meta: { layout: 'Main', auth: true },
     },
 ];

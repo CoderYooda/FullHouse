@@ -24,6 +24,25 @@
       </div>
 
       <div class="module">
+        <!-- Привязка email (для Telegram-пользователей) -->
+        <div class="email-link-section" v-if="isTelegramMode && (!user.email || user.email.includes('@telegram.com'))">
+          <div v-if="!showEmailCodeForm">
+            <input type="email" v-model="linkEmail" placeholder="Введите email" class="form-control" />
+            <button @click="sendLinkEmail" class="btn-link">Привязать email</button>
+          </div>
+          <div v-else>
+            <input type="text" v-model="emailCode" placeholder="Код из письма" class="form-control" />
+            <button @click="verifyLinkEmail" class="btn-link">Подтвердить</button>
+          </div>
+        </div>
+
+        <!-- Привязка Telegram (для email-пользователей) -->
+        <div class="telegram-link-section" v-if="!isTelegramMode && !user.telegram_user_id">
+          <div id="telegram-link-widget"></div>
+        </div>
+      </div>
+
+      <div class="module">
         <div class="user-split-card">
           <div class="user-card" style="margin-bottom: 0">
             <div class="card-header">
@@ -130,9 +149,11 @@ export default {
       this.$router.push('/login');
     },
   },
-  mounted() {
-    console.log('Telegram object:', window.Telegram);
-    console.log('isTelegramMode:', this.isTelegramMode);
+  async mounted() {
+    // Если есть данные от Telegram и нет токена — авторизуемся
+    if (window.Telegram?.WebApp?.initData && !localStorage.getItem('_token')) {
+      await this.telegramAuth();
+    }
 
     this.loadPlayerData();
     this.getTournament();

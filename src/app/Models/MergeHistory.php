@@ -9,7 +9,14 @@ class MergeHistory extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['from_user_id', 'to_user_id', 'merged_summary', 'reason'];
+    protected $table = 'merge_history';
+
+    protected $fillable = [
+        'from_user_id',
+        'to_user_id',
+        'merged_summary',
+        'reason'
+    ];
 
     protected $casts = ['merged_summary' => 'array'];
 }

@@ -1,9 +1,10 @@
+<!--
 <template>
   <div class="login-container">
     <div class="login-card">
       <h2>Вход в систему</h2>
 
-      <!-- Email форма (для web-режима) -->
+      &lt;!&ndash; Email форма (для web-режима) &ndash;&gt;
       <form v-if="!shouldUseTelegramAuth" @submit.prevent="handleEmailLogin">
         <div class="form-group">
           <input
@@ -28,7 +29,7 @@
         </button>
       </form>
 
-      <!-- Telegram авторизация (только для Telegram-режима) -->
+      &lt;!&ndash; Telegram авторизация (только для Telegram-режима) &ndash;&gt;
       <div v-else class="telegram-auth">
         <div class="loading-spinner" v-if="isLoading">
           Авторизация через Telegram...
@@ -246,4 +247,4 @@ export default {
   color: red;
   font-size: 14px;
 }
-</style>
+</style>-->

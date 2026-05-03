@@ -275,7 +275,6 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
         ]);
 
         $user = $request->user();
@@ -283,12 +282,6 @@ class AuthController extends Controller
         if (!str_contains($user->email, '@telegram.com')) {
             return response()->json(['message' => 'Email уже привязан'], 400);
         }
-
-        // Временно сохраняем email и пароль в сессии
-        session([
-            'temp_email' => $request->email,
-            'temp_password' => Hash::make($request->password),
-        ]);
 
         $code = random_int(100000, 999999);
         EmailVerification::updateOrCreate(
@@ -308,14 +301,8 @@ class AuthController extends Controller
         $request->validate([
             'email' => 'required|email',
             'code' => 'required|string|size:6',
+            'password' => 'required|min:8|confirmed',
         ]);
-
-        $tempEmail = session('temp_email');
-        $tempPassword = session('temp_password');
-
-        if (!$tempEmail || $tempEmail !== $request->email || !$tempPassword) {
-            return response()->json(['message' => 'Неверный email'], 400);
-        }
 
         $verification = EmailVerification::where('email', $request->email)
             ->where('code', $request->code)
@@ -324,19 +311,21 @@ class AuthController extends Controller
 
         $user = $request->user();
 
+        if (!str_contains($user->email, '@telegram.com')) {
+            return response()->json(['message' => 'Email уже привязан'], 400);
+        }
+
         $user->email = $request->email;
-        $user->password = $tempPassword;
+        $user->password = Hash::make($request->password);
         $user->email_verified_at = now();
         $user->save();
 
-        // Обновляем credential
         $user->credentials()->updateOrCreate(
             ['provider' => 'email'],
             ['provider_uid' => $request->email]
         );
 
         $verification->delete();
-        session()->forget(['temp_email', 'temp_password']);
 
         return response()->json(['message' => 'Email привязан']);
     }

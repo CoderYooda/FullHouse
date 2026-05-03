@@ -1,7 +1,11 @@
 <template>
   <div class="content">
     <ChangeNameModal/>
-    <div class="boxed">
+    <div class="boxed p-relative">
+      <button @click="logout" class="logout-button" v-if="!isTelegramMode">
+        Выйти из аккаунта
+      </button>
+
       <div class="avatar_guard">
         <img class="player_avatar" :src="user.photo_url || '/images/default-avatar.png'">
       </div>
@@ -17,21 +21,20 @@
           </span>
         </div>
 
-        <div class="logout-row" v-if="!isTelegramMode">
-          <button @click="logout" class="logout-button">
-            Выйти из аккаунта
-          </button>
-        </div>
+
       </div>
 
       <div class="module">
         <!-- Привязка email (для пользователей с фейковым email) -->
         <div class="email-link-section" v-if="!user.email_verified_at && user.email && user.email.includes('@telegram.com')">
           <label class="form-label">Привязать Email</label>
-          <div v-if="!showEmailCodeForm" class="row row-form">
+          <div v-if="!showEmailCodeForm" class="row row-column g-5">
             <input type="email" v-model="linkEmail" placeholder="Введите email" class="form-control" />
+            <input type="password" v-model="linkPassword" placeholder="Придумайте пароль" class="form-control" />
+            <input type="password" v-model="linkPasswordConfirmation" placeholder="Подтвердите пароль" class="form-control" />
             <button @click="sendLinkEmail" class="btn-default">Привязать</button>
           </div>
+
           <div v-else class="row row-form">
             <input type="text" v-model="emailCode" placeholder="Код из письма" class="form-control" />
             <button @click="verifyLinkEmail" class="btn-default">Подтвердить</button>
@@ -81,6 +84,8 @@ export default {
     return {
       tournaments: [],
       linkEmail: '',
+      linkPassword: '',
+      linkPasswordConfirmation: '',
       emailCode: '',
       showEmailCodeForm: false,
     };
@@ -155,8 +160,20 @@ export default {
     },
 
     async sendLinkEmail() {
+      if (this.linkPassword !== this.linkPasswordConfirmation) {
+        alert('Пароли не совпадают');
+        return;
+      }
+      if (this.linkPassword.length < 8) {
+        alert('Пароль должен быть не менее 8 символов');
+        return;
+      }
       try {
-        await axios.post('/api/link-email', { email: this.linkEmail });
+        await axios.post('/api/link-email', {
+          email: this.linkEmail,
+          password: this.linkPassword,
+          password_confirmation: this.linkPasswordConfirmation,
+        });
         this.showEmailCodeForm = true;
         alert('Код отправлен на email');
       } catch (error) {
@@ -229,15 +246,16 @@ export default {
 <style>
 
 .logout-button {
-  width: 100%;
   padding: 10px;
-  margin-top: 10px;
   border: none;
   border-radius: 8px;
   font-size: 16px;
   cursor: pointer;
   background-color: #dc3545;
   color: white;
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 .logout-button:hover {
   background-color: #c82333;

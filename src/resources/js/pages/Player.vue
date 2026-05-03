@@ -182,19 +182,27 @@ export default {
     },
 
     async verifyLinkEmail() {
+      if (this.linkPassword !== this.linkPasswordConfirmation) {
+        alert('Пароли не совпадают');
+        return;
+      }
       try {
         await axios.post('/api/verify-link-email', {
           email: this.linkEmail,
           code: this.emailCode,
+          password: this.linkPassword,
+          password_confirmation: this.linkPasswordConfirmation,
         });
         alert('Email привязан');
         await this.$store.dispatch('auth/GetPlayer');
         await this.getTournament();
         this.showEmailCodeForm = false;
         this.linkEmail = '';
+        this.linkPassword = '';
+        this.linkPasswordConfirmation = '';
         this.emailCode = '';
       } catch (error) {
-        alert('Неверный код');
+        alert(error.response?.data?.message || 'Неверный код');
       }
     },
 

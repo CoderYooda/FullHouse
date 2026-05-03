@@ -220,11 +220,11 @@ export default {
     width: auto;
     border-radius: 0 12px 12px 0;
   }
-  .form-label {
-    color: #6B6581;
-    display: inline-block;
-    margin-bottom: 5px;
-    padding-left: 15px;
-  }
+}
+.form-label {
+  color: #6B6581;
+  display: inline-block;
+  margin-bottom: 5px;
+  padding-left: 15px;
 }
 </style>

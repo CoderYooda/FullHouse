@@ -275,23 +275,27 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8|confirmed',
         ]);
 
         $user = $request->user();
 
-        // Проверяем, что у пользователя фейковый email
-        if (!$user->email || !str_contains($user->email, '@telegram.com')) {
-            return response()->json(['message' => 'Email уже привязан или недействителен'], 400);
+        if (!str_contains($user->email, '@telegram.com')) {
+            return response()->json(['message' => 'Email уже привязан'], 400);
         }
 
-        // Генерируем код и сохраняем в БД
+        // Временно сохраняем email и пароль в сессии
+        session([
+            'temp_email' => $request->email,
+            'temp_password' => Hash::make($request->password),
+        ]);
+
         $code = random_int(100000, 999999);
         EmailVerification::updateOrCreate(
             ['email' => $request->email],
             ['code' => $code, 'expires_at' => now()->addMinutes(15)]
         );
 
-        // Отправляем письмо
         Mail::raw("Код для привязки email: $code", function ($message) use ($request) {
             $message->to($request->email)->subject('Привязка email');
         });
@@ -306,7 +310,13 @@ class AuthController extends Controller
             'code' => 'required|string|size:6',
         ]);
 
-        // Проверяем код
+        $tempEmail = session('temp_email');
+        $tempPassword = session('temp_password');
+
+        if (!$tempEmail || $tempEmail !== $request->email || !$tempPassword) {
+            return response()->json(['message' => 'Неверный email'], 400);
+        }
+
         $verification = EmailVerification::where('email', $request->email)
             ->where('code', $request->code)
             ->where('expires_at', '>', now())
@@ -314,24 +324,19 @@ class AuthController extends Controller
 
         $user = $request->user();
 
-        // Проверяем, что у пользователя действительно фейковый email
-        if (!$user->email || !str_contains($user->email, '@telegram.com')) {
-            return response()->json(['message' => 'Email уже привязан'], 400);
-        }
-
-        // Обновляем email пользователя
         $user->email = $request->email;
+        $user->password = $tempPassword;
         $user->email_verified_at = now();
         $user->save();
 
-        // Обновляем или создаём credential
+        // Обновляем credential
         $user->credentials()->updateOrCreate(
             ['provider' => 'email'],
             ['provider_uid' => $request->email]
         );
 
-        // Удаляем код подтверждения
         $verification->delete();
+        session()->forget(['temp_email', 'temp_password']);
 
         return response()->json(['message' => 'Email привязан']);
     }

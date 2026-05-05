@@ -16,17 +16,15 @@ class MigrateUserCredentials extends Command
 
     public function handle()
     {
-        $this->info('Starting migration...');
-
         // ==================== 1. МИГРАЦИЯ ТУРНИРОВ ИЗ КОМПАНИЙ В ГОРОДА ====================
-        $this->info('Step 1: Migrating tournaments from companies to cities...');
+        $this->info('Step 1: МИГРАЦИЯ ТУРНИРОВ ИЗ КОМПАНИЙ В ГОРОДА ...');
 
         // Находим города
         $belgorod = City::where('name', 'Белгород')->first();
         $voronezh = City::where('name', 'Воронеж')->first();
 
         if (!$belgorod || !$voronezh) {
-            $this->error('Cities not found. Please run cities migration first.');
+            $this->error('Города не найдены. Пожалуйста, сначала выполните миграцию.');
             return 1;
         }
 
@@ -38,18 +36,18 @@ class MigrateUserCredentials extends Command
         if ($blgCompany) {
             $count = Tournament::where('company_id', $blgCompany->id)
                 ->update(['city_id' => $belgorod->id]);
-            $this->info("Moved {$count} tournaments from 'blg' company to Belgorod city");
+            $this->info("Перемещено {$count}  'blg' в город Белгород");
         } else {
-            $this->warn("Company 'blg' not found, skipping...");
+            $this->warn("Компания 'blg' не найдена, пропускаем...");
         }
 
         // Переносим турниры компании vzh в Воронеж
         if ($vzhCompany) {
             $count = Tournament::where('company_id', $vzhCompany->id)
                 ->update(['city_id' => $voronezh->id]);
-            $this->info("Moved {$count} tournaments from 'vzh' company to Voronezh city");
+            $this->info("Перемещено {$count} турниров из компании 'vzh' в город Воронеж");
         } else {
-            $this->warn("Company 'vzh' not found, skipping...");
+            $this->warn("Компания 'vzh' не найдена, пропускаем...");
         }
 
         // Все остальные турниры (если есть) – оставляем без города или переносим в Белгород по умолчанию
@@ -57,7 +55,28 @@ class MigrateUserCredentials extends Command
         if ($otherCount > 0) {
             Tournament::whereNull('city_id')->whereNotNull('company_id')
                 ->update(['city_id' => $belgorod->id]);
-            $this->info("Moved {$otherCount} tournaments from other companies to Belgorod city");
+            $this->info("{$otherCount} турниров было без города и переехало в Белгород");
+        }
+
+        // ==================== НАЗНАЧАЕМ АДМИНИСТРАТОРОВ ====================
+        $this->info('Step 2: Setting up administrators...');
+
+        // Administrator для Белгорода
+        $adminBelgorod = User::where('name', 'Administrator')->first();
+        if ($adminBelgorod) {
+            $adminBelgorod->is_admin = true;
+            $adminBelgorod->city_id = $belgorod->id;
+            $adminBelgorod->save();
+            $this->info("Администратор для Белгорода назначен");
+        }
+
+        // AdministratorVZH для Воронежа
+        $adminVoronezh = User::where('name', 'AdministratorVZH')->first();
+        if ($adminVoronezh) {
+            $adminVoronezh->is_admin = true;
+            $adminVoronezh->city_id = $voronezh->id;
+            $adminVoronezh->save();
+            $this->info("Администратор для Воронежа назначен");
         }
 
         // ==================== 2. МИГРАЦИЯ ПОЛЬЗОВАТЕЛЕЙ ====================
@@ -88,12 +107,12 @@ class MigrateUserCredentials extends Command
                     'provider_data' => ['username' => $telegramUser->username],
                 ]);
                 $created++;
-                $this->info("Created credential for user {$user->id} (telegram_id: {$telegramId})");
+                $this->info("Созданы учетные данные для пользователя {$user->id} (telegram_id: {$telegramId})");
             } else {
                 if ($existingCredential->user_id !== $user->id) {
-                    $this->warn("Credential for telegram_id {$telegramId} already belongs to user {$existingCredential->user_id}, skipping user {$user->id}");
+                    $this->warn("Учетные данные для telegram_id {$telegramId} уже принадлежат пользователю {$existingCredential->user_id}, пользователь {$user->id} пропущен");
                 } else {
-                    $this->line("Credential for user {$user->id} already exists, skipped.");
+                    $this->line("Учетные данные для пользователя {$user->id} уже существуют, пропущены.");
                 }
                 $skipped++;
             }
@@ -108,15 +127,15 @@ class MigrateUserCredentials extends Command
         }
 
         // ==================== 3. ИТОГИ ====================
-        $this->info('Migration completed!');
+        $this->info('Миграция турниров и пользователей прошла успешно!');
         $this->table(
             ['Step', 'Details'],
             [
-                ['Tournaments to Belgorod', $blgCompany ? Tournament::where('city_id', $belgorod->id)->count() . ' tournaments' : 'N/A'],
-                ['Tournaments to Voronezh', $vzhCompany ? Tournament::where('city_id', $voronezh->id)->count() . ' tournaments' : 'N/A'],
-                ['Users credentials created', $created],
-                ['Users credentials skipped', $skipped],
-                ['Users activated', $activated],
+                ['Турниры в Белгороде', $blgCompany ? Tournament::where('city_id', $belgorod->id)->count() . ' tournaments' : 'N/A'],
+                ['Турниры в Воронеже', $vzhCompany ? Tournament::where('city_id', $voronezh->id)->count() . ' tournaments' : 'N/A'],
+                ['Пользователей удачно мигрировало', $created],
+                ['Пользователей при миграции пропущено', $skipped],
+                ['Пользователей пришлось активировать', $activated],
             ]
         );
 

@@ -207,7 +207,7 @@ export default {
     },
 
     initTelegramLinkWidget() {
-      const container = document.getElementById('telegram-bind-widget');
+      const container = document.getElementById('telegram-link-widget');
       if (!container) return;
 
       const script = document.createElement('script');
@@ -215,7 +215,7 @@ export default {
       script.async = true;
       script.setAttribute('data-telegram-login', 'test_fullhouse_bot');
       script.setAttribute('data-size', 'large');
-      script.setAttribute('data-onauth', 'onTelegramBindAuth(user)'); // обрати внимание — передаём параметр
+      script.setAttribute('data-onauth', 'onTelegramBindAuth'); // обрати внимание — передаём параметр
       container.appendChild(script);
 
       window.onTelegramBindAuth = (user) => {

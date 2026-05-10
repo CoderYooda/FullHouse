@@ -80,6 +80,7 @@ class UpdateTournamentRequest extends FormRequest
             types: $this->validated('types') ?? [],
             season: $this->validated('season'),
             company_id: $this->user()->company_id,
+            city_id: $this->user()->city_id,
         );
     }
 }

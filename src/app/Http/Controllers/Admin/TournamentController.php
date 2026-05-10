@@ -48,7 +48,8 @@ class TournamentController extends Controller
             ->owned()
             ->get();
         $seasons = Season::query()
-            ->owned()
+//            ->owned()
+            ->orderBy('created_at', 'DESC')
             ->get();
 
         return view('admin.tournaments.edit', [
@@ -68,7 +69,10 @@ class TournamentController extends Controller
         $tournamentTypes = TournamentType::query()
             ->owned()
             ->get();
-        $seasons = Season::query()->owned()->get();
+        $seasons = Season::query()
+//            ->owned()
+            ->orderBy('created_at', 'DESC')
+            ->get();
 
         return view('admin.tournaments.edit', [
             'tournament' => $tournament,

@@ -2,7 +2,7 @@
   <div class="content">
     <ChangeNameModal/>
     <div class="boxed p-relative">
-      <button @click="logout" class="logout-button" v-if="!isTelegramMode">
+      <button @click="logout" class="logout-button" v-if="!isTelegramApp">
         Выйти из аккаунта
       </button>
 
@@ -20,8 +20,6 @@
               Сменить город ({{ currentCityName }})
           </span>
         </div>
-
-
       </div>
 
       <div class="module">
@@ -42,7 +40,7 @@
         </div>
 
         <!-- Привязка Telegram (для email-пользователей) -->
-        <div class="telegram-link-section" v-if="!isTelegramMode && !user.telegram_user_id">
+        <div class="telegram-link-section" v-if="!isTelegramApp && !user.telegram_user_id">
           <div id="telegram-link-widget"></div>
         </div>
       </div>
@@ -101,11 +99,8 @@ export default {
       if (cityId === 2) return 'Воронеж';
       return 'не выбран';
     },
-    isTelegramMode1() {
-      return !!window.Telegram?.WebApp?.initData;
-    },
-    isTelegramMode() {
-      // Если есть объект Telegram.WebApp и внутри него initData — значит мы в Telegram
+    // Только если приложение открыто внутри Telegram WebApp (через бота)
+    isTelegramApp() {
       return !!(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData);
     },
   },
@@ -215,14 +210,14 @@ export default {
       script.async = true;
       script.setAttribute('data-telegram-login', 'test_fullhouse_bot');
       script.setAttribute('data-size', 'large');
-      script.setAttribute('data-onauth', 'onTelegramBindAuth'); // обрати внимание — передаём параметр
+      script.setAttribute('data-onauth', 'onTelegramBindAuth');
       container.appendChild(script);
 
       window.onTelegramBindAuth = (user) => {
-        // здесь уже не нужно объявлять функцию внутри — она глобальная
         this.handleTelegramBind(user);
       };
     },
+
     async handleTelegramBind(user) {
       console.log('Привязка Telegram', user);
       try {
@@ -236,12 +231,7 @@ export default {
     },
   },
   async mounted() {
-    // Если есть данные от Telegram и нет токена — авторизуемся
-    if (window.Telegram?.WebApp?.initData && !localStorage.getItem('_token')) {
-      await this.telegramAuth();
-    }
-
-    if (!this.isTelegramMode) {
+    if (!this.isTelegramApp) {
       this.initTelegramLinkWidget();
     }
 
@@ -252,7 +242,6 @@ export default {
 </script>
 
 <style>
-
 .logout-button {
   padding: 10px;
   border: none;
@@ -269,25 +258,24 @@ export default {
   background-color: #c82333;
 }
 .view-agreement-row {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 .view-agreement-button {
-    padding: 0.5rem 1rem;
-    font-size: 0.95rem;
-    color: #68627d;
-    text-decoration: none;
-    border-radius: 15px;
-    transition: background-color 0.2s, color 0.2s;
-    border: 1px solid rgba(59, 58, 65, 0.6588235294);
-    background: rgba(24, 23, 28, 0.431372549);
-
-    text-align: center;
-    display: block;
-    margin: 20px auto 0;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  color: #68627d;
+  text-decoration: none;
+  border-radius: 15px;
+  transition: background-color 0.2s, color 0.2s;
+  border: 1px solid rgba(59, 58, 65, 0.6588235294);
+  background: rgba(24, 23, 28, 0.431372549);
+  text-align: center;
+  display: block;
+  margin: 20px auto 0;
 }
 .view-agreement-button:hover {
-    background-color: #0066cc;
-    color: white;
+  background-color: #0066cc;
+  color: white;
 }
 .change-city-button {
   background: #EDB258;

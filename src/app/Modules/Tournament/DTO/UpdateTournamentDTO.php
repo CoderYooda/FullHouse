@@ -27,6 +27,7 @@ class UpdateTournamentDTO
         public readonly array $types,
         public readonly int $season,
         public readonly int $company_id,
+        public readonly ?int $city_id,
     ){
     }
 }

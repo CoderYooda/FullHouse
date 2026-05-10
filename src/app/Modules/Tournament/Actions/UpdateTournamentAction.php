@@ -37,6 +37,7 @@ class UpdateTournamentAction
         $tournament->description = 'deprecated';
         $tournament->season_id = $updateTournamentDTO->season;
         $tournament->company_id = $updateTournamentDTO->company_id;
+        $tournament->city_id = $updateTournamentDTO->city_id;
         $tournament->save();
 
         $tournament->types()->sync($updateTournamentDTO->types);

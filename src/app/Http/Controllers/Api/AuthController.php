@@ -145,7 +145,6 @@ class AuthController extends Controller
                 'password' => Hash::make('123456'),
                 'is_active' => true,
                 'telegram_user_id' => $telegramUser->id,
-                'agreement' => false,
             ]);
 
             $user->credentials()->create([

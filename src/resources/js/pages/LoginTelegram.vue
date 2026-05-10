@@ -1,9 +1,12 @@
 <template>
   <div class="telegram-container">
     <div class="telegram-card">
-      <div v-if="isLoading" class="loading-spinner">
-        Авторизация через Telegram...
+
+      <div class="preloader">
+        <div class="blur-overlay"></div>
+        <div class="logo"></div>
       </div>
+
       <div v-else-if="error" class="error-message">
         {{ error }}
       </div>

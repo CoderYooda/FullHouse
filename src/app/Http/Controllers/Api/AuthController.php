@@ -144,6 +144,7 @@ class AuthController extends Controller
                 'email' => $telegramId . '@telegram.com',
                 'password' => Hash::make('123456'),
                 'is_active' => true,
+                'agreement' => false,
                 'telegram_user_id' => $telegramUser->id,
             ]);
 

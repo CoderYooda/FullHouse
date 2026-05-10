@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $id
  * @property int $type
  * @property int $user_id
+ * @property int $city_id
  * @property bool $is_anonymous
  * @property bool $is_solved
  * @property string $message
@@ -39,7 +40,7 @@ class Feedback extends Model
 
     public function scopeOwned(Builder $query): void
     {
-        $query->where('company_id', auth()->user()->company_id);
+        $query->where('city_id', auth()->user()->city_id);
     }
 
     public function user(): BelongsTo

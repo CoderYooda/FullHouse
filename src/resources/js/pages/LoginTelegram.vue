@@ -196,22 +196,58 @@ export default {
 
 <style scoped>
 .telegram-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: #000;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
+
+.preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(180deg, #2A2A32 0%, #17161C 100%);
+}
+
+.blur-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%);
+  backdrop-filter: blur(10px);
+}
+
+.logo {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  background-image: url('/img/logo.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 10;
+}
+
 .telegram-card {
+  position: relative;
+  z-index: 10;
   background: white;
   padding: 2rem;
   border-radius: 12px;
   text-align: center;
 }
-.loading-spinner {
-  color: #667eea;
-  font-size: 16px;
-}
+
 .error-message {
   color: red;
   font-size: 14px;

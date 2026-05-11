@@ -62,7 +62,6 @@ export default {
     };
   },
   mounted() {
-    console.log('||||||||||||||||||ЭТА ХРЕНЬ НЕ ДОЛЖНА ОТОБРАЗИТЬСЯ||||||||||||||')
     this.initTelegramWidget();
   },
   methods: {
@@ -76,8 +75,8 @@ export default {
         return;
       }
 
-      const botName = 'test_fullhouse_bot';
-
+      const botName = process.env.MIX_TELEGRAM_BOT_USERNAME;
+      
       const script = document.createElement('script');
       script.src = 'https://telegram.org/js/telegram-widget.js?22';
       script.async = true;

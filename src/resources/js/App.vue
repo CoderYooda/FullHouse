@@ -27,6 +27,13 @@ export default {
   },
   async mounted() {
     const token = localStorage.getItem('_token');
+    const isTelegramPage = window.location.pathname === '/telegram/player';
+
+    // Если страница авторизации через бота — не трогаем
+    if (isTelegramPage) {
+      this.isLoading = false;
+      return;
+    }
 
     if (token) {
       try {

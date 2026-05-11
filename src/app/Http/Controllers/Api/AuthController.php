@@ -39,7 +39,7 @@ class AuthController extends Controller
                     'public_name' => $request->public_name,
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
-                    'agreement' => true,
+                    'agreement' => false,
                     'is_active' => true,
                 ]);
 
@@ -111,29 +111,22 @@ class AuthController extends Controller
 
     public function telegramLogin(Request $request)
     {
-        error_log("1. telegramLogin START");
 
         $this->validateTelegramHash($request->all());
-        error_log("2. validateTelegramHash DONE");
 
         $telegramId = $request->input('id');
-        error_log("3. telegramId: " . $telegramId);
 
         $credential = UserCredential::where('provider', 'telegram')
             ->where('provider_uid', $telegramId)
             ->first();
-        error_log("4. credential search DONE");
 
         if ($credential) {
-            error_log("5. credential EXISTS");
             $user = $credential->user;
             if (!$user->is_active) {
                 $user->is_active = true;
                 $user->save();
-                error_log("6. user activated");
             }
         } else {
-            error_log("5. credential NOT FOUND, creating new user");
 
             $telegramUser = TelegramUser::create([
                 'telegram_id' => $telegramId,
@@ -144,7 +137,6 @@ class AuthController extends Controller
                 'allows_write_to_pm' => true,
                 'photo_url' => $request->input('photo_url'),
             ]);
-            error_log("6. TelegramUser created, id: " . $telegramUser->id);
 
             $user = User::create([
                 'name' => $request->input('first_name', ''),
@@ -155,18 +147,15 @@ class AuthController extends Controller
                 'telegram_user_id' => $telegramUser->id,
                 'agreement' => false,
             ]);
-            error_log("7. User created, id: " . $user->id);
 
             $user->credentials()->create([
                 'provider' => 'telegram',
                 'provider_uid' => $telegramId,
                 'provider_data' => ['username' => $request->input('username')],
             ]);
-            error_log("8. credential created");
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
-        error_log("9. token created");
 
         return response()->json(['token' => $token, 'user' => $user]);
     }
@@ -177,11 +166,6 @@ class AuthController extends Controller
         $telegramId = $request->input('id');
         $currentUser = $request->user();
 
-        Log::info('linkTelegram started', [
-            'telegramId' => $telegramId,
-            'currentUser' => $currentUser->id,
-        ]);
-
         // Если уже привязан — просто возвращаем успех
         if ($currentUser->credentials()->where('provider', 'telegram')->where('provider_uid', $telegramId)->exists()) {
             return response()->json(['message' => 'Telegram уже привязан'], 200);
@@ -190,16 +174,10 @@ class AuthController extends Controller
         $telegramUser = TelegramUser::where('telegram_id', $telegramId)->first();
         $sourceUser = $telegramUser ? User::where('telegram_user_id', $telegramUser->id)->first() : null;
 
-        Log::info('linkTelegram check', [
-            'telegramUser' => $telegramUser?->id,
-            'sourceUser' => $sourceUser?->id,
-            'sourceUser_active' => $sourceUser?->is_active,
-        ]);
-
         $mergeService = new UserMergeService();
 
         if ($sourceUser && $sourceUser->is_active && $sourceUser->id !== $currentUser->id) {
-            Log::info('Merging users', ['source' => $sourceUser->id, 'target' => $currentUser->id]);
+
             $mergeService->merge($sourceUser, $currentUser, 'link_telegram_to_web', $request->resolved_city_id ?? null);
 
             // Обновляем текущего пользователя после слияния
@@ -207,9 +185,6 @@ class AuthController extends Controller
 
             return response()->json(['message' => 'Аккаунты объединены', 'user' => $currentUser]);
         }
-
-        // Если TelegramUser не найден или он неактивен — создаём новый и привязываем
-        Log::info('Creating new TelegramUser and linking', ['currentUser' => $currentUser->id]);
 
         if (!$telegramUser) {
             $telegramUser = TelegramUser::create([

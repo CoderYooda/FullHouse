@@ -46,17 +46,17 @@ export default {
           auth_date: user.auth_date,
           hash: user.hash,
         });
-        console.log('МОЖЕТ ТУТ УЖЕ НЕ ОТРАБАТЫВАЕТ?????')
+
         localStorage.setItem('_token', data.token);
         this.$store.commit('auth/SET_TOKEN', data.token);
-        console.log("Вот до сюда норм а дальше видимо чушь111111111...")
+
         this.$store.commit('auth/SET_USER', data.user);
-        console.log("Вот до сюда норм а дальше видимо чушь222222222...")
+
         this.setAxiosAuthHeader(data.token);
 
         this.$router.push({name: 'player'});
+
       } catch (error) {
-        console.log('МОЖЕТ В ОШИБКУ УЛЕТАЕТ???')
         // console.error(error);
         this.error = error.response?.data?.message || 'Ошибка входа через Telegram';
       } finally {
@@ -67,8 +67,6 @@ export default {
 
   },
   mounted() {
-    console.log('что-то видим', window.Telegram?.WebApp);
-    console.log('Видим initData', window.Telegram?.WebApp.initData);
 
     if (window.Telegram?.WebApp?.initData) {
       const initData = window.Telegram.WebApp.initData;
@@ -109,7 +107,7 @@ export default {
           auth_date: result.auth_date,
           hash: result.hash
         };
-        console.log('ДО СЮДА ТОЧНО ДОХОДИТ')
+
         this.handleTelegramLogin(data);
       } else {
         this.error = 'Не удалось получить данные пользователя';
@@ -138,9 +136,7 @@ export default {
   //         auth_date: window.Telegram.WebApp.initDataUnsafe?.auth_date,
   //         hash: window.Telegram.WebApp.initDataUnsafe?.hash
   //       };
-  //       console.log('ПОЛЬЗОВАТЕЛЬ', window.Telegram.WebApp.initDataUnsafe)
-  //       console.log('приветики', data)
-  //       console.log('приветики2', initData)
+
   //
   //       this.handleTelegramLogin(data);
   //     } else {

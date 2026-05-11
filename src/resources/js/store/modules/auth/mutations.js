@@ -24,7 +24,7 @@ export default {
     },
 
     SET_USER(state, user) {
-        console.log('SET_USER mutation called with:', user);
+
         state.user = user;
         state._authenticated = !!user;
         if (user && user.public_name) {

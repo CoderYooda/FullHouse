@@ -7,7 +7,7 @@
         <div class="logo"></div>
       </div>
 
-      <div v-else-if="error" class="error-message">
+      <div v-if="error" class="error-message">
         {{ error }}
       </div>
     </div>
@@ -46,14 +46,17 @@ export default {
           auth_date: user.auth_date,
           hash: user.hash,
         });
-
+        console.log('МОЖЕТ ТУТ УЖЕ НЕ ОТРАБАТЫВАЕТ?????')
         localStorage.setItem('_token', data.token);
         this.$store.commit('auth/SET_TOKEN', data.token);
+        console.log("Вот до сюда норм а дальше видимо чушь111111111...")
         this.$store.commit('auth/SET_USER', data.user);
-
+        console.log("Вот до сюда норм а дальше видимо чушь222222222...")
         this.setAxiosAuthHeader(data.token);
-        this.$router.push('/player');
+
+        this.$router.push({name: 'player'});
       } catch (error) {
+        console.log('МОЖЕТ В ОШИБКУ УЛЕТАЕТ???')
         // console.error(error);
         this.error = error.response?.data?.message || 'Ошибка входа через Telegram';
       } finally {
@@ -64,19 +67,22 @@ export default {
 
   },
   mounted() {
+    console.log('что-то видим', window.Telegram?.WebApp);
+    console.log('Видим initData', window.Telegram?.WebApp.initData);
+
     if (window.Telegram?.WebApp?.initData) {
       const initData = window.Telegram.WebApp.initData;
       let user = window.Telegram.WebApp.initDataUnsafe?.user;
 
       const decodedString = decodeURIComponent(initData);
 
-//Превращаем строку в объект URLSearchParams
+      //Превращаем строку в объект URLSearchParams
       const params = new URLSearchParams(decodedString);
 
-//Создаём итоговый объект
+      //Создаём итоговый объект
       const result = {};
 
-//Проходим по всем параметрам
+      //Проходим по всем параметрам
       for (const [key, value] of params) {
         // Если это поле user, превращаем его строку в настоящий объект
         if (key === 'user') {
@@ -103,7 +109,7 @@ export default {
           auth_date: result.auth_date,
           hash: result.hash
         };
-
+        console.log('ДО СЮДА ТОЧНО ДОХОДИТ')
         this.handleTelegramLogin(data);
       } else {
         this.error = 'Не удалось получить данные пользователя';

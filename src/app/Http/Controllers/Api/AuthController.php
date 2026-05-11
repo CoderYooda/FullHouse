@@ -111,23 +111,31 @@ class AuthController extends Controller
 
     public function telegramLogin(Request $request)
     {
+        $start = microtime(true);
+        \Log::info('telegramLogin START');
+
         $this->validateTelegramHash($request->all());
+        \Log::info('validateTelegramHash DONE', ['time' => microtime(true) - $start]);
 
         $telegramId = $request->input('id');
+        \Log::info('telegramId: ' . $telegramId);
 
-        // Ищем существующую запись в user_credentials
         $credential = UserCredential::where('provider', 'telegram')
             ->where('provider_uid', $telegramId)
             ->first();
+        \Log::info('credential search DONE', ['time' => microtime(true) - $start]);
 
         if ($credential) {
+            \Log::info('credential EXISTS');
             $user = $credential->user;
             if (!$user->is_active) {
                 $user->is_active = true;
                 $user->save();
+                \Log::info('user activated');
             }
         } else {
-            // Создаём TelegramUser
+            \Log::info('credential NOT FOUND, creating new user');
+
             $telegramUser = TelegramUser::create([
                 'telegram_id' => $telegramId,
                 'first_name' => $request->input('first_name'),
@@ -137,6 +145,7 @@ class AuthController extends Controller
                 'allows_write_to_pm' => true,
                 'photo_url' => $request->input('photo_url'),
             ]);
+            \Log::info('TelegramUser created', ['id' => $telegramUser->id, 'time' => microtime(true) - $start]);
 
             $user = User::create([
                 'name' => $request->input('first_name', ''),
@@ -145,16 +154,21 @@ class AuthController extends Controller
                 'password' => Hash::make('123456'),
                 'is_active' => true,
                 'telegram_user_id' => $telegramUser->id,
+                'agreement' => false,
             ]);
+            \Log::info('User created', ['id' => $user->id, 'time' => microtime(true) - $start]);
 
             $user->credentials()->create([
                 'provider' => 'telegram',
                 'provider_uid' => $telegramId,
                 'provider_data' => ['username' => $request->input('username')],
             ]);
+            \Log::info('credential created', ['time' => microtime(true) - $start]);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
+        \Log::info('token created', ['time' => microtime(true) - $start]);
+
         return response()->json(['token' => $token, 'user' => $user]);
     }
 
@@ -242,7 +256,7 @@ class AuthController extends Controller
 
         // 1. Хеш должен быть
         if (!isset($data['hash'])) {
-            \Log::error('Hash missing', $data);
+            Log::error('Hash missing', $data);
             return false;
         }
 
@@ -265,10 +279,7 @@ class AuthController extends Controller
         $calculated_hash = hash_hmac('sha256', $data_check_string, $secret_key);
 
         // 5. Сравниваем
-        $isValid = hash_equals($calculated_hash, $hash);
-
-
-        return $isValid;
+        return hash_equals($calculated_hash, $hash);
     }
 
     public function linkEmail(Request $request)

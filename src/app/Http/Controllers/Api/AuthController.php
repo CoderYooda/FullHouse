@@ -111,6 +111,7 @@ class AuthController extends Controller
 
     public function telegramLogin(Request $request)
     {
+        error_log("=== telegramLogin called ===");
         $start = microtime(true);
         Log::info('telegramLogin START');
 

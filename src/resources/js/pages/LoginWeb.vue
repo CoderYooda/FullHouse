@@ -62,6 +62,7 @@ export default {
     };
   },
   mounted() {
+    console.log('||||||||||||||||||ЭТА ХРЕНЬ НЕ ДОЛЖНА ОТОБРАЗИТЬСЯ||||||||||||||')
     this.initTelegramWidget();
   },
   methods: {

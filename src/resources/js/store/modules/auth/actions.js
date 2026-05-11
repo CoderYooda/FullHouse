@@ -21,7 +21,6 @@ export default ({
         }
     },
     async GetPlayer({ commit, state }) {
-        console.log('GetPlayer called');
 
         // Проверяем токен
         const token = localStorage.getItem('_token');
@@ -32,7 +31,7 @@ export default ({
 
         try {
             const { data } = await axios.get('/api/me');
-            console.log('User data received:', data);
+
             commit('SET_USER', data);
             return data;
         } catch (error) {

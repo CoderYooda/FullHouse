@@ -110,7 +110,6 @@ export default {
 
     loadPlayerData() {
       this.GetPlayer().then((player) => {
-        console.log('Player agreement value:', player.agreement, typeof player.agreement);
         if (player?.agreement === false) {
           this.$router.push({
             slug: window.company_id,

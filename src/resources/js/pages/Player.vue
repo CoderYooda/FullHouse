@@ -7,7 +7,7 @@
       </button>
 
       <div class="avatar_guard">
-        <img class="player_avatar" :src="user.photo_url || '/images/default-avatar.png'">
+        <img class="player_avatar" :src="user.photo_url || '/img/default-avatar-152.png'">
       </div>
       <div class="player_name">{{ user.name }}</div>
       <div class="public_name_title">Игровой никнейм</div>

@@ -34,7 +34,10 @@
             <div v-for="player in players" class="card card-dashboard-pageviews mb-2 p-2">
                 <div class="az-list-item">
                     <div class="d-flex">
-                        <div class="az-img-user mr-2"><img v-bind:src="player.telegram_user.photo_url" alt=""></div>
+                        <div class="az-img-user mr-2">
+                          <img v-if="player.telegram_user && player.telegram_user.photo_url" v-bind:src="player.telegram_user.photo_url" alt="">
+                          <img v-else :src="'/img/default-avatar.png'">
+                        </div>
                         <div>
                             <h6 class="mg-b-0 tx-inverse no-wrap" style="white-space: nowrap; max-width: 144px">{{ player.public_name }}</h6>
                             <small class="tx-11 tx-gray-500 no-wrap" style="white-space: nowrap;">ID пользователя: {{ player.id }}</small>

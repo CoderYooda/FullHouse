@@ -25,76 +25,15 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TelegramController extends Controller
 {
-//    public function index($company_slug): View
-//    {
-//        $company = Company::query()
-//            ->where('slug', $company_slug)
-//            ->first();
-//
-//        if (!$company) {
-//            throw new NotFoundHttpException('Company not found');
-//        }
-//
-//        return view('telegram', compact('company'));
-//    }
+
     public function index(): View
     {
-        return view('app', [
-            'isWeb' => false,
-        ]);
+        return view('app', ['isWeb' => false,]);
     }
 
     public function test(): string
     {
         return auth()->user()->name;
-    }
-
-    public function auth(
-        Request $request,
-        ValidateService $validateService,
-        AuthService $authService,
-        CreateTelegramUserAction $createTelegramUserAction,
-        UpdateTelegramUserAction $updateTelegramUserAction,
-    ): JsonResponse {
-        $params = $request->get('query');
-        $companySlug = $request->get('company');
-
-        $company = Company::query()
-            ->where('slug', $companySlug)
-            ->first();
-
-        parse_str(urldecode($params), $tgData);
-        $telegramUserData = json_decode($tgData['user'], true);
-
-        if ($validateService->validate($params, $company->tg_bot_token)) {
-            $telegramUser = TelegramUser::where('telegram_id', $telegramUserData['id'])->first();
-
-            if (!$telegramUser) {
-                $telegramUser = $createTelegramUserAction->handle(
-                    telegramUserDTO: new CreateTelegramUserDTO($telegramUserData)
-                );
-            } else {
-                $telegramUser = $updateTelegramUserAction->handle(
-                    telegramUserDTO: new UpdateTelegramUserDTO($telegramUserData),
-                    telegramUser:$telegramUser,
-                );
-            }
-
-            $user = $authService->getOrCreateUser(new CreateUserDTO(
-                telegramUser: $telegramUser,
-                companyId: $company->id,
-            ));
-
-            $user->tokens()->delete();
-
-            $token = $user->createToken('telegram', ['read', 'write']);
-
-            return new JsonResponse([
-                'token' => $token->plainTextToken,
-            ]);
-        }
-
-        throw new Exception('TelegramUserInvalid');
     }
 
     public function updateName(Request $request): UpdateNameResource

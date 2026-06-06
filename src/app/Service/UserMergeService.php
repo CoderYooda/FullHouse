@@ -15,10 +15,10 @@ class UserMergeService
     public function merge(User $source, User $target, string $reason = 'manual', ?int $resolvedCityId = null)
     {
         if ($source->id === $target->id) {
-            throw new \Exception('Cannot merge user with itself');
+            throw new \Exception('Невозможно объединить пользователя с самим собой');
         }
         if (!$source->is_active || !$target->is_active) {
-            throw new \Exception('One of users is already merged or deleted');
+            throw new \Exception('Один из пользователей уже объединен или удален');
         }
 
         $finalCityId = $this->resolveCityConflict($source, $target, $resolvedCityId);
@@ -87,25 +87,22 @@ class UserMergeService
             $target->telegram_user_id = $telegramUser->id;
         }
 
-        $target->save(); // ← Убедись, что эта строка есть
+        $target->save();
     }
 
     protected function mergeParticipants(User $source, User $target)
     {
         $sourceParticipants = DB::table('participants')->where('user_id', $source->id)->get();
         foreach ($sourceParticipants as $participant) {
-            $existing = DB::table('participants')
-                ->where('user_id', $target->id)
+            $existing = Participant::where('user_id', $target->id)
                 ->where('tournament_id', $participant->tournament_id)
                 ->first();
             if ($existing) {
-                DB::table('participants')
-                    ->where('user_id', $source->id)
+                Participant::where('user_id', $source->id)
                     ->where('tournament_id', $participant->tournament_id)
                     ->delete();
             } else {
-                DB::table('participants')
-                    ->where('user_id', $source->id)
+                Participant::where('user_id', $source->id)
                     ->where('tournament_id', $participant->tournament_id)
                     ->update(['user_id' => $target->id]);
             }

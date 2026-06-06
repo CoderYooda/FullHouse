@@ -30,9 +30,8 @@ export default {
 
         // Обновляем данные пользователя в store
         const { data } = await axios.get('/api/me');
-        console.log('User after city save:', data);  // ← Добавить
+
         this.$store.commit('auth/SET_USER', data);
-        console.log('Store user after commit:', this.$store.state.auth.user);  // ← Добавить
 
         // Закрываем модалку
         this.$emit('city-selected');

@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\WebController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\AuthController;
@@ -78,7 +77,7 @@ Route::middleware(['auth:web'])->group(function () {
 });
 
 
-// ==================== TELEGRAM-ВЕРСИЯ (ДОБАВИТЬ ЭТО!) ====================
+// ==================== TELEGRAM-ВЕРСИЯ ====================
 Route::get('/telegram/{any}', [TelegramController::class, 'index'])
     ->where('any', '.*')
     ->name('telegram.index');

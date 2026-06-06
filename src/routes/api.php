@@ -34,7 +34,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::post('/feedback/create', [FeedbackController::class, 'receiveFeedback']);
 
-    Route::get('/me', [AuthController::class, 'me']);
+    Route::get('/me', [UserController::class, 'me']);
     Route::match(['get', 'post'], '/link-telegram', [AuthController::class, 'linkTelegram']);
     Route::post('/unlink-telegram', [AuthController::class, 'unlinkTelegram']);
     Route::post('/set-city', [UserController::class, 'setCity']);

@@ -9,7 +9,6 @@ class WebController extends Controller
 {
     public function index(): View
     {
-        // Просто отдаём шаблон, никаких проверок
         return view('app', ['isWeb' => true]);
     }
 }

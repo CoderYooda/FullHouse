@@ -24,6 +24,9 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'public_name' => 'required|string|max:255',
             'agreement' => 'accepted',
+        ],
+        [
+            'email' => 'Ваш email уже занят'
         ]);
 
         User::where('email', $request->email)
@@ -166,7 +169,6 @@ class AuthController extends Controller
         $telegramId = $request->input('id');
         $currentUser = $request->user();
 
-        // Если уже привязан — просто возвращаем успех
         if ($currentUser->credentials()->where('provider', 'telegram')->where('provider_uid', $telegramId)->exists()) {
             return response()->json(['message' => 'Telegram уже привязан'], 200);
         }
@@ -217,11 +219,6 @@ class AuthController extends Controller
         $user->telegram_user_id = null;
         $user->save();
         return response()->json(['message' => 'Telegram отвязан']);
-    }
-
-    public function me(Request $request)
-    {
-        return $request->user();
     }
 
     protected function validateTelegramHash(array $data): bool
@@ -281,6 +278,7 @@ class AuthController extends Controller
         return response()->json(['message' => 'Код отправлен']);
     }
 
+    //Привязка Email к пользователю который изначально регался через телеграм
     public function verifyLinkEmail(Request $request)
     {
         $request->validate([

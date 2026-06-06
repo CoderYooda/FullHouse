@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    public function me(Request $request)
+    {
+        return $request->user();
+    }
+
     public function setCity(Request $request)
     {
         $request->validate(['city_id' => 'required|exists:cities,id']);
@@ -15,4 +20,5 @@ class UserController extends Controller
         $user->save();
         return response()->json(['message' => 'Город сохранён']);
     }
+
 }

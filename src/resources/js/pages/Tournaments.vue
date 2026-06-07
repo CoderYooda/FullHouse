@@ -8,7 +8,7 @@
                         Заполнение турниров в процессе, вернитесь позже
                     </div>
                 </div>
-                <router-link :to="{ path: '/' + slug + '/tournaments/'+ tournament.id}" v-for="tournament in tournaments"  class="my-link-wrapper">
+                <router-link :to="{ name: 'tournament', params: { id: tournament.id } }" v-for="tournament in tournaments"  class="my-link-wrapper">
                     <div class="card">
                         <div class="aside-container">
                             <div class="left-side">
@@ -51,45 +51,44 @@
 </template>
 
 <script>
-
 export default {
-    data: function () {
-        return {
-            tournaments:[],
-        }
+  data: function () {
+    return {
+      tournaments:[],
+    }
+  },
+  methods:{
+    async getTournaments(){
+      try{
+        // Убираем company из запроса
+        const { data } = await axios({
+          method: 'POST',
+          url: '/api/tournament/list',
+        });
+        this.tournaments = data.data
+        return true;
+      } catch (error) {
+        console.error('Error loading tournaments:', error);
+        return false;
+      }
     },
-    methods:{
-        async getTournaments(){
-            try{
-                const { data } = await axios({
-                    method: 'POST',
-                    url: '/api/tournament/list?company=' + window.Slug,
-                });
-                this.tournaments = data.data
-
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        num_word(value, words){
-            value = Math.abs(value) % 100;
-            let num = value % 10;
-            if(value > 10 && value < 20) return words[2];
-            if(num > 1 && num < 5) return words[1];
-            if(num === 1) return words[0];
-
-            return words[2];
-        }
+    num_word(value, words){
+      value = Math.abs(value) % 100;
+      let num = value % 10;
+      if(value > 10 && value < 20) return words[2];
+      if(num > 1 && num < 5) return words[1];
+      if(num === 1) return words[0];
+      return words[2];
+    }
+  },
+  computed:{
+    slug() {
+      return window.Slug;
     },
-    computed:{
-        slug() {
-            return window.Slug;
-        },
-    },
-    mounted() {
-        this.getTournaments()
-    },
+  },
+  mounted() {
+    this.getTournaments()
+  },
 }
 </script>
 

@@ -13,10 +13,6 @@ class FeedbackController extends Controller
 {
     public function receiveFeedback(CreateFeedbackRequest $request): JsonResponse
     {
-        $company = Company::query()
-            ->where('slug', request()->input('company'))
-            ->first();
-
         $feedback = new Feedback();
         $feedback->type = FeedbackType::from($request->validated('type'));
         $feedback->user_id = $request->user()->id;
@@ -25,7 +21,7 @@ class FeedbackController extends Controller
             FeedbackType::Incident,
         ]) ? Carbon::parse($request->validated('date')) : null;
         $feedback->is_anonymous = $request->validated('is_anon');
-        $feedback->company_id = $company->id;
+        $feedback->city_id = $request->user()->city_id;
 
         $feedback->save();
 

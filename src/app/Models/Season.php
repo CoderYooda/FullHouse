@@ -32,6 +32,11 @@ class Season extends Model
 
     public function scopeOwned(Builder $query): void
     {
-        $query->where('company_id', auth()->user()->company_id);
+        $query->where('city_id', auth()->user()->city_id);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
     }
 }

@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\City;
+use App\Models\UserCredential;
+use App\Models\MergeHistory;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -41,7 +44,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'public_name',
+        'telegram_user_id',
     ];
+    protected $appends = ['photo_url'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -69,14 +75,44 @@ class User extends Authenticatable
         $query->where('company_id', auth()->user()->company_id);
     }
 
-    public function telegramUser(): BelongsTo
+    public function telegramUser()
     {
         return $this->belongsTo(TelegramUser::class, 'telegram_user_id');
+    }
+
+    public function getPhotoUrlAttribute()
+    {
+        return $this->telegramUser?->photo_url;
     }
 
     public function tournaments(): BelongsToMany
     {
         return $this->belongsToMany(Tournament::class, 'participants', 'user_id', 'tournament_id')
             ->withPivot('is_actual', 'created_at');
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    public function mergedInto()
+    {
+        return $this->belongsTo(User::class, 'merged_into_user_id');
+    }
+
+    public function credentials()
+    {
+        return $this->hasMany(UserCredential::class);
+    }
+
+    public function participants()
+    {
+        return $this->hasMany(Participant::class, 'user_id');
+    }
+
+    public function isPrimary()
+    {
+        return is_null($this->merged_into_user_id) && $this->is_active;
     }
 }

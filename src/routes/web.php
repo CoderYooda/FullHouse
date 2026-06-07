@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\WebController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\AuthController;
@@ -13,18 +13,11 @@ use App\Http\Controllers\Admin\SeasonsController as AdminSeasonsController;
 use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 
 
-Route::get('/', [HomeController::class, 'index'])
-    ->name('home');
 
-Route::get('/telegram/{company_slug}/{any}', [TelegramController::class, 'index'])
-    ->where('any', '.*')
-    ->name('home');
 
-Route::get('/login', [AuthController::class, 'login'])
-    ->name('login');
-
-Route::post('/login', [AuthController::class, 'authenticate'])
-    ->name('admin.login');
+// Админка
+Route::get('/admin/login', [AuthController::class, 'login'])->name('admin.login');
+Route::post('/admin/login', [AuthController::class, 'authenticate'])->name('admin.login.post');
 
 
 Route::middleware(['auth:web'])->group(function () {
@@ -52,7 +45,7 @@ Route::middleware(['auth:web'])->group(function () {
             Route::post('/{tournament_id}/players', [AdminTournamentController::class, 'players'])
                 ->name('admin.tournament.players');
             Route::post('/test', [AdminTournamentController::class, 'test'])
-                ->name('admin.tournament.actualToggle');
+                ->name('admin.tournament.testActualToggle');
         });
 
         Route::prefix('feedback')->group(function () {
@@ -84,6 +77,14 @@ Route::middleware(['auth:web'])->group(function () {
 });
 
 
+// ==================== TELEGRAM-ВЕРСИЯ ====================
+Route::get('/telegram/{any}', [TelegramController::class, 'index'])
+    ->where('any', '.*')
+    ->name('telegram.index');
 
+Route::get('/', [WebController::class, 'index']);
+// ==================== SPA (должен быть последним) ====================
+Route::get('/{any}', [WebController::class, 'index'])
+    ->where('any', '.*');
 
 

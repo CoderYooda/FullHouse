@@ -88,4 +88,8 @@ class Tournament extends Model
     {
         return $this->belongsTo(Season::class, 'season_id');
     }
+    public function city(): BelongsTo
+    {
+        return $this->belongsTo(City::class, 'city_id');
+    }
 }

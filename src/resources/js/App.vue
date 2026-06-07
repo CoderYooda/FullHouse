@@ -1,50 +1,49 @@
-<template lang="">
-    <div v-if="isLoading" class="container preloader">
-        <div class="blur-overlay"></div>
-        <div class="logo"></div>
-    </div>
-    <component :is="layout"></component>
-
+<template>
+  <div v-if="isLoading" class="preloader">
+    <div class="blur-overlay"></div>
+    <div class="logo"></div>
+  </div>
+  <component :is="layout" v-else />
 </template>
 
 <script>
 import Auth from './layouts/Auth.vue';
 import Main from './layouts/Main.vue';
 import Clear from './layouts/Clear.vue';
-import { mapActions, mapGetters, mapMutations } from 'vuex';
+import axios from 'axios';
 
 export default {
-    name: 'app',
-    components: {
-        Auth,
-        Main,
-        Clear,
+  name: 'app',
+  components: { Auth, Main, Clear },
+  data() {
+    return {
+      isLoading: true,
+    };
+  },
+  computed: {
+    layout() {
+      return this.$route.meta.layout || 'Auth';
     },
-    mounted() {
-        if (localStorage.getItem('_token')) {
-            this.setToken({token:localStorage.getItem('_token')})
-        } else {
-            this.$router.push({
-                slug: window.company_id,
-                path: 'login'
-            });
-        }
-    },
-    methods: {
-        ...mapMutations('auth', ['setToken']),
-    },
-    computed: {
+  },
+  async mounted() {
+    const token = localStorage.getItem('_token');
+    const isTelegramPage = window.location.pathname === '/telegram/player';
 
-        // ...mapGetters(['LOADING']),
-
-
-        isLoading(){
-            return this.$store.state._fullscreenLoading;
-        },
-
-        layout() {
-            return this.$route.meta.layout || 'Auth';
-        }
+    // Если страница авторизации через бота — не трогаем
+    if (isTelegramPage) {
+      this.isLoading = false;
+      return;
     }
-}
+
+    if (token) {
+      try {
+        await this.$store.dispatch('auth/GetPlayer');
+      } catch (error) {
+        localStorage.removeItem('_token');
+      }
+    }
+
+    this.isLoading = false;
+  },
+};
 </script>

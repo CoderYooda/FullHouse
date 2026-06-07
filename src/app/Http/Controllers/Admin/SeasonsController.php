@@ -17,7 +17,7 @@ class SeasonsController extends Controller
     public function index(): View
     {
         $seasons = Season::query()
-            ->owned()
+//            ->owned()
             ->orderBy('created_at', 'DESC')
             ->paginate(10);
 

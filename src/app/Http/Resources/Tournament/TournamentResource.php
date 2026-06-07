@@ -46,6 +46,7 @@ class TournamentResource extends JsonResource
             'without_re_entry' => $this->tournament->without_re_entry,
             'without_add_on' => $this->tournament->without_add_on,
             'description' => $this->tournament->description,
+            'city_id' => $this->tournament->city_id,
             'participant_count' => $this->tournament->users()->where('participants.is_actual', true)->count(),
             'participant' => $this->tournament->users()
                 ->where('participants.is_actual', true)

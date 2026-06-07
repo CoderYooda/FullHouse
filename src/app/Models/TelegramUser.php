@@ -3,23 +3,24 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
 
-/**
- * --- Properties from a database ---
- * @property int $id
- * @property int $telegram_id
- * @property int $user_id
- * @property string $first_name
- * @property string | null $last_name
- * @property string | null $username
- * @property string | null $language_code
- * @property bool $allows_write_to_pm
- * @property string | null $photo_url
- * */
-
-class TelegramUser extends Authenticatable
+class TelegramUser extends Model
 {
+    use HasFactory;
+
+    protected $fillable = [
+        'telegram_id',
+        'first_name',
+        'last_name',
+        'username',
+        'language_code',
+        'allows_write_to_pm',
+        'photo_url',
+    ];
+
+//    public function user()
+//    {
+//        return $this->belongsTo(User::class, 'id', 'telegram_user_id');
+//    }
 }

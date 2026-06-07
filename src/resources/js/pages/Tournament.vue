@@ -30,10 +30,19 @@
                 <div class="module">
                   <div class="players_list__title">Учасники турнира</div>
 
-                  <div class=" players_list row">
-                    <div v-for="player in players"  class="player_item row">
+                  <div class="players_list row">
+                    <div v-for="player in players" :key="player.id" class="player_item row">
                       <div class="player_item__info row">
-                        <img v-bind:src="player.telegram_user.photo_url" class="player_item__img">
+                        <img
+                            v-if="player.telegram_user"
+                            :src="player.telegram_user.photo_url"
+                            class="player_item__img"
+                        >
+                        <img
+                            v-else
+                            src="/img/default-avatar.png"
+                            class="player_item__img"
+                        >
                         <div class="player_item__name">{{ player.public_name }}</div>
                       </div>
                       <div class="player_item__ordinal">{{ player.pivot.serial_number }}</div>

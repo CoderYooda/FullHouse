@@ -18,12 +18,14 @@ use Illuminate\Contracts\View\View;
 use function Symfony\Component\String\u;
 use App\Repositories\TournamentRepository;
 use App\Service\TournamentService;
+use App\Service\User\UserService;
 
 class TournamentController extends Controller
 {
     public function __construct(
         protected TournamentRepository $tournamentRepository,
         protected TournamentService $tournamentService,
+        protected UserService $userService,
     )
     {
 
@@ -54,102 +56,53 @@ class TournamentController extends Controller
         return redirect()->route('admin.index');
     }
 
-    public function getTodayList(): TournamentCollectionResource
+    public function getUpcomingTournaments(Request $request): TournamentCollectionResource
     {
-        /** @var User $user */
-        $user = auth()->user();
+        $user = $this->userService->getAuthenticatedUser();
 
-        $tournaments = Tournament::query()
-            ->with('users')
-            ->whereDate('event_date', '>=', Carbon::today()->startOfDay())
-            ->where('is_actual', true)
-            ->whereHas('users', function ($query) use ($user) {
-                $query->where('participants.user_id', $user->id)
-                ->where('participants.is_actual', true);
-            })
-            ->orderBy('event_date')
-            ->get();
-
-        if ($tournaments) {
-            return new TournamentCollectionResource($tournaments);
-        }
-
-        throw new ModelNotFoundException();
-    }
-
-    public function list(Request $request)
-    {
-        $user = auth()->user();
-        $cityId = $user->city_id;
-
-        $tournaments = Tournament::query()
-            ->whereDate('event_date', '>=', Carbon::today())
-            ->where('is_actual', true)
-            ->where('city_id', $cityId)
-            ->orderBy('event_date')->get();
+        $tournaments = $this->tournamentRepository->getUpcomingTournaments($user->city_id);
 
         return new TournamentCollectionResource($tournaments);
     }
 
-    public function join(Request $request, int $tournament_id): JsonResponse
+    public function getUserUpcomingTournaments(): TournamentCollectionResource
     {
-        /** @var User $user */
-        $user = auth()->user();
+        $user = $this->userService->getAuthenticatedUser();
+        $tournaments = $this->tournamentRepository->getUserUpcomingTournaments($user->id);
 
-        /** @var Tournament $tournament */
-        $tournament = Tournament::query()
-            ->with('users')
-            ->where('id', $tournament_id)->first();
+        return new TournamentCollectionResource($tournaments);
+    }
 
-        $actualUser = $tournament->users->where('id', $user->id)->first();
+    public function join(int $tournament_id): JsonResponse
+    {
+        $tournament = Tournament::findOrFail($tournament_id);
+        $user = $this->userService->getAuthenticatedUser();
 
-        if ($actualUser) {
-            $actualUser->pivot->is_actual = true;
-            $actualUser->pivot->save();
-        } else {
-            $tournament->users()->attach(auth()->user()->id, [
-                'created_at' => Carbon::now(),
-            ]);
-        }
+        $this->tournamentService->addParticipant($tournament, $user);
 
-        $this->tournamentService->recalculationOrderPlayers($this->tournamentRepository->getSortedActualPlayers($tournament_id));
+        $this->tournamentService->recalculationOrderPlayers(
+            $this->tournamentRepository->getSortedActualPlayers($tournament_id)
+        );
 
         return $this->getTournamentPlayers($tournament_id);
     }
 
-    public function get(Request $request, int $tournament_id): TournamentResource
+    public function leave(int $tournament_id): JsonResponse
     {
-        /** @var Tournament $tournament */
-        $tournament = Tournament::query()
-            ->where('id', $tournament_id)->first();
+        $tournament = Tournament::findOrFail($tournament_id);
+        $user = $this->userService->getAuthenticatedUser();
 
-        if ($tournament) {
-            return new TournamentResource($tournament);
-        }
-
-        throw new ModelNotFoundException();
-    }
-
-    public function leave(Request $request, int $tournament_id): JsonResponse
-    {
-        /** @var User $user */
-        $user = auth()->user();
-
-        /** @var Tournament $tournament */
-        $tournament = Tournament::query()
-            ->where('id', $tournament_id)->first();
-
-        $actualUser = $tournament->users->where('id', $user->id)->first();
-
-        if ($actualUser) {
-            $actualUser->pivot->is_actual = false;
-            $actualUser->pivot->serial_number = null;
-            $actualUser->pivot->save();
-        }
-
-        $this->tournamentService->recalculationOrderPlayers($this->tournamentRepository->getSortedActualPlayers($tournament_id));
+        $this->tournamentService->removeParticipant($tournament, $user);
+        $this->tournamentService->recalculationOrderPlayers(
+            $this->tournamentRepository->getSortedActualPlayers($tournament_id)
+        );
 
         return $this->getTournamentPlayers($tournament_id);
+    }
+
+    public function getTournament(int $tournament_id): TournamentResource
+    {
+        return new TournamentResource($this->tournamentRepository->getTournament($tournament_id));
     }
 
     public function getTournamentPlayers($tournament_id): JsonResponse

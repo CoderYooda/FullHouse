@@ -25,16 +25,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/player/update_name', [TelegramController::class, 'updateName']);
     Route::post('/player/accept_agreement', [PlayerController::class, 'acceptAgreement']);
 
-    Route::post('/tournament/list', [TournamentController::class, 'list']);
-    Route::post('/tournament/get', [TournamentController::class, 'getTodayList']);
-    Route::post('/tournament/{tournament_id}/get', [TournamentController::class, 'get']);
+    Route::post('/tournament/list', [TournamentController::class, 'getUpcomingTournaments']);
+    Route::post('/tournament/get', [TournamentController::class, 'getUserUpcomingTournaments']);
+    Route::post('/tournament/{tournament_id}/get', [TournamentController::class, 'getTournament']);
     Route::post('/tournament/{tournament_id}/join', [TournamentController::class, 'join']);
     Route::post('/tournament/{tournament_id}/leave', [TournamentController::class, 'leave']);
     Route::post('/tournament/{tournament_id}/players', [TournamentController::class, 'getTournamentPlayers']);
 
     Route::post('/feedback/create', [FeedbackController::class, 'receiveFeedback']);
 
-    Route::get('/me', [UserController::class, 'me']);
+    Route::get('/me', [UserController::class, 'getLoginUser']);
     Route::match(['get', 'post'], '/link-telegram', [AuthController::class, 'linkTelegram']);
     Route::post('/unlink-telegram', [AuthController::class, 'unlinkTelegram']);
     Route::post('/set-city', [UserController::class, 'setCity']);

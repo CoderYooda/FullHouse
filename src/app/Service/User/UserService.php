@@ -109,11 +109,6 @@ class UserService
         return str_contains($user->email, '@telegram.com');
     }
 
-    public function getUserWithCredentials(User $user): User
-    {
-        return $user->load('credentials');
-    }
-
     public function updatePublicName(int $userId, string $publicName): User
     {
         $this->userRepository->updatePublicName($userId, $publicName);

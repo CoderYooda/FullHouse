@@ -3,283 +3,131 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\TelegramUser;
-use App\Models\EmailVerification;
-use App\Models\UserCredential;
-use App\Service\UserMergeService;
+use App\Service\User\UserService;
+use App\Service\Telegram\TelegramService;
+use App\Service\EmailVerification\EmailVerificationService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    public function __construct(
+        private readonly UserService $userService,
+        private readonly TelegramService $telegramService,
+        private readonly EmailVerificationService $emailVerificationService
+    ) {}
+
+    public function register(Request $request): JsonResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed',
             'name' => 'required|string|max:255',
             'public_name' => 'required|string|max:255',
             'agreement' => 'accepted',
-        ],
-        [
-            'email' => 'Ваш email уже занят'
         ]);
 
-        User::where('email', $request->email)
-            ->whereNull('email_verified_at')
-            ->delete();
-
         try {
-
-            DB::transaction(function () use ($request) {
-
-                $user = User::create([
-                    'name' => $request->name,
-                    'public_name' => $request->public_name,
-                    'email' => $request->email,
-                    'password' => Hash::make($request->password),
-                    'agreement' => false,
-                    'is_active' => true,
-                ]);
-
-                $user->credentials()->create([
-                    'provider' => 'email',
-                    'provider_uid' => $request->email,
-                ]);
-
-                $code = random_int(100000, 999999);
-                EmailVerification::updateOrCreate(
-                    ['email' => $request->email],
-                    ['code' => $code, 'expires_at' => now()->addMinutes(15)]
-                );
-
-                Mail::raw("Ваш код подтверждения: $code", function ($message) use ($request) {
-                    $message->to($request->email)->subject('Подтверждение email');
-                });
-
-            });
-
+            $this->userService->registerWithEmail($validated);
+            return response()->json(['message' => 'Код подтверждения отправлен']);
         } catch (\Exception $e) {
-            Log::error('Registration failed: ' . $e->getMessage());
-            return response()->json(['message' => 'Ошибка при регистрации. Попробуйте позже.'], 500);
+            return response()->json(['message' => 'Ошибка при регистрации'], 500);
         }
-
-
-        return response()->json(['message' => 'Код подтверждения отправлен']);
     }
 
-    public function verifyEmail(Request $request)
+    public function verifyEmail(Request $request): JsonResponse
     {
         $request->validate([
             'email' => 'required|email',
             'code' => 'required|string|size:6'
         ]);
 
-        $verification = EmailVerification::where('email', $request->email)
-            ->where('code', $request->code)
-            ->where('expires_at', '>', now())
-            ->firstOrFail();
+        $user = $this->userService->verifyEmail($request->email, $request->code);
 
-        $user = User::where('email', $request->email)->firstOrFail();
-        $user->email_verified_at = now();
-        $user->save();
-        $verification->delete();
+        if (!$user) {
+            return response()->json(['message' => 'Неверный код'], 400);
+        }
 
         $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json(['token' => $token, 'user' => $user]);
     }
 
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ]);
 
-        $user = User::where('email', $request->email)->first();
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Неверные данные'], 401);
-        }
-        if (!$user->email_verified_at) {
-            return response()->json(['message' => 'Email не подтверждён'], 403);
+        $user = $this->userService->login($request->email, $request->password);
+
+        if (!$user) {
+            return response()->json(['message' => 'Неверные данные или email не подтверждён'], 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json(['token' => $token, 'user' => $user]);
     }
 
-    public function telegramLogin(Request $request)
+    public function telegramLogin(Request $request): JsonResponse
     {
+        $botToken = config('services.telegram.bot_token');
 
-        $this->validateTelegramHash($request->all());
-
-        $telegramId = $request->input('id');
-
-        $credential = UserCredential::where('provider', 'telegram')
-            ->where('provider_uid', $telegramId)
-            ->first();
-
-        if ($credential) {
-            $user = $credential->user;
-            if (!$user->is_active) {
-                $user->is_active = true;
-                $user->save();
-            }
-        } else {
-
-            $telegramUser = TelegramUser::create([
-                'telegram_id' => $telegramId,
-                'first_name' => $request->input('first_name'),
-                'last_name' => $request->input('last_name'),
-                'username' => $request->input('username'),
-                'language_code' => $request->input('language_code'),
-                'allows_write_to_pm' => true,
-                'photo_url' => $request->input('photo_url'),
-            ]);
-
-            $user = User::create([
-                'name' => $request->input('first_name', ''),
-                'public_name' => $request->input('username', ''),
-                'email' => $telegramId . '@telegram.com',
-                'password' => Hash::make('123456'),
-                'is_active' => true,
-                'telegram_user_id' => $telegramUser->id,
-                'agreement' => false,
-            ]);
-
-            $user->credentials()->create([
-                'provider' => 'telegram',
-                'provider_uid' => $telegramId,
-                'provider_data' => ['username' => $request->input('username')],
-            ]);
+        if (!$this->telegramService->validateTelegramHash($request->all(), $botToken)) {
+            return response()->json(['message' => 'Неверные данные Telegram'], 401);
         }
 
+        $user = $this->telegramService->loginOrRegisterViaTelegram($request->all());
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json(['token' => $token, 'user' => $user]);
     }
 
-    public function linkTelegram(Request $request)
+    public function linkTelegram(Request $request): JsonResponse
     {
-        $this->validateTelegramHash($request->all());
-        $telegramId = $request->input('id');
-        $currentUser = $request->user();
+        $botToken = config('services.telegram.bot_token');
 
-        if ($currentUser->credentials()->where('provider', 'telegram')->where('provider_uid', $telegramId)->exists()) {
-            return response()->json(['message' => 'Telegram уже привязан'], 200);
+        if (!$this->telegramService->validateTelegramHash($request->all(), $botToken)) {
+            return response()->json(['message' => 'Неверные данные Telegram'], 401);
         }
 
-        $telegramUser = TelegramUser::where('telegram_id', $telegramId)->first();
-        $sourceUser = $telegramUser ? User::where('telegram_user_id', $telegramUser->id)->first() : null;
+        $user = $this->userService->getAuthenticatedUser();
 
-        $mergeService = new UserMergeService();
+        $result = $this->telegramService->linkTelegramToUser(
+            $user,
+            $request->all(),
+            $request->input('resolved_city_id')
+        );
 
-        if ($sourceUser && $sourceUser->is_active && $sourceUser->id !== $currentUser->id) {
-
-            $mergeService->merge($sourceUser, $currentUser, 'link_telegram_to_web', $request->resolved_city_id ?? null);
-
-            // Обновляем текущего пользователя после слияния
-            $currentUser = $currentUser->fresh();
-
-            return response()->json(['message' => 'Аккаунты объединены', 'user' => $currentUser]);
-        }
-
-        if (!$telegramUser) {
-            $telegramUser = TelegramUser::create([
-                'telegram_id' => $telegramId,
-                'first_name' => $request->input('first_name'),
-                'last_name' => $request->input('last_name'),
-                'username' => $request->input('username'),
-                'language_code' => $request->input('language_code'),
-                'allows_write_to_pm' => true,
-                'photo_url' => $request->input('photo_url'),
-            ]);
-        }
-
-        $currentUser->telegram_user_id = $telegramUser->id;
-        $currentUser->save();
-
-        $currentUser->credentials()->create([
-            'provider' => 'telegram',
-            'provider_uid' => $telegramId,
-            'provider_data' => ['username' => $request->input('username')],
-        ]);
-
-        return response()->json(['message' => 'Telegram привязан', 'user' => $currentUser]);
+        return response()->json($result);
     }
 
-    public function unlinkTelegram(Request $request)
+
+    public function unlinkTelegram(Request $request): JsonResponse
     {
-        $user = $request->user();
-        $user->credentials()->where('provider', 'telegram')->delete();
-        $user->telegram_user_id = null;
-        $user->save();
+        $user = $this->userService->getAuthenticatedUser();
+        $this->telegramService->unlinkTelegram($user);
         return response()->json(['message' => 'Telegram отвязан']);
     }
 
-    protected function validateTelegramHash(array $data): bool
-    {
-        $bot_token = config('services.telegram.bot_token');
-
-        // 1. Хеш должен быть
-        if (!isset($data['hash'])) {
-            Log::error('Hash missing', $data);
-            return false;
-        }
-
-        $hash = $data['hash'];
-        unset($data['hash']); // Удаляем хеш из данных для проверки
-
-        // 2. Сортируем по ключам (обязательно!)
-        ksort($data);
-
-        // 3. Формируем строку для проверки
-        $data_check_arr = [];
-        foreach ($data as $key => $value) {
-            // Значение всегда должно быть строкой (и не содержать лишних пробелов)
-            $data_check_arr[] = $key . '=' . (string)$value;
-        }
-        $data_check_string = implode("\n", $data_check_arr);
-
-        // 4. Вычисляем хеш
-        $secret_key = hash('sha256', $bot_token, true);
-        $calculated_hash = hash_hmac('sha256', $data_check_string, $secret_key);
-
-        // 5. Сравниваем
-        return hash_equals($calculated_hash, $hash);
-    }
-
-    public function linkEmail(Request $request)
+    public function linkEmail(Request $request): JsonResponse
     {
         $request->validate([
             'email' => 'required|email|unique:users,email',
         ]);
 
-        $user = $request->user();
+        $user = $this->userService->getAuthenticatedUser();
 
-        if (!str_contains($user->email, '@telegram.com')) {
+        if (!$this->userService->isTelegramGeneratedUser($user)) {
             return response()->json(['message' => 'Email уже привязан'], 400);
         }
 
-        $code = random_int(100000, 999999);
-        EmailVerification::updateOrCreate(
-            ['email' => $request->email],
-            ['code' => $code, 'expires_at' => now()->addMinutes(15)]
-        );
-
-        Mail::raw("Код для привязки email: $code", function ($message) use ($request) {
-            $message->to($request->email)->subject('Привязка email');
-        });
+        $this->emailVerificationService->generateAndSend($request->email, 'Привязка email');
 
         return response()->json(['message' => 'Код отправлен']);
     }
 
-    //Привязка Email к пользователю который изначально регался через телеграм
-    public function verifyLinkEmail(Request $request)
+    public function verifyLinkEmail(Request $request): JsonResponse
     {
         $request->validate([
             'email' => 'required|email',
@@ -287,28 +135,22 @@ class AuthController extends Controller
             'password' => 'required|min:8|confirmed',
         ]);
 
-        $verification = EmailVerification::where('email', $request->email)
-            ->where('code', $request->code)
-            ->where('expires_at', '>', now())
-            ->firstOrFail();
+        $user = $this->userService->getAuthenticatedUser();
 
-        $user = $request->user();
-
-        if (!str_contains($user->email, '@telegram.com')) {
+        if (!$this->userService->isTelegramGeneratedUser($user)) {
             return response()->json(['message' => 'Email уже привязан'], 400);
         }
 
-        $user->email = $request->email;
-        $user->password = Hash::make($request->password);
-        $user->email_verified_at = now();
-        $user->save();
-
-        $user->credentials()->updateOrCreate(
-            ['provider' => 'email'],
-            ['provider_uid' => $request->email]
+        $success = $this->userService->linkEmailToTelegramUser(
+            $user,
+            $request->email,
+            $request->password,
+            $request->code
         );
 
-        $verification->delete();
+        if (!$success) {
+            return response()->json(['message' => 'Неверный код'], 400);
+        }
 
         return response()->json(['message' => 'Email привязан']);
     }

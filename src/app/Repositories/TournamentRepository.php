@@ -3,7 +3,6 @@
 namespace App\Repositories;
 
 use App\Models\Tournament;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
